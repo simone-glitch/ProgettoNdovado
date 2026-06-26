@@ -1,98 +1,407 @@
-<div class="prenotazioni-container">
-  <header class="page-header">
+<div class="bookings-page">
+
+  <!-- ── Modals ── -->
+  @if (showAlert) {
+    <app-alert [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+  }
+  @if (showConfirm) {
+    <app-conferma-box [messaggio]="confirmMessage" (risposta)="gestisciRisposta($event)"></app-conferma-box>
+  }
+
+  <!-- ── Breadcrumb ── -->
+  <nav class="bookings-breadcrumb">
+    <button class="bc-home" (click)="vaiAgliHotel()">
+      <i class="fas fa-home"></i> Home
+    </button>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">
+      @if (isGuest) { Le Mie Prenotazioni }
+      @else if (isHost) { Prenotazioni Hotel }
+      @else { Tutte le Prenotazioni }
+    </span>
+  </nav>
+
+  <!-- ── Page Header ── -->
+  <header class="bookings-header">
     <h1>
       @if (isGuest) { Le mie prenotazioni }
       @else if (isHost) { Prenotazioni dei miei hotel }
       @else { Tutte le prenotazioni }
     </h1>
-    <p class="subtitle">
-      @if (isGuest) { Storico e stato delle tue prenotazioni }
-      @else if (isHost) { Gestisci le richieste per le tue strutture }
-      @else { Panoramica completa di tutte le prenotazioni }
-    </p>
+    <p class="bookings-subtitle">Gestisci i tuoi soggiorni, visualizza i dettagli delle prenotazioni e scarica le conferme.</p>
   </header>
 
-  <app-alert
-    *ngIf="showAlert"
-    [type]="alertType"
-    [message]="alertMessage"
-    (dismissEvent)="onAlertDismiss()">
-  </app-alert>
+  <!-- ── Two-column layout ── -->
+  <div class="bookings-layout">
 
-  <app-conferma-box
-    *ngIf="showConfirm"
-    [messaggio]="confirmMessage"
-    (risposta)="gestisciRisposta($event)">
-  </app-conferma-box>
+    <!-- ══ LEFT MAIN COLUMN ══ -->
+    <div class="bookings-main">
 
-  @if (loading) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Caricamento prenotazioni...</p>
-    </div>
-  } @else if (prenotazioni.length === 0) {
-    <div class="empty-state">
-      <i class="fas fa-calendar-times empty-icon"></i>
-      <p>Nessuna prenotazione trovata.</p>
-    </div>
-  } @else {
-    <div class="table-wrapper">
-      <table class="modern-table">
-        <thead>
-          <tr>
-            <th>Hotel / Camera</th>
-            @if (!isGuest) { <th>Ospite</th> }
-            <th>Check-in</th>
-            <th>Check-out</th>
-            <th>Ospiti</th>
-            <th>Totale</th>
-            <th>Stato</th>
-            <th>Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (p of prenotazioni; track p.id) {
-            <tr>
-              <td>
-                <strong>{{ p.nomeHotel }}</strong>
-                <span class="room-type">{{ p.tipoCamera }}</span>
-              </td>
-              @if (!isGuest) {
-                <td>{{ p.nomeUtente }}</td>
-              }
-              <td>{{ p.dataCheckin | date:'dd/MM/yyyy' }}</td>
-              <td>{{ p.dataCheckout | date:'dd/MM/yyyy' }}</td>
-              <td>{{ p.numOspiti }}</td>
-              <td class="prezzo-cell">€{{ p.prezzoTotale | number:'1.2-2' }}</td>
-              <td>
-                <span class="stato-badge" [ngClass]="statoBadgeClass(p.stato)">
-                  {{ statoLabel(p.stato) }}
-                </span>
-              </td>
-              <td class="actions-cell">
-                @if ((isHost || isAdmin) && p.stato === 'IN_ATTESA') {
-                  <button class="btn-action btn-confirm" (click)="aggiornaStato(p.id, 'CONFERMATA')">
-                    Conferma
-                  </button>
-                  <button class="btn-action btn-cancel" (click)="aggiornaStato(p.id, 'CANCELLATA')">
-                    Rifiuta
-                  </button>
-                }
-                @if (isGuest && p.stato === 'IN_ATTESA') {
-                  <button class="btn-action btn-cancel" (click)="cancella(p.id)">
-                    Annulla
-                  </button>
-                }
-                @if (isAdmin) {
-                  <button class="btn-action btn-delete" (click)="elimina(p.id)" title="Elimina">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                }
-              </td>
-            </tr>
+      <!-- Stat cards skeleton -->
+      @if (loading) {
+        <div class="bookings-stats-grid">
+          @for (item of skeletonItems; track item) {
+            <div class="booking-stat-card skel-card">
+              <div class="skel skel-icon"></div>
+              <div class="stat-info">
+                <div class="skel skel-text-sm"></div>
+                <div class="skel skel-text-lg"></div>
+              </div>
+            </div>
           }
-        </tbody>
-      </table>
-    </div>
-  }
+        </div>
+      } @else {
+        <!-- Stat cards (dynamic) -->
+        <div class="bookings-stats-grid">
+          <div class="booking-stat-card">
+            <div class="stat-icon-wrap stat-green">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Prenotazioni attive</span>
+              <span class="stat-value">{{ prenotazioniAttive }}</span>
+            </div>
+          </div>
+          <div class="booking-stat-card">
+            <div class="stat-icon-wrap stat-blue">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Soggiorni completati</span>
+              <span class="stat-value">{{ soggiorniCompletati }}</span>
+            </div>
+          </div>
+          <div class="booking-stat-card">
+            <div class="stat-icon-wrap stat-gold">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Totale speso</span>
+              <span class="stat-value stat-value-md">{{ totaleSpeso }}</span>
+            </div>
+          </div>
+          <div class="booking-stat-card">
+            <div class="stat-icon-wrap stat-purple">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Prossimo check-in</span>
+              <span class="stat-value stat-value-md">{{ prossimoCheckin }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── Filter Bar ── -->
+      <div class="bookings-filter-card">
+        <div class="bookings-search">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            placeholder="Cerca per hotel, camera o codice prenotazione"
+            class="search-input" />
+        </div>
+        <div class="filter-controls">
+          <select [(ngModel)]="filterStatus" class="filter-select">
+            <option value="">Tutte le prenotazioni</option>
+            <option value="IN_ATTESA">In attesa</option>
+            <option value="CONFERMATA">Confermate</option>
+            <option value="CANCELLATA">Cancellate</option>
+          </select>
+          <input type="date" [(ngModel)]="filterPeriodo" class="filter-date" title="Filtra per periodo" />
+          <button class="btn-filtra" (click)="applyFilters()">
+            <i class="fas fa-filter"></i> Filtra
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Tabs ── -->
+      <div class="bookings-tabs">
+        <button class="tab-btn" [class.tab-active]="activeTab === 'tutte'" (click)="setTab('tutte')">
+          Tutte
+          @if (!loading && prenotazioni.length > 0) {
+            <span class="tab-count">{{ prenotazioni.length }}</span>
+          }
+        </button>
+        <button class="tab-btn" [class.tab-active]="activeTab === 'arrivo'" (click)="setTab('arrivo')">
+          In arrivo
+          @if (!loading && countArrivo > 0) {
+            <span class="tab-count tab-count-green">{{ countArrivo }}</span>
+          }
+        </button>
+        <button class="tab-btn" [class.tab-active]="activeTab === 'completate'" (click)="setTab('completate')">
+          Completate
+          @if (!loading && countCompletate > 0) {
+            <span class="tab-count tab-count-blue">{{ countCompletate }}</span>
+          }
+        </button>
+        <button class="tab-btn" [class.tab-active]="activeTab === 'cancellate'" (click)="setTab('cancellate')">
+          Cancellate
+          @if (!loading && countCancellate > 0) {
+            <span class="tab-count tab-count-red">{{ countCancellate }}</span>
+          }
+        </button>
+      </div>
+
+      <!-- ── Loading skeleton (bookings) ── -->
+      @if (loading) {
+        <div class="bookings-list">
+          @for (item of skeletonBookings; track item) {
+            <div class="booking-card booking-card-skel">
+              <div class="skel skel-img"></div>
+              <div class="skel-booking-content">
+                <div class="skel skel-title" style="width:52%"></div>
+                <div class="skel skel-text-sm" style="width:30%; margin-top:8px"></div>
+                <div class="skel skel-text-sm" style="width:78%; margin-top:14px"></div>
+                <div class="skel skel-text-sm" style="width:55%; margin-top:6px"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Error state ── -->
+      @else if (errorLoading) {
+        <div class="bookings-empty">
+          <div class="empty-icon-wrap empty-icon-red">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3>Impossibile caricare le prenotazioni</h3>
+          <p>Controlla la connessione al server e riprova.</p>
+          <button class="btn-booking-primary" (click)="carica()">
+            <i class="fas fa-redo"></i>&nbsp; Riprova
+          </button>
+        </div>
+      }
+
+      <!-- ── Empty (no bookings at all) ── -->
+      @else if (prenotazioni.length === 0) {
+        <div class="bookings-empty">
+          <div class="empty-icon-wrap">
+            <i class="fas fa-calendar-times"></i>
+          </div>
+          <h3>Non hai ancora prenotazioni</h3>
+          <p>Inizia a esplorare i nostri hotel e prenota il tuo prossimo soggiorno.</p>
+          <button class="btn-booking-primary" (click)="vaiAgliHotel()">
+            <i class="fas fa-search"></i>&nbsp; Cerca un hotel
+          </button>
+        </div>
+      }
+
+      <!-- ── Empty (no results from filters) ── -->
+      @else if (prenotazioniFiltrate.length === 0) {
+        <div class="bookings-empty">
+          <div class="empty-icon-wrap">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3>Nessun risultato trovato</h3>
+          <p>Modifica i filtri di ricerca per vedere altre prenotazioni.</p>
+        </div>
+      }
+
+      <!-- ── Booking list ── -->
+      @else {
+        <div class="bookings-list">
+          @for (p of prenotazioniFiltrate; track p.id) {
+            <div class="booking-card">
+
+              <!-- Hotel image / placeholder -->
+              <div class="booking-image">
+                <div class="booking-img-placeholder">
+                  <span class="hotel-initials">{{ getHotelInitials(p.nomeHotel) }}</span>
+                </div>
+                <!-- Location badge over image (only if available from backend) -->
+                @if (p.citta || p.city || p.destinazione || p.destination) {
+                  <div class="booking-img-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ p.citta || p.city || p.destinazione || p.destination }}
+                  </div>
+                }
+              </div>
+
+              <!-- Main content -->
+              <div class="booking-content">
+
+                <!-- Top row: name + badge | code + total -->
+                <div class="booking-top-row">
+                  <div class="booking-name-status">
+                    <h3 class="booking-hotel-name">{{ p.nomeHotel || 'Hotel non disponibile' }}</h3>
+                    <span class="booking-status-badge" [ngClass]="getStatoBadgeClass(p.stato)">
+                      <i class="fas fa-circle badge-dot"></i>
+                      {{ getStatoLabel(p.stato) }}
+                    </span>
+                  </div>
+                  <div class="booking-meta-right">
+                    <div class="booking-meta-block">
+                      <span class="meta-label"><i class="fas fa-hashtag meta-icon"></i> Codice</span>
+                      <span class="booking-code">{{ bookingCode(p) }}</span>
+                    </div>
+                    <div class="booking-meta-divider"></div>
+                    <div class="booking-meta-block">
+                      <span class="meta-label"><i class="fas fa-euro-sign meta-icon"></i> Totale</span>
+                      <span class="booking-total">
+                        {{ p.prezzoTotale != null ? formatPrezzo(p.prezzoTotale) : 'N/D' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Details grid -->
+                <div class="booking-details-grid">
+                  <div class="booking-detail-item">
+                    <span class="detail-label"><i class="fas fa-sign-in-alt detail-icon"></i> Check-in</span>
+                    <span class="detail-value">{{ formatDate(p.dataCheckin) }}</span>
+                  </div>
+                  <div class="detail-sep"></div>
+                  <div class="booking-detail-item">
+                    <span class="detail-label"><i class="fas fa-sign-out-alt detail-icon"></i> Check-out</span>
+                    <span class="detail-value">{{ formatDate(p.dataCheckout) }}</span>
+                  </div>
+                  <div class="detail-sep"></div>
+                  <div class="booking-detail-item">
+                    <span class="detail-label"><i class="fas fa-user detail-icon"></i> Ospiti</span>
+                    <span class="detail-value">
+                      {{ p.numOspiti || 1 }}&nbsp;{{ (p.numOspiti || 1) === 1 ? 'adulto' : 'adulti' }}
+                    </span>
+                  </div>
+                  <div class="detail-sep"></div>
+                  <div class="booking-detail-item">
+                    <span class="detail-label"><i class="fas fa-bed detail-icon"></i> Camera</span>
+                    <span class="detail-value">{{ p.tipoCamera || 'Camera non specificata' }}</span>
+                  </div>
+                  @if (!isGuest) {
+                    <div class="detail-sep"></div>
+                    <div class="booking-detail-item">
+                      <span class="detail-label"><i class="fas fa-user-circle detail-icon"></i> Ospite</span>
+                      <span class="detail-value">{{ p.nomeUtente || 'N/D' }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Services (only if backend provides them) -->
+                @if (p.servizi?.length || p.services?.length) {
+                  <div class="booking-services">
+                    @for (srv of (p.servizi || p.services); track srv) {
+                      <span class="service-tag"><i class="fas fa-check-circle service-icon"></i>{{ srv }}</span>
+                    }
+                  </div>
+                }
+
+                <!-- Action buttons -->
+                <div class="booking-actions">
+
+                  <!-- Always available: view details -->
+                  <button class="btn-booking-secondary" (click)="vaiDettagli(p)">
+                    <i class="fas fa-eye"></i> Vedi dettagli
+                  </button>
+
+                  <!-- GUEST actions -->
+                  @if (isGuest) {
+                    @if (p.stato === 'IN_ATTESA') {
+                      <button class="btn-booking-secondary btn-danger-outline" (click)="cancella(p.id)">
+                        <i class="fas fa-times-circle"></i> Annulla prenotazione
+                      </button>
+                    }
+                    @if (isCompletataBooking(p)) {
+                      <button class="btn-booking-secondary" (click)="vaiAgliHotel()">
+                        <i class="fas fa-star"></i> Lascia una recensione
+                      </button>
+                      <button class="btn-booking-secondary" (click)="vaiAgliHotel()">
+                        <i class="fas fa-redo"></i> Prenota di nuovo
+                      </button>
+                    }
+                  }
+
+                  <!-- HOST / ADMIN actions -->
+                  @if (isHost || isAdmin) {
+                    @if (p.stato === 'IN_ATTESA') {
+                      <button class="btn-booking-primary" (click)="aggiornaStato(p.id, 'CONFERMATA')">
+                        <i class="fas fa-check"></i> Conferma
+                      </button>
+                      <button class="btn-booking-secondary btn-danger-outline" (click)="aggiornaStato(p.id, 'CANCELLATA')">
+                        <i class="fas fa-times"></i> Rifiuta
+                      </button>
+                    }
+                    @if (isAdmin) {
+                      <button class="btn-booking-icon btn-danger-icon" (click)="elimina(p.id)" title="Elimina prenotazione">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    }
+                  }
+
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div><!-- /bookings-main -->
+
+    <!-- ══ RIGHT SIDEBAR ══ -->
+    <aside class="bookings-sidebar">
+
+      <!-- Support card -->
+      <div class="support-card">
+        <div class="support-icon-wrap">
+          <i class="fas fa-headset"></i>
+        </div>
+        <h4 class="sidebar-card-title">Hai bisogno di aiuto?</h4>
+        <p class="sidebar-card-text">Il nostro team è a tua disposizione 24 ore su 24, 7 giorni su 7.</p>
+        <button class="btn-booking-primary btn-full" (click)="vaiAssistenza()">
+          <i class="fas fa-comment-dots"></i> Contatta assistenza
+        </button>
+      </div>
+
+      <!-- Benefits card -->
+      <div class="booking-benefits-card">
+        <h4 class="sidebar-card-title">Vantaggi prenotazione</h4>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-tag"></i></div>
+          <div class="benefit-text">
+            <span class="benefit-title">Miglior prezzo garantito</span>
+            <span class="benefit-desc">Ti offriamo sempre il miglior prezzo.</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-times-circle"></i></div>
+          <div class="benefit-text">
+            <span class="benefit-title">Cancellazione gratuita</span>
+            <span class="benefit-desc">Fino al giorno prima del check-in.</span>
+          </div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-icon"><i class="fas fa-headset"></i></div>
+          <div class="benefit-text">
+            <span class="benefit-title">Assistenza clienti 24/7</span>
+            <span class="benefit-desc">Siamo sempre qui per te.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick documents card -->
+      <div class="quick-documents-card">
+        <h4 class="sidebar-card-title">Documenti rapidi</h4>
+        <div class="doc-item" (click)="showAlertMessage('Sezione fatture disponibile a breve.', 'info')">
+          <div class="doc-icon-wrap"><i class="fas fa-file-invoice"></i></div>
+          <span class="doc-label">Fatture</span>
+          <i class="fas fa-chevron-right doc-arrow"></i>
+        </div>
+        <div class="doc-item" (click)="showAlertMessage('Sezione conferme disponibile a breve.', 'info')">
+          <div class="doc-icon-wrap"><i class="fas fa-file-alt"></i></div>
+          <span class="doc-label">Conferme</span>
+          <i class="fas fa-chevron-right doc-arrow"></i>
+        </div>
+        <div class="doc-item" (click)="showAlertMessage('Sezione metodi di pagamento disponibile a breve.', 'info')">
+          <div class="doc-icon-wrap"><i class="fas fa-credit-card"></i></div>
+          <span class="doc-label">Metodi di pagamento</span>
+          <i class="fas fa-chevron-right doc-arrow"></i>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /bookings-layout -->
+
 </div>

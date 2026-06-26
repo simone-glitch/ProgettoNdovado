@@ -1,126 +1,478 @@
-<div class="settings-container">
-  <header class="settings-header">
-    <div class="header-content">
-      <h1>Impostazioni Sistema</h1>
-      <p>Configura il tuo profilo e le tue preferenze.</p>
-    </div>
+<div class="settings-page">
+
+  @if (showAlert) {
+    <app-alert
+      [type]="alertType"
+      [message]="alertMessage"
+      (dismissEvent)="nascondiAlert()">
+    </app-alert>
+  }
+
+  <!-- ── Breadcrumb ── -->
+  <nav class="settings-breadcrumb">
+    <button class="bc-home" (click)="vaiAHome()">
+      <i class="fas fa-home"></i> Home
+    </button>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Impostazioni</span>
+  </nav>
+
+  <!-- ── Page Header ── -->
+  <header class="settings-page-header">
+    <h1>Impostazioni</h1>
+    <p>Gestisci il tuo profilo, la sicurezza, le notifiche e le preferenze del tuo account.</p>
   </header>
 
-  <app-alert
-    *ngIf="showAlert"
-    [type]="alertType"
-    [message]="alertMessage"
-    (dismissEvent)="nascondiAlert()"
-  ></app-alert>
+  <!-- ── Three-column layout ── -->
+  <div class="settings-layout">
 
-  <div class="settings-grid">
+    <!-- ══ LEFT SIDEBAR ══ -->
+    <aside class="settings-sidebar">
+      <nav class="settings-sidebar-menu">
 
-    <section class="settings-card">
-      <div class="card-header">
-        <i class="fas fa-user card-icon"></i>
-        <h3>Profilo Personale</h3>
-      </div>
+        <button class="settings-menu-item" [class.active]="activeSection === 'profilo'"
+          (click)="setActiveSection('profilo')">
+          <i class="fas fa-user"></i>
+          <span>Profilo</span>
+        </button>
 
-      <div class="card-body">
-        <div class="user-avatar-upload">
-          <div class="avatar-preview">{{ userInitials }}</div>
+        <button class="settings-menu-item" [class.active]="activeSection === 'sicurezza'"
+          (click)="setActiveSection('sicurezza')">
+          <i class="fas fa-lock"></i>
+          <span>Sicurezza</span>
+        </button>
+
+        <button class="settings-menu-item" [class.active]="activeSection === 'notifiche'"
+          (click)="setActiveSection('notifiche')">
+          <i class="fas fa-bell"></i>
+          <span>Notifiche</span>
+        </button>
+
+        <button class="settings-menu-item" [class.active]="activeSection === 'pagamenti'"
+          (click)="setActiveSection('pagamenti')">
+          <i class="fas fa-credit-card"></i>
+          <span>Metodi di pagamento</span>
+        </button>
+
+        <button class="settings-menu-item" [class.active]="activeSection === 'preferenze'"
+          (click)="setActiveSection('preferenze')">
+          <i class="fas fa-sliders-h"></i>
+          <span>Preferenze</span>
+        </button>
+
+        <button class="settings-menu-item" [class.active]="activeSection === 'privacy'"
+          (click)="setActiveSection('privacy')">
+          <i class="fas fa-shield-alt"></i>
+          <span>Privacy</span>
+        </button>
+
+      </nav>
+    </aside>
+
+    <!-- ══ MAIN COLUMN ══ -->
+    <main class="settings-main">
+
+      <!-- ── PROFILO ── -->
+      <section id="section-profilo" class="settings-card profile-settings-card">
+        <div class="settings-card-header">
+          <h2>Informazioni profilo</h2>
         </div>
 
-        <form [formGroup]="profileForm" (ngSubmit)="aggiornaProfilo()">
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" formControlName="nome">
+        <div class="profile-body">
 
-            <small
-              class="error-message"
-              *ngIf="profileForm.get('nome')?.invalid && profileForm.get('nome')?.touched">
-              Il nome è obbligatorio.
-            </small>
+          <!-- Avatar -->
+          <div class="profile-avatar-section">
+            <div class="profile-avatar-circle">{{ userInitials }}</div>
+            <div class="profile-user-name">{{ nomeCompleto }}</div>
+            <div class="profile-user-role">{{ roleBadge }}</div>
+            <button type="button" class="btn-modifica-foto">
+              <i class="fas fa-camera"></i> Modifica foto
+            </button>
           </div>
 
-          <div class="form-group">
-            <label>Cognome</label>
-            <input type="text" formControlName="cognome">
+          <!-- Form -->
+          <form [formGroup]="profileForm" (ngSubmit)="aggiornaProfilo()" class="profile-form-area">
+            <div class="profile-form-grid">
 
-            <small
-              class="error-message"
-              *ngIf="profileForm.get('cognome')?.invalid && profileForm.get('cognome')?.touched">
-              Il cognome è obbligatorio.
-            </small>
+              <div class="form-field">
+                <label>Nome</label>
+                <input type="text" formControlName="nome" placeholder="Il tuo nome">
+                @if (profileForm.get('nome')?.invalid && profileForm.get('nome')?.touched) {
+                  <small class="field-error">Il nome è obbligatorio.</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Cognome</label>
+                <input type="text" formControlName="cognome" placeholder="Il tuo cognome">
+                @if (profileForm.get('cognome')?.invalid && profileForm.get('cognome')?.touched) {
+                  <small class="field-error">Il cognome è obbligatorio.</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Email</label>
+                <input type="email" formControlName="email" placeholder="La tua email">
+                @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+                  <small class="field-error">Inserisci un indirizzo email valido.</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Telefono</label>
+                <input type="tel" formControlName="telefono" placeholder="Non impostato">
+              </div>
+
+            </div>
+
+            <div class="profile-form-actions">
+              <button type="submit" class="btn-save-main"
+                [disabled]="profileForm.invalid || isSavingProfile">
+                {{ isSavingProfile ? 'Salvataggio...' : 'Salva modifiche' }}
+              </button>
+              <button type="button" class="btn-cancel" (click)="annullaProfilo()">Annulla</button>
+            </div>
+          </form>
+
+        </div>
+      </section>
+
+      <!-- ── SICUREZZA ── -->
+      <section id="section-sicurezza" class="settings-card security-settings-card">
+        <div class="settings-card-header">
+          <h2>Sicurezza account</h2>
+        </div>
+
+        <!-- Password row -->
+        <div class="security-row">
+          <div class="security-row-icon"><i class="fas fa-lock"></i></div>
+          <div class="security-row-info">
+            <span class="security-row-label">Password</span>
+            <span class="security-row-sub">Mantieni il tuo account protetto con una password sicura.</span>
           </div>
-
-          <div class="form-group">
-            <label>Email Lavorativa</label>
-            <input type="email" formControlName="email">
-
-            <small
-              class="error-message"
-              *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
-              Inserisci un indirizzo email valido.
-            </small>
-          </div>
-
-          <button
-            type="submit"
-            class="btn-save-main"
-            style="margin-top: 15px; width: 100%;"
-            [disabled]="profileForm.invalid || isSavingProfile">
-            {{ isSavingProfile ? 'Salvataggio...' : 'Aggiorna Profilo' }}
+          <button class="btn-outline-action" (click)="showPasswordForm = !showPasswordForm">
+            Cambia password
           </button>
-        </form>
-      </div>
-    </section>
+        </div>
 
-    <section class="settings-card">
-      <div class="card-header">
-        <i class="fas fa-lock card-icon"></i>
-        <h3>Sicurezza e Password</h3>
-      </div>
+        @if (showPasswordForm) {
+          <form [formGroup]="passwordForm" (ngSubmit)="cambiaPassword()" class="password-form">
 
-      <div class="card-body">
-        <form [formGroup]="passwordForm" (ngSubmit)="cambiaPassword()">
-          <div class="form-group">
-            <label>Vecchia Password</label>
-            <input
-              type="password"
-              formControlName="vecchiaPassword"
-              placeholder="Inserisci vecchia password">
+            <div class="form-field">
+              <label>Vecchia Password</label>
+              <input type="password" formControlName="vecchiaPassword"
+                placeholder="Inserisci la vecchia password">
+              @if (passwordForm.get('vecchiaPassword')?.invalid && passwordForm.get('vecchiaPassword')?.touched) {
+                <small class="field-error">Inserisci la vecchia password.</small>
+              }
+            </div>
 
-            <small
-              class="error-message"
-              *ngIf="passwordForm.get('vecchiaPassword')?.invalid && passwordForm.get('vecchiaPassword')?.touched">
-              Inserisci la vecchia password.
-            </small>
+            <div class="form-field">
+              <label>Nuova Password</label>
+              <input type="password" formControlName="nuovaPassword"
+                placeholder="Minimo 8 caratteri, 1 maiuscola, 1 numero">
+              <small class="field-hint">{{ passwordRulesMessage }}</small>
+              @if (nuovaPasswordNonValida) {
+                <small class="field-error">La nuova password non rispetta i requisiti di sicurezza.</small>
+              }
+            </div>
+
+            <div class="password-form-actions">
+              <button type="submit" class="btn-save-main"
+                [disabled]="passwordForm.invalid || isChangingPassword">
+                {{ isChangingPassword ? 'Cambio in corso...' : 'Conferma nuova password' }}
+              </button>
+              <button type="button" class="btn-cancel"
+                (click)="showPasswordForm = false; passwordForm.reset()">
+                Annulla
+              </button>
+            </div>
+
+          </form>
+        }
+
+        <div class="section-divider"></div>
+
+        <!-- 2FA row -->
+        <div class="security-row">
+          <div class="security-row-icon"><i class="fas fa-mobile-alt"></i></div>
+          <div class="security-row-info">
+            <span class="security-row-label">Autenticazione a due fattori</span>
+            <span class="security-row-sub">Proteggi il tuo account con un livello di sicurezza aggiuntivo.</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [checked]="false" disabled>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Accessi collegati row -->
+        <div class="security-row">
+          <div class="security-row-icon"><i class="fas fa-link"></i></div>
+          <div class="security-row-info">
+            <span class="security-row-label">Accessi collegati</span>
+            <span class="security-row-sub">Gestisci gli account e i dispositivi collegati.</span>
+          </div>
+          <button class="btn-outline-action">Gestisci accessi</button>
+        </div>
+
+      </section>
+
+      <!-- ── NOTIFICHE ── -->
+      <section id="section-notifiche" class="settings-card notification-settings-card">
+        <div class="settings-card-header">
+          <h2>Notifiche</h2>
+        </div>
+
+        <div class="notif-grid">
+
+          <div class="notif-row">
+            <div class="notif-row-left">
+              <div class="notif-icon"><i class="fas fa-tag"></i></div>
+              <span class="notif-label">Offerte e promozioni</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="notifiche.offertePromozioni">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
 
-          <div class="form-group">
-            <label>Nuova Password</label>
-            <input
-              type="password"
-              formControlName="nuovaPassword"
-              placeholder="Minimo 8 caratteri, 1 maiuscola e 1 numero">
-
-            <small class="hint-message">
-              La password deve avere almeno 8 caratteri, almeno una lettera maiuscola e almeno un numero.
-            </small>
-
-            <small
-              class="error-message"
-              *ngIf="nuovaPasswordNonValida">
-              La nuova password deve avere almeno 8 caratteri, almeno una lettera maiuscola e almeno un numero.
-            </small>
+          <div class="notif-row">
+            <div class="notif-row-left">
+              <div class="notif-icon"><i class="fas fa-envelope"></i></div>
+              <span class="notif-label">Aggiornamenti via email</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="notifiche.aggiornamenti">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
 
-          <button
-            type="submit"
-            class="btn-save-main"
-            style="margin-top: 15px; width: 100%;"
-            [disabled]="passwordForm.invalid || isChangingPassword">
-            {{ isChangingPassword ? 'Cambio password...' : 'Cambia Password' }}
+          <div class="notif-row">
+            <div class="notif-row-left">
+              <div class="notif-icon"><i class="fas fa-calendar-check"></i></div>
+              <span class="notif-label">Conferme di prenotazione</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="notifiche.confermePrenotazione">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="notif-row">
+            <div class="notif-row-left">
+              <div class="notif-icon"><i class="fas fa-comment-alt"></i></div>
+              <span class="notif-label">SMS importanti</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="notifiche.smsImportanti">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="notif-row">
+            <div class="notif-row-left">
+              <div class="notif-icon"><i class="fas fa-bell"></i></div>
+              <span class="notif-label">Promemoria check-in</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="notifiche.promemoria">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+        </div>
+
+        <div class="settings-card-footer">
+          <button class="btn-save-main" (click)="salvaNotifiche()">Salva preferenze notifiche</button>
+        </div>
+      </section>
+
+      <!-- ── PREFERENZE ── -->
+      <section id="section-preferenze" class="settings-card preferences-settings-card">
+        <div class="settings-card-header">
+          <h2>Preferenze di viaggio</h2>
+        </div>
+
+        <div class="pref-grid">
+
+          <div class="pref-item">
+            <div class="pref-item-icon"><i class="fas fa-globe"></i></div>
+            <div class="pref-item-body">
+              <label>Lingua</label>
+              <select [(ngModel)]="preferenze.lingua">
+                <option>Italiano</option>
+                <option>English</option>
+                <option>Español</option>
+                <option>Français</option>
+                <option>Deutsch</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pref-item">
+            <div class="pref-item-icon"><i class="fas fa-coins"></i></div>
+            <div class="pref-item-body">
+              <label>Valuta</label>
+              <select [(ngModel)]="preferenze.valuta">
+                <option>EUR (€)</option>
+                <option>USD ($)</option>
+                <option>GBP (£)</option>
+                <option>CHF</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pref-item">
+            <div class="pref-item-icon"><i class="fas fa-sun"></i></div>
+            <div class="pref-item-body">
+              <label>Tema</label>
+              <select [(ngModel)]="preferenze.tema">
+                <option>Chiaro</option>
+                <option>Scuro</option>
+                <option>Sistema</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pref-item">
+            <div class="pref-item-icon"><i class="fas fa-newspaper"></i></div>
+            <div class="pref-item-body">
+              <label>Newsletter</label>
+              <select [(ngModel)]="preferenze.newsletter">
+                <option>Attiva</option>
+                <option>Disattiva</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="settings-card-footer">
+          <button class="btn-save-main" (click)="salvaPreferenze()">Salva preferenze</button>
+        </div>
+      </section>
+
+      <!-- ── PAGAMENTI ── -->
+      <section id="section-pagamenti" class="settings-card payment-methods-card">
+        <div class="settings-card-header-row">
+          <h2>Metodi di pagamento</h2>
+          <button class="btn-add-method">
+            <i class="fas fa-plus"></i> Aggiungi metodo
           </button>
-        </form>
+        </div>
+
+        <div class="payment-empty-state">
+          <div class="payment-empty-icon"><i class="fas fa-credit-card"></i></div>
+          <p class="payment-empty-title">Nessun metodo di pagamento</p>
+          <p class="payment-empty-sub">
+            Aggiungi una carta di credito o un altro metodo di pagamento per prenotare più velocemente.
+          </p>
+          <button class="btn-save-main" style="margin-top: 8px;">
+            <i class="fas fa-plus"></i> Aggiungi metodo
+          </button>
+        </div>
+      </section>
+
+      <!-- ── PRIVACY ── -->
+      <section id="section-privacy" class="settings-card privacy-settings-card">
+        <div class="settings-card-header">
+          <h2>Privacy</h2>
+        </div>
+
+        <div class="privacy-row">
+          <div class="privacy-row-info">
+            <span class="privacy-label">Visibilità profilo</span>
+            <span class="privacy-sub">Scegli chi può vedere le tue informazioni personali.</span>
+          </div>
+          <select class="privacy-select">
+            <option>Solo io</option>
+            <option>Pubblico</option>
+          </select>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="privacy-row">
+          <div class="privacy-row-info">
+            <span class="privacy-label">Consenso ai dati</span>
+            <span class="privacy-sub">Permetti a Ndovado di utilizzare i dati di navigazione per migliorare la tua esperienza.</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [checked]="true">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="privacy-row">
+          <div class="privacy-row-info">
+            <span class="privacy-label">Richiesta copia dei dati</span>
+            <span class="privacy-sub">Scarica una copia completa di tutti i tuoi dati personali.</span>
+          </div>
+          <button class="btn-outline-action">Richiedi dati</button>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="privacy-row">
+          <div class="privacy-row-info">
+            <span class="privacy-label danger-label">Disattiva account</span>
+            <span class="privacy-sub">Disattiva temporaneamente il tuo account Ndovado.</span>
+          </div>
+          <button class="btn-danger-outline">Disattiva</button>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- ══ RIGHT SIDEBAR ══ -->
+    <aside class="settings-rightbar">
+
+      <!-- Stato account -->
+      <div class="settings-card account-status-card">
+        <h3 class="rightbar-card-title">Stato account</h3>
+
+        <div class="account-status-list">
+
+          <div class="account-status-item">
+            @if (emailVerificata) {
+              <i class="fas fa-check-circle status-icon ok"></i>
+            } @else {
+              <i class="fas fa-times-circle status-icon warn"></i>
+            }
+            <span>Email verificata</span>
+          </div>
+
+          <div class="account-status-item">
+            @if (telefonoImpostato) {
+              <i class="fas fa-check-circle status-icon ok"></i>
+            } @else {
+              <i class="fas fa-exclamation-circle status-icon warn"></i>
+            }
+            <span>{{ telefonoImpostato ? 'Telefono verificato' : 'Telefono non impostato' }}</span>
+          </div>
+
+          <div class="account-status-item column">
+            <div class="status-row-header">
+              <i class="fas fa-check-circle status-icon ok"></i>
+              <span>Profilo completato</span>
+              <span class="completion-pct">{{ profileCompletion }}%</span>
+            </div>
+            <div class="completion-bar-bg">
+              <div class="completion-bar-fill" [style.width.%]="profileCompletion"></div>
+            </div>
+          </div>
+
+        </div>
       </div>
-    </section>
+
+    </aside>
 
   </div>
+
 </div>

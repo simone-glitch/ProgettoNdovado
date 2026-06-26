@@ -23,6 +23,7 @@ export class Register {
     nome:     new FormControl('', [Validators.required]),
     cognome:  new FormControl('', [Validators.required]),
     email:    new FormControl('', [Validators.required, Validators.email]),
+    telefono: new FormControl(''),
     ruolo:    new FormControl('GUEST', [Validators.required]),
     password: new FormControl('', [
       Validators.required,
@@ -42,7 +43,8 @@ export class Register {
       cognome:  v.cognome!,
       email:    v.email!,
       password: v.password!,
-      ruolo:    v.ruolo!
+      ruolo:    v.ruolo!,
+      telefono: v.telefono || undefined
     }).subscribe({
       next: () => {
         this.showAlertMessage('Registrazione completata! Ora puoi effettuare il login.', 'success');

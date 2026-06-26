@@ -42,6 +42,9 @@ task startFrontend(type: Exec) {
     description = 'Avvia il frontend Angular in una finestra separata'
 }
 
-tasks.named('bootRun') {
+task startAll {
     dependsOn startFrontend
+    finalizedBy 'bootRun'
+    description = 'Avvia frontend (finestra separata) e backend Spring Boot'
+    group = 'application'
 }

@@ -205,6 +205,14 @@
   letter-spacing: 0.9px;
 }
 
+.auth-label-optional {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: #9CA3AF;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .auth-input-wrap {
   position: relative;
   display: flex;

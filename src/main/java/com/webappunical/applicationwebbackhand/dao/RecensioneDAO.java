@@ -40,7 +40,7 @@ public class RecensioneDAO {
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id_recensione"});
             ps.setString(1, recensione.getTitolo());
             ps.setString(2, recensione.getTesto());
             ps.setInt(3, recensione.getVoto());

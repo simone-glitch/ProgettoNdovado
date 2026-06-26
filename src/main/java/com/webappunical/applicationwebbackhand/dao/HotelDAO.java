@@ -78,7 +78,7 @@ public class HotelDAO {
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id_hotel"});
             ps.setString(1, hotel.getNome());
             ps.setString(2, hotel.getDescrizione());
             ps.setString(3, hotel.getCitta());

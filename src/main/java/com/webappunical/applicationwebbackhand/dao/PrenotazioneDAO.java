@@ -48,7 +48,7 @@ public class PrenotazioneDAO {
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id_prenotazione"});
             ps.setDate(1, Date.valueOf(p.getDataCheckin()));
             ps.setDate(2, Date.valueOf(p.getDataCheckout()));
             ps.setInt(3, p.getNumOspiti());
