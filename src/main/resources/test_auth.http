@@ -1,0 +1,418 @@
+### ==============================================================================
+### TEST COMPLETO MINIMALE - AUTH + RUOLI + PIPPOBOT + TIMESHEET
+### ==============================================================================
+###
+### PRIMA DI PARTIRE:
+### 1. PostgreSQL deve essere acceso.
+### 2. Backend Spring Boot acceso su http://localhost:8080.
+### 3. Consigliato: DB pulito importato da schema_database.sql.
+### 4. Esegui i passaggi in ordine dal primo all'ultimo.
+###
+### NOTA IMPORTANTE:
+### - Il timesheet richiede un task esistente.
+### - Per questo creiamo prima un progetto e un task direttamente via REST.
+### ==============================================================================
+
+
+### ==============================================================================
+### VARIABILI
+### ==============================================================================
+
+@baseUrl = http://localhost:8080
+
+@userEmail = user.test@example.com
+@userPassword = Miapassword1234
+
+@adminEmail = admin.test@example.com
+@adminPassword = Adminpassword123
+
+### Se DB pulito:
+### - il primo progetto creato dovrebbe avere ID 1
+### - il primo task creato dovrebbe avere ID 1
+###
+### Se gli ID reali sono diversi, aggiorna questi valori dopo i passaggi 5 e 7.
+@progettoId = 1
+@taskId = 1
+
+
+### ==============================================================================
+### PASSAGGIO 1 - REGISTRA USER
+### Atteso:
+### - 201 Created
+### ==============================================================================
+
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Utente",
+  "cognome": "Normale",
+  "password": "{{userPassword}}",
+  "ruolo": "USER",
+  "email": "{{userEmail}}"
+}
+
+
+### ==============================================================================
+### PASSAGGIO 2 - REGISTRA ADMIN
+### Atteso:
+### - 201 Created
+### ==============================================================================
+
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Admin",
+  "cognome": "Sistema",
+  "password": "{{adminPassword}}",
+  "ruolo": "ADMIN",
+  "email": "{{adminEmail}}"
+}
+
+
+### ==============================================================================
+### PASSAGGIO 3 - LOGIN USER
+### Atteso:
+### - 200 OK
+### ==============================================================================
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}"
+}
+
+
+### ==============================================================================
+### PASSAGGIO 4 - LOGIN ADMIN
+### Atteso:
+### - 200 OK
+### ==============================================================================
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+
+### ==============================================================================
+### PASSAGGIO 5 - ADMIN CREA PROGETTO DIRETTAMENTE
+### Serve come setup certo per task/timesheet, senza dipendere da Gemini.
+###
+### Atteso:
+### - 201 Created
+### ==============================================================================
+
+POST {{baseUrl}}/api/progetti/crea
+Content-Type: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+{
+  "nomeProgetto": "Progetto Test Principale",
+  "stato": "IN_CORSO",
+  "dataInizio": "2026-05-01",
+  "dataFine": "2026-12-31",
+  "repositoryGitHub": null
+}
+
+
+### ==============================================================================
+### PASSAGGIO 6 - VERIFICA PROGETTI
+### Atteso:
+### - 200 OK
+###
+### Controlla l'id_progetto reale.
+### Se non è 1, aggiorna @progettoId in alto.
+### ==============================================================================
+
+GET {{baseUrl}}/api/progetti/tutti
+Accept: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+
+### ==============================================================================
+### PASSAGGIO 7 - ADMIN CREA TASK DIRETTAMENTE
+### Serve come setup certo per il timesheet.
+###
+### Atteso:
+### - 200 OK
+### - La risposta dovrebbe essere l'ID del task creato.
+###
+### Se la risposta non è 1, aggiorna @taskId in alto.
+### ==============================================================================
+
+POST {{baseUrl}}/api/tasks/crea
+Content-Type: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+{
+  "descrizione": "Task valido per test timesheet",
+  "id_progetto": {{progettoId}},
+  "titolo_task": "Task Timesheet Test"
+}
+
+
+### ==============================================================================
+### PASSAGGIO 8 - VERIFICA TASK
+### Atteso:
+### - 200 OK
+###
+### Controlla l'id_task reale.
+### Se non è 1, aggiorna @taskId in alto.
+### ==============================================================================
+
+GET {{baseUrl}}/api/tasks/vedi
+Accept: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+
+### ==============================================================================
+### PASSAGGIO 9 - USER PROVA A CREARE TASK DIRETTAMENTE
+### Atteso:
+### - Deve fallire o restituire errore di sicurezza dal proxy.
+### - Lo USER normale NON deve poter creare task.
+### ==============================================================================
+
+### ------------------------------------------------------------------------------
+### PASSAGGIO 7.3: IMPORTAZIONE ISSUE DA GITHUB (Solo ADMIN)
+### ------------------------------------------------------------------------------
+POST http://localhost:8080/api/github/importa-task?idProgetto=5
+Content-Type: application/json
+Authorization: Basic luigi@gmail.com Rr9%A51!!
+
+### ==============================================================================
+### PASSAGGIO 10 - USER REGISTRA ORE DIRETTAMENTE
+### Atteso:
+### - 201 Created
+###
+### Nota:
+### - idUtente è volutamente sbagliato.
+### - Il backend deve ignorarlo/sovrascriverlo usando l'utente autenticato.
+### ==============================================================================
+
+POST {{baseUrl}}/api/timesheet/log
+Content-Type: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+{
+  "dataLavoro": "2026-05-11",
+  "ore": 2.5,
+  "descrizione": "Test diretto timesheet da utente normale",
+  "idUtente": 99999,
+  "idTask": {{taskId}}
+}
+
+
+### ==============================================================================
+### PASSAGGIO 11 - USER PROVA A SUPERARE 8 ORE NELLA STESSA DATA
+### Atteso:
+### - 400 Bad Request
+### - Messaggio tipo: non puoi superare le 8 ore giornaliere.
+###
+### Perché:
+### - Nel passaggio 10 hai salvato 2.5 ore.
+### - Qui provi ad aggiungerne 7.0.
+### - Totale: 9.5 ore.
+### ==============================================================================
+
+POST {{baseUrl}}/api/timesheet/log
+Content-Type: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+{
+  "dataLavoro": "2026-05-11",
+  "ore": 7.0,
+  "descrizione": "Test superamento limite giornaliero",
+  "idUtente": 99999,
+  "idTask": {{taskId}}
+}
+
+
+### ==============================================================================
+### PASSAGGIO 12 - USER PROVA A REGISTRARE ORE NEL FUTURO
+### Atteso:
+### - 400 Bad Request
+### ==============================================================================
+
+POST {{baseUrl}}/api/timesheet/log
+Content-Type: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+{
+  "dataLavoro": "2035-01-01",
+  "ore": 1.0,
+  "descrizione": "Test data futura",
+  "idUtente": 99999,
+  "idTask": {{taskId}}
+}
+
+
+### ==============================================================================
+### PASSAGGIO 13 - USER VISUALIZZA IL PROPRIO TIMESHEET
+### Atteso:
+### - 200 OK
+### - Lista delle ore dello USER loggato.
+### ==============================================================================
+
+GET {{baseUrl}}/api/timesheet/mio?anno=2026&mese=5
+Accept: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+
+### ==============================================================================
+### PASSAGGIO 14 - PIPPOBOT: ADMIN PROVA A CREARE PROGETTO
+### Atteso:
+### - 200 OK
+### - Se Gemini risponde correttamente, il progetto viene creato.
+### - Se Gemini è sovraccarico, potresti ricevere risposta con errore 503 nel campo "risposta".
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+{
+  "dataLavoro": "2026-04-18",
+  "ore": 4.5,
+  "descrizione": "Lavorato al design della UI e fix css vari",
+  "idTask": 1
+}
+
+
+### ==============================================================================
+### PASSAGGIO 15 - PIPPOBOT: USER PROVA A CREARE PROGETTO
+### Atteso:
+### - 200 OK con messaggio di blocco/permessi insufficienti.
+### - Nel DB NON deve comparire questo progetto.
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+{
+  "messaggio": "PippoBot, crea un nuovo progetto chiamato 'Progetto Vietato User' con stato 'IN_CORSO'. La data di inizio è 2026-06-01 e la data di fine è 2026-12-31."
+}
+
+
+### ==============================================================================
+### PASSAGGIO 16 - PIPPOBOT: ADMIN PROVA A CREARE TASK
+### Atteso:
+### - 200 OK
+### - Se Gemini risponde correttamente, il task viene creato.
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+{
+  "dataLavoro": "2030-01-01",
+  "ore": 2.0,
+  "descrizione": "Macchina del tempo",
+  "idTask": 1
+}
+
+
+### ==============================================================================
+### PASSAGGIO 17 - PIPPOBOT: USER PROVA A CREARE TASK
+### Atteso:
+### - 200 OK con messaggio di blocco/permessi insufficienti.
+### - Nel DB NON deve comparire questo task.
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+{
+  "messaggio": "PippoBot, crea un nuovo task per il progetto {{progettoId}}. Il titolo è 'Task Vietato User' e la descrizione è 'Questo task non deve essere creato da un utente normale'."
+}
+
+
+### ==============================================================================
+### PASSAGGIO 18 - PIPPOBOT: USER REGISTRA ORE SU TASK ESISTENTE
+### Atteso:
+### - 200 OK
+### - Se Gemini risponde correttamente, PippoBot registra ore sul task.
+### - Se superi le 8 ore giornaliere, deve rispondere con avviso.
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}
+
+{
+  "messaggio": "PippoBot, registra 1 ora di lavoro per oggi sul task con id {{taskId}}."
+}
+
+
+### ==============================================================================
+### PASSAGGIO 19 - SICUREZZA: CHIAMATA SENZA AUTENTICAZIONE
+### Atteso:
+### - 401 Unauthorized
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+
+{
+  "messaggio": "Questa richiesta deve fallire perché non sono autenticato."
+}
+
+
+### ==============================================================================
+### PASSAGGIO 20 - SICUREZZA: PASSWORD SBAGLIATA
+### Atteso:
+### - 401 Unauthorized
+### ==============================================================================
+
+POST {{baseUrl}}/api/chat/chiedi
+Content-Type: application/json
+Authorization: Basic {{userEmail}} passwordSbagliata
+
+{
+  "messaggio": "Questa richiesta deve fallire perché la password è sbagliata."
+}
+
+
+### ==============================================================================
+### PASSAGGIO 21 - VERIFICA FINALE PROGETTI
+### Atteso:
+### - 200 OK
+### - Controlla che non esista il progetto vietato richiesto dallo USER.
+### ==============================================================================
+
+GET {{baseUrl}}/api/progetti/tutti
+Accept: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+
+### ==============================================================================
+### PASSAGGIO 22 - VERIFICA FINALE TASK
+### Atteso:
+### - 200 OK
+### - Controlla che non esista il task vietato richiesto dallo USER.
+### ==============================================================================
+
+GET {{baseUrl}}/api/tasks/vedi
+Accept: application/json
+Authorization: Basic {{adminEmail}} {{adminPassword}}
+
+
+### ==============================================================================
+### PASSAGGIO 23 - VERIFICA FINALE TIMESHEET USER
+### Atteso:
+### - 200 OK
+### - Vedi le ore registrate dallo USER.
+### ==============================================================================
+
+GET {{baseUrl}}/api/timesheet/mio?anno=2026&mese=5
+Accept: application/json
+Authorization: Basic {{userEmail}} {{userPassword}}

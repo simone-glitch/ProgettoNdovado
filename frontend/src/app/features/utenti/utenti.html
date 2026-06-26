@@ -1,0 +1,54 @@
+<div class="utenti-container">
+  <header class="header-main">
+    <h1>Gestione Utenti</h1>
+    <p>Visualizza e gestisci gli utenti registrati nel sistema.</p>
+  </header>
+
+  <app-alert
+    *ngIf="showAlert"
+    [type]="alertType"
+    [message]="alertMessage"
+    (dismissEvent)="onAlertDismiss()"
+  ></app-alert>
+  <app-conferma-box
+    *ngIf="showConfirm"
+    [messaggio]="confirmMessage"
+    (risposta)="gestisciRisposta($event)">
+  </app-conferma-box>
+  <div class="list-container">
+    <table class="modern-table">
+      <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Ruolo</th>
+        <th *ngIf="isAdmin">Azioni</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let utente of utenti">
+        <td>
+          <div class="user-info">
+            <div class="avatar">{{ utente.nome.charAt(0) }}{{ utente.cognome.charAt(0) }}</div>
+            <span>{{ utente.nome }} {{ utente.cognome }}</span>
+          </div>
+        </td>
+        <td>{{ utente.email }}</td>
+        <td>
+          <span class="badge" [ngClass]="{'badge-admin': utente.ruolo === 'ADMIN', 'badge-user': utente.ruolo === 'USER'}">
+            {{ utente.ruolo }}
+          </span>
+        </td>
+        <td class="actions" *ngIf="isAdmin">
+          <button class="btn-promote" *ngIf="utente.ruolo === 'USER'" (click)="promuoviAdAdmin(utente)">
+            Promuovi ad Admin
+          </button>
+          <button class="btn-delete" (click)="eliminaUtente(utente)">
+            Elimina
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

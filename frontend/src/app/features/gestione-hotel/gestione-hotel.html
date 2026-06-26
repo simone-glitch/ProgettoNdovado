@@ -1,0 +1,206 @@
+<div class="gestione-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ isAdmin ? 'Gestione Hotel' : 'I Miei Hotel' }}</h1>
+      <p class="subtitle">{{ isAdmin ? 'Gestisci tutte le strutture' : 'Aggiungi e gestisci le tue strutture ricettive' }}</p>
+    </div>
+    <button class="btn-primary" (click)="apriNuovoHotel()">+ Nuovo Hotel</button>
+  </header>
+
+  <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+  <app-conferma-box *ngIf="showConfirm" [messaggio]="confirmMessage" (risposta)="gestisciRisposta($event)"></app-conferma-box>
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
+  } @else if (hotels.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-hotel empty-icon"></i>
+      <p>Nessun hotel ancora. Creane uno!</p>
+    </div>
+  } @else {
+    @for (hotel of hotels; track hotel.id) {
+      <div class="hotel-row">
+        <!-- HOTEL CARD -->
+        <div class="hotel-card">
+          <div class="hotel-card-info">
+            <div>
+              <h3>{{ hotel.nome }}</h3>
+              <p class="hotel-meta"><i class="fas fa-map-marker-alt"></i> {{ hotel.citta }} &nbsp;·&nbsp; {{ stelle(hotel.stelle) }}</p>
+              <p class="hotel-desc">{{ hotel.descrizione }}</p>
+            </div>
+          </div>
+          <div class="hotel-card-actions">
+            <button class="btn-sm btn-secondary" (click)="gestisciCamere(hotel)">
+              @if (hotelAperto?.id === hotel.id) {
+                Chiudi camere
+              } @else {
+                <i class="fas fa-bed"></i> Camere ({{ hotel.camere?.length ?? 0 }})
+              }
+            </button>
+            <button class="btn-sm btn-edit" (click)="apriModificaHotel(hotel)"><i class="fas fa-pen"></i> Modifica</button>
+            <button class="btn-sm btn-delete" (click)="chiediEliminaHotel(hotel)"><i class="fas fa-trash"></i> Elimina</button>
+          </div>
+        </div>
+
+        <!-- CAMERE PANEL -->
+        @if (hotelAperto?.id === hotel.id) {
+          <div class="camere-panel">
+            <div class="camere-header">
+              <h4>Camere di {{ hotel.nome }}</h4>
+              <button class="btn-sm btn-primary" (click)="apriNuovaCamera()">+ Aggiungi camera</button>
+            </div>
+
+            @if (showCameraForm) {
+              <form [formGroup]="cameraForm" (ngSubmit)="salvaCamera()" class="camera-form">
+                <h5>{{ editingCamera ? 'Modifica Camera' : 'Nuova Camera' }}</h5>
+                <div class="form-grid">
+                  <div class="form-row">
+                    <label>Tipo</label>
+                    <select formControlName="tipo" class="form-input">
+                      @for (t of tipiCamera; track t) {
+                        <option [value]="t">{{ t }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-row">
+                    <label>Prezzo/notte (€)</label>
+                    <input type="number" formControlName="prezzoNotte" class="form-input" min="0" step="0.01">
+                    @if (cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid) {
+                      <small class="err">Campo obbligatorio</small>
+                    }
+                  </div>
+                  <div class="form-row">
+                    <label>Capienza ospiti</label>
+                    <input type="number" formControlName="capienza" class="form-input" min="1">
+                  </div>
+                  <div class="form-row check-row">
+                    <label>
+                      <input type="checkbox" formControlName="disponibile">
+                      Disponibile
+                    </label>
+                  </div>
+                </div>
+                <div class="form-row full">
+                  <label>Descrizione</label>
+                  <textarea formControlName="descrizione" class="form-input" rows="2" placeholder="Dettagli camera..."></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-sm btn-secondary" (click)="showCameraForm = false">Annulla</button>
+                  <button type="submit" class="btn-sm btn-primary">Salva</button>
+                </div>
+              </form>
+            }
+
+            @if (camere.length === 0 && !showCameraForm) {
+              <p class="no-data">Nessuna camera. Aggiungine una!</p>
+            }
+            <div class="camere-list">
+              @for (c of camere; track c.id) {
+                <div class="camera-item">
+                  <div class="camera-item-info">
+                    <span class="tipo-badge">{{ c.tipo }}</span>
+                    <span class="capienza-label"><i class="fas fa-user"></i> {{ c.capienza }}</span>
+                    <span class="disp-label" [class.ok]="c.disponibile" [class.no]="!c.disponibile">
+                      {{ c.disponibile ? 'Disponibile' : 'Occupata' }}
+                    </span>
+                    <p class="camera-item-desc">{{ c.descrizione }}</p>
+                  </div>
+                  <div class="camera-item-right">
+                    <span class="prezzo-cam">€{{ c.prezzoNotte | number:'1.2-2' }}/notte</span>
+                    <div class="camera-item-actions">
+                      <button class="btn-sm btn-edit" (click)="apriModificaCamera(c)"><i class="fas fa-pen"></i></button>
+                      <button class="btn-sm btn-delete" (click)="chiediEliminaCamera(c)"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- HOTEL FORM MODAL -->
+  @if (showHotelForm) {
+    <div class="modal-overlay" (click)="showHotelForm = false">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingHotel ? 'Modifica Hotel' : 'Nuovo Hotel' }}</h3>
+          <button class="modal-close" (click)="showHotelForm = false">✕</button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="hotelForm" (ngSubmit)="salvaHotel()">
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label>Nome struttura *</label>
+                <input type="text" formControlName="nome" class="form-input" placeholder="Es. Hotel Roma Centro">
+                @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
+                  <small class="err">Campo obbligatorio</small>
+                }
+              </div>
+              <div class="form-row">
+                <label>Stelle *</label>
+                <select formControlName="stelle" class="form-input">
+                  <option value="1">★ 1 stella</option>
+                  <option value="2">★★ 2 stelle</option>
+                  <option value="3">★★★ 3 stelle</option>
+                  <option value="4">★★★★ 4 stelle</option>
+                  <option value="5">★★★★★ 5 stelle</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Città *</label>
+                <input type="text" formControlName="citta" class="form-input" placeholder="Es. Roma">
+                @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
+                  <small class="err">Campo obbligatorio</small>
+                }
+              </div>
+              <div class="form-row">
+                <label>Indirizzo *</label>
+                <input type="text" formControlName="indirizzo" class="form-input" placeholder="Via Roma 1">
+                @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
+                  <small class="err">Campo obbligatorio</small>
+                }
+              </div>
+              <div class="form-row">
+                <label>Latitudine (opzionale)</label>
+                <input type="number" formControlName="latitudine" class="form-input" step="0.000001" placeholder="Es. 41.9028">
+              </div>
+              <div class="form-row">
+                <label>Longitudine (opzionale)</label>
+                <input type="number" formControlName="longitudine" class="form-input" step="0.000001" placeholder="Es. 12.4964">
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Descrizione *</label>
+              <textarea formControlName="descrizione" class="form-input" rows="3" placeholder="Descrivi la struttura..."></textarea>
+              @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
+                <small class="err">Campo obbligatorio</small>
+              }
+            </div>
+
+            @if (serviziDisponibili.length > 0) {
+              <div class="form-row">
+                <label>Servizi offerti</label>
+                <div class="servizi-check-grid">
+                  @for (s of serviziDisponibili; track s.id) {
+                    <label class="servizio-check" [class.selected]="isServizioSelezionato(s.id)">
+                      <input type="checkbox" [checked]="isServizioSelezionato(s.id)" (change)="toggleServizio(s.id)">
+                      {{ s.nome }}
+                    </label>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" (click)="showHotelForm = false">Annulla</button>
+              <button type="submit" class="btn-primary">{{ editingHotel ? 'Salva modifiche' : 'Crea hotel' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>

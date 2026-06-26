@@ -1,0 +1,98 @@
+<div class="prenotazioni-container">
+  <header class="page-header">
+    <h1>
+      @if (isGuest) { Le mie prenotazioni }
+      @else if (isHost) { Prenotazioni dei miei hotel }
+      @else { Tutte le prenotazioni }
+    </h1>
+    <p class="subtitle">
+      @if (isGuest) { Storico e stato delle tue prenotazioni }
+      @else if (isHost) { Gestisci le richieste per le tue strutture }
+      @else { Panoramica completa di tutte le prenotazioni }
+    </p>
+  </header>
+
+  <app-alert
+    *ngIf="showAlert"
+    [type]="alertType"
+    [message]="alertMessage"
+    (dismissEvent)="onAlertDismiss()">
+  </app-alert>
+
+  <app-conferma-box
+    *ngIf="showConfirm"
+    [messaggio]="confirmMessage"
+    (risposta)="gestisciRisposta($event)">
+  </app-conferma-box>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Caricamento prenotazioni...</p>
+    </div>
+  } @else if (prenotazioni.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-calendar-times empty-icon"></i>
+      <p>Nessuna prenotazione trovata.</p>
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Hotel / Camera</th>
+            @if (!isGuest) { <th>Ospite</th> }
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Ospiti</th>
+            <th>Totale</th>
+            <th>Stato</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of prenotazioni; track p.id) {
+            <tr>
+              <td>
+                <strong>{{ p.nomeHotel }}</strong>
+                <span class="room-type">{{ p.tipoCamera }}</span>
+              </td>
+              @if (!isGuest) {
+                <td>{{ p.nomeUtente }}</td>
+              }
+              <td>{{ p.dataCheckin | date:'dd/MM/yyyy' }}</td>
+              <td>{{ p.dataCheckout | date:'dd/MM/yyyy' }}</td>
+              <td>{{ p.numOspiti }}</td>
+              <td class="prezzo-cell">€{{ p.prezzoTotale | number:'1.2-2' }}</td>
+              <td>
+                <span class="stato-badge" [ngClass]="statoBadgeClass(p.stato)">
+                  {{ statoLabel(p.stato) }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                @if ((isHost || isAdmin) && p.stato === 'IN_ATTESA') {
+                  <button class="btn-action btn-confirm" (click)="aggiornaStato(p.id, 'CONFERMATA')">
+                    Conferma
+                  </button>
+                  <button class="btn-action btn-cancel" (click)="aggiornaStato(p.id, 'CANCELLATA')">
+                    Rifiuta
+                  </button>
+                }
+                @if (isGuest && p.stato === 'IN_ATTESA') {
+                  <button class="btn-action btn-cancel" (click)="cancella(p.id)">
+                    Annulla
+                  </button>
+                }
+                @if (isAdmin) {
+                  <button class="btn-action btn-delete" (click)="elimina(p.id)" title="Elimina">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

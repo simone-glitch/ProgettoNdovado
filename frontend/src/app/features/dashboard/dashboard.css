@@ -1,0 +1,256 @@
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* ── Layout ── */
+.ndv-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: #F5F7FA;
+}
+
+/* ── Navbar ── */
+.ndv-navbar {
+  background: #061B3A;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 200;
+  box-shadow: 0 2px 20px rgba(3,11,26,0.35);
+}
+
+.ndv-nav-inner {
+  display: flex;
+  align-items: center;
+  height: 68px;
+  padding: 0 48px;
+  gap: 32px;
+}
+
+/* ── Logo ── */
+.ndv-nav-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.ndv-nav-logo-img {
+  height: 34px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.25));
+}
+
+/* ── Center nav links ── */
+.ndv-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.ndv-nav-item {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.62);
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.ndv-nav-item:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+.ndv-nav-active {
+  color: #C9A45C !important;
+  background: rgba(201,164,92,0.14) !important;
+}
+
+/* ── Right section ── */
+.ndv-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.ndv-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 6px 14px 6px 8px;
+}
+
+.ndv-user-av {
+  width: 32px; height: 32px;
+  background: rgba(201,164,92,0.18);
+  border: 1.5px solid rgba(201,164,92,0.45);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700;
+  color: #C9A45C;
+  flex-shrink: 0;
+}
+
+.ndv-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ndv-user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #F0F4FF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.ndv-role-tag {
+  font-size: 0.67rem;
+  color: #C9A45C;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.ndv-logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.88rem;
+  transition: all 0.2s;
+}
+.ndv-logout-btn:hover {
+  background: rgba(201,164,92,0.15);
+  border-color: rgba(201,164,92,0.4);
+  color: #C9A45C;
+}
+
+/* ── Hamburger (mobile only) ── */
+.ndv-hamburger-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  width: 38px; height: 38px;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.ndv-hamburger-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* ── Mobile dropdown ── */
+.ndv-mob-overlay {
+  position: fixed;
+  inset: 0;
+  top: 68px;
+  background: rgba(3,11,26,0.5);
+  z-index: 199;
+  animation: overlayIn 0.22s ease;
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.ndv-mob-menu {
+  background: #061B3A;
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  animation: menuSlide 0.22s ease;
+}
+@keyframes menuSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ndv-mob-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  text-decoration: none;
+  color: rgba(255,255,255,0.6);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.18s;
+}
+.ndv-mob-link i { font-size: 0.88rem; width: 16px; text-align: center; flex-shrink: 0; }
+.ndv-mob-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.ndv-mob-active { color: #C9A45C !important; background: rgba(201,164,92,0.12) !important; }
+
+.ndv-mob-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ── Main Content ── */
+.ndv-main {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+/* ── AI Chat Button ── */
+.div-ai {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, #C9A45C, #A67828);
+  border-radius: 50%;
+  cursor: pointer;
+  position: fixed;
+  bottom: 28px; right: 28px;
+  z-index: 100;
+  box-shadow: 0 6px 24px rgba(201,164,92,0.45);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.15rem;
+}
+.div-ai:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 32px rgba(201,164,92,0.55);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .ndv-nav-inner { padding: 0 32px; gap: 20px; }
+  .ndv-user-name { max-width: 110px; }
+}
+
+@media (max-width: 860px) {
+  .ndv-nav-center { display: none; }
+  .ndv-user-pill  { display: none; }
+  .ndv-hamburger-btn { display: flex; }
+  .ndv-nav-inner { padding: 0 20px; justify-content: space-between; gap: 0; }
+}
+
+@media (max-width: 640px) {
+  .ndv-main { padding: 20px; }
+}

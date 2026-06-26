@@ -1,0 +1,66 @@
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(10,35,66,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.modal-box {
+  background-color: #ffffff;
+  color: #1A2238;
+  padding: 28px 24px 20px 24px;
+  border-radius: 16px;
+  border: 1px solid #E8EDF4;
+  box-shadow: 0 16px 48px rgba(10,35,66,0.12);
+  width: 90%;
+  max-width: 480px;
+  animation: confBoxIn 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes confBoxIn { from { opacity: 0; transform: scale(0.96) translateY(12px); } to { opacity: 1; transform: none; } }
+
+.modal-content p {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.55;
+  margin: 0 0 24px 0;
+  color: #4A5565;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn {
+  padding: 9px 22px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.18s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-annulla {
+  background-color: #F5F7FA;
+  color: #4A5565;
+  border-color: #D1D9E6;
+}
+.btn-annulla:hover { background-color: #E8EDF4; }
+
+.btn-ok {
+  background: linear-gradient(135deg, #0F3460, #0A2342);
+  color: #ffffff;
+  border-color: transparent;
+}
+.btn-ok:hover {
+  background: linear-gradient(135deg, #C9943A, #A67828);
+  box-shadow: 0 4px 14px rgba(201,148,58,0.3);
+}

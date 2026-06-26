@@ -1,0 +1,126 @@
+<div class="settings-container">
+  <header class="settings-header">
+    <div class="header-content">
+      <h1>Impostazioni Sistema</h1>
+      <p>Configura il tuo profilo e le tue preferenze.</p>
+    </div>
+  </header>
+
+  <app-alert
+    *ngIf="showAlert"
+    [type]="alertType"
+    [message]="alertMessage"
+    (dismissEvent)="nascondiAlert()"
+  ></app-alert>
+
+  <div class="settings-grid">
+
+    <section class="settings-card">
+      <div class="card-header">
+        <i class="fas fa-user card-icon"></i>
+        <h3>Profilo Personale</h3>
+      </div>
+
+      <div class="card-body">
+        <div class="user-avatar-upload">
+          <div class="avatar-preview">{{ userInitials }}</div>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="aggiornaProfilo()">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" formControlName="nome">
+
+            <small
+              class="error-message"
+              *ngIf="profileForm.get('nome')?.invalid && profileForm.get('nome')?.touched">
+              Il nome è obbligatorio.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Cognome</label>
+            <input type="text" formControlName="cognome">
+
+            <small
+              class="error-message"
+              *ngIf="profileForm.get('cognome')?.invalid && profileForm.get('cognome')?.touched">
+              Il cognome è obbligatorio.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Email Lavorativa</label>
+            <input type="email" formControlName="email">
+
+            <small
+              class="error-message"
+              *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+              Inserisci un indirizzo email valido.
+            </small>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-save-main"
+            style="margin-top: 15px; width: 100%;"
+            [disabled]="profileForm.invalid || isSavingProfile">
+            {{ isSavingProfile ? 'Salvataggio...' : 'Aggiorna Profilo' }}
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="card-header">
+        <i class="fas fa-lock card-icon"></i>
+        <h3>Sicurezza e Password</h3>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="passwordForm" (ngSubmit)="cambiaPassword()">
+          <div class="form-group">
+            <label>Vecchia Password</label>
+            <input
+              type="password"
+              formControlName="vecchiaPassword"
+              placeholder="Inserisci vecchia password">
+
+            <small
+              class="error-message"
+              *ngIf="passwordForm.get('vecchiaPassword')?.invalid && passwordForm.get('vecchiaPassword')?.touched">
+              Inserisci la vecchia password.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Nuova Password</label>
+            <input
+              type="password"
+              formControlName="nuovaPassword"
+              placeholder="Minimo 8 caratteri, 1 maiuscola e 1 numero">
+
+            <small class="hint-message">
+              La password deve avere almeno 8 caratteri, almeno una lettera maiuscola e almeno un numero.
+            </small>
+
+            <small
+              class="error-message"
+              *ngIf="nuovaPasswordNonValida">
+              La nuova password deve avere almeno 8 caratteri, almeno una lettera maiuscola e almeno un numero.
+            </small>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-save-main"
+            style="margin-top: 15px; width: 100%;"
+            [disabled]="passwordForm.invalid || isChangingPassword">
+            {{ isChangingPassword ? 'Cambio password...' : 'Cambia Password' }}
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+</div>

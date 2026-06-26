@@ -1,0 +1,53 @@
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ChatWindow }  from '../../components/chat-window/chat-window';
+import { ChatService } from '../../services/chat.service';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, ChatWindow],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.css',
+})
+export class Dashboard implements OnInit {
+  currentUser: any = {};
+  sidebarOpen = false;
+
+  constructor(
+    private chatService: ChatService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.currentUser = this.authService.getLoggedUser() ?? {};
+  }
+
+  get isAdmin(): boolean { return this.currentUser?.ruolo === 'ADMIN'; }
+  get isHost():  boolean { return this.currentUser?.ruolo === 'HOST';  }
+  get isGuest(): boolean { return this.currentUser?.ruolo === 'GUEST'; }
+
+  get userInitials(): string {
+    const n = this.currentUser?.nome    ?? '';
+    const c = this.currentUser?.cognome ?? '';
+    return (n.charAt(0) + c.charAt(0)).toUpperCase() || '?';
+  }
+
+  get roleBadge(): string {
+    const map: Record<string, string> = { ADMIN: 'Admin', HOST: 'Host', GUEST: 'Guest' };
+    return map[this.currentUser?.ruolo] ?? '';
+  }
+
+  toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
+  closeSidebar()  { this.sidebarOpen = false; }
+
+  toggleChat(): void { this.chatService.toggleChat(); }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+}

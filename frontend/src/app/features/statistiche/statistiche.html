@@ -1,0 +1,80 @@
+<div class="statistiche-container">
+  <header class="page-header">
+    <h1>Statistiche</h1>
+    <p class="subtitle">{{ isAdmin ? 'Panoramica globale della piattaforma' : 'Andamento delle tue strutture' }}</p>
+  </header>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Caricamento statistiche...</p>
+    </div>
+  }
+
+  @if (!loading && stats) {
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      @if (isAdmin) {
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-hotel"></i></div>
+          <div class="kpi-value">{{ stats.totaleHotel ?? 0 }}</div>
+          <div class="kpi-label">Hotel attivi</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-users"></i></div>
+          <div class="kpi-value">{{ stats.totaleUtenti ?? 0 }}</div>
+          <div class="kpi-label">Utenti registrati</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-clipboard-list"></i></div>
+          <div class="kpi-value">{{ stats.totalePrenotazioni ?? 0 }}</div>
+          <div class="kpi-label">Prenotazioni totali</div>
+        </div>
+        <div class="kpi-card highlight">
+          <div class="kpi-icon"><i class="fas fa-euro-sign"></i></div>
+          <div class="kpi-value">€{{ (stats.entrateMesseCorrente ?? 0) | number:'1.0-0' }}</div>
+          <div class="kpi-label">Entrate mese corrente</div>
+        </div>
+      } @else {
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-hotel"></i></div>
+          <div class="kpi-value">{{ stats.mieiHotel ?? 0 }}</div>
+          <div class="kpi-label">Le mie strutture</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-clipboard-list"></i></div>
+          <div class="kpi-value">{{ stats.prenotazioniRicevute ?? 0 }}</div>
+          <div class="kpi-label">Prenotazioni ricevute</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+          <div class="kpi-value">{{ stats.prenotazioniInAttesa ?? 0 }}</div>
+          <div class="kpi-label">In attesa di conferma</div>
+        </div>
+        <div class="kpi-card highlight">
+          <div class="kpi-icon"><i class="fas fa-euro-sign"></i></div>
+          <div class="kpi-value">€{{ (stats.entrateMesseCorrente ?? 0) | number:'1.0-0' }}</div>
+          <div class="kpi-label">Entrate mese corrente</div>
+        </div>
+      }
+    </div>
+
+    <!-- CHARTS -->
+    @if (charts) {
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Prenotazioni per mese</h3>
+          <div class="chart-wrapper">
+            <canvas #chartPrenotazioni></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>{{ isAdmin ? 'Hotel più prenotati' : 'Prenotazioni per struttura' }}</h3>
+          <div class="chart-wrapper doughnut-wrapper">
+            <canvas #chartHotel></canvas>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

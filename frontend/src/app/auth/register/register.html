@@ -1,0 +1,144 @@
+<div class="auth-container">
+
+  <!-- ── SINISTRA: pannello con foto Santorini ── -->
+  <div class="auth-visual">
+    <div class="auth-visual-content">
+
+      <img src="/assets/images/logo-ndovado.png" alt="Ndovado" class="auth-logo-img">
+
+      <p class="auth-visual-tagline">Registrati gratis e inizia<br>a esplorare il mondo.</p>
+
+      <div class="auth-visual-feats">
+        <div class="auth-feat">
+          <div class="auth-feat-ico"><i class="fas fa-bolt"></i></div>
+          <div>
+            <strong>Registrazione in 30 secondi</strong>
+            <span>veloce e senza impegno</span>
+          </div>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat-ico"><i class="fas fa-hotel"></i></div>
+          <div>
+            <strong>Ospite o Struttura</strong>
+            <span>prenota o pubblica il tuo hotel</span>
+          </div>
+        </div>
+        <div class="auth-feat">
+          <div class="auth-feat-ico"><i class="fas fa-shield-alt"></i></div>
+          <div>
+            <strong>Accesso sicuro</strong>
+            <span>autenticazione protetta JWT</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── DESTRA: form ── -->
+  <div class="auth-form-panel">
+    <div class="auth-form-box">
+
+      <!-- Logo solo su mobile -->
+      <div class="auth-mobile-logo">
+        Ndovado<i class="fas fa-map-marker-alt"></i>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <a routerLink="/login" class="auth-tab">Login</a>
+        <span class="auth-tab auth-tab--active">Registrati</span>
+      </div>
+
+      <app-alert
+        *ngIf="showAlert"
+        [type]="alertType"
+        [message]="alertMessage"
+        (dismissEvent)="onAlertDismiss()">
+      </app-alert>
+
+      <h2 class="auth-heading">Crea account</h2>
+      <p class="auth-sub">Benvenuto su Ndovado — prenota il tuo prossimo soggiorno.</p>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+        <div class="auth-form-row">
+          <div class="auth-field">
+            <label class="auth-label">Nome</label>
+            <div class="auth-input-wrap">
+              <i class="fas fa-user auth-ico"></i>
+              <input class="auth-input" type="text" formControlName="nome" placeholder="Mario">
+            </div>
+            @if (registerForm.get('nome')?.touched && registerForm.get('nome')?.invalid) {
+              <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</small>
+            }
+          </div>
+          <div class="auth-field">
+            <label class="auth-label">Cognome</label>
+            <div class="auth-input-wrap">
+              <i class="fas fa-user auth-ico"></i>
+              <input class="auth-input" type="text" formControlName="cognome" placeholder="Rossi">
+            </div>
+            @if (registerForm.get('cognome')?.touched && registerForm.get('cognome')?.invalid) {
+              <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</small>
+            }
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-envelope auth-ico"></i>
+            <input class="auth-input" type="email" formControlName="email" placeholder="mario.rossi@email.com">
+          </div>
+          @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+            <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Inserisci un'email valida</small>
+          }
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock auth-ico"></i>
+            <input class="auth-input" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Min. 8 caratteri, 1 maiuscola, 1 numero">
+            <button type="button" class="auth-eye-btn" (click)="showPassword = !showPassword" tabindex="-1">
+              <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+            <small class="auth-err"><i class="fas fa-lock"></i> Min. 8 caratteri, una maiuscola e un numero</small>
+          }
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Tipo di account</label>
+          <div class="auth-ruolo-grid">
+            <label class="auth-ruolo-opt" [class.auth-ruolo-opt--active]="registerForm.get('ruolo')?.value === 'GUEST'">
+              <input type="radio" formControlName="ruolo" value="GUEST">
+              <i class="fas fa-suitcase-rolling"></i>
+              <span class="auth-ruolo-name">Ospite</span>
+              <span class="auth-ruolo-desc">Cerca e prenota hotel</span>
+            </label>
+            <label class="auth-ruolo-opt" [class.auth-ruolo-opt--active]="registerForm.get('ruolo')?.value === 'HOST'">
+              <input type="radio" formControlName="ruolo" value="HOST">
+              <i class="fas fa-building"></i>
+              <span class="auth-ruolo-name">Struttura</span>
+              <span class="auth-ruolo-desc">Pubblica e gestisci hotel</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-btn-primary" [disabled]="registerForm.invalid">
+          Crea account
+        </button>
+
+      </form>
+
+      <p class="auth-switch">
+        Hai già un account? <a routerLink="/login">Accedi</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

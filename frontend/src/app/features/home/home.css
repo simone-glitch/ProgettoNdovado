@@ -1,0 +1,647 @@
+/* ── Home Container ── */
+.home-container {
+  min-height: 100%;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 8px;
+}
+
+/* ── Hero — breaks out of .ndv-main padding (40px) ── */
+.ndv-hero {
+  margin: -40px -40px 0;
+  background-color: #061B3A;
+  background-image:
+    linear-gradient(to bottom, rgba(3,11,26,0.48) 0%, rgba(6,20,50,0.68) 100%),
+    url('/assets/images/hero-ndovado.jpg');
+  background-size: cover;
+  background-position: center 62%;
+  padding: 44px 80px 48px;
+  position: relative;
+}
+
+.ndv-hero-text {
+  margin-bottom: 44px;
+  position: relative;
+  z-index: 1;
+}
+
+.ndv-hero-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 18px;
+  letter-spacing: -0.5px;
+  line-height: 1.12;
+  max-width: 640px;
+}
+
+.ndv-hero-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.78);
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.65;
+}
+
+/* ── Search Card ── */
+.ndv-search-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 32px 20px;
+  box-shadow: 0 28px 72px rgba(3,11,26,0.38);
+  position: relative;
+  z-index: 2;
+}
+
+.ndv-search-row {
+  display: grid;
+  grid-template-columns: 2fr 1.3fr 1.3fr 1fr auto;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: #fff;
+}
+
+.ndv-sf {
+  padding: 14px 20px 16px;
+  background: #fff;
+}
+
+.ndv-sf-sep {
+  border-left: 1.5px solid #E5E7EB;
+}
+
+.ndv-sf-label {
+  display: block;
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: #6B7280;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.ndv-sf-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ndv-sf-ico {
+  color: #9CA3AF;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.ndv-sf-inner input,
+.ndv-sf-inner select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.93rem;
+  color: #111827;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ndv-sf-inner input::placeholder { color: #9CA3AF; }
+
+.ndv-sf-action {
+  display: flex;
+  align-items: stretch;
+  padding: 8px;
+  border-left: 1.5px solid #E5E7EB;
+  background: #fff;
+}
+
+.ndv-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 28px;
+  background: #061B3A;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.22s ease, box-shadow 0.22s ease;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.2px;
+}
+.ndv-primary-btn:hover {
+  background: #0A2B50;
+  box-shadow: 0 6px 22px rgba(6,27,58,0.3);
+}
+
+.ndv-search-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.ndv-trust {
+  font-size: 0.8rem;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ndv-trust i { color: #10B981; }
+.ndv-dot { color: #D1D5DB; }
+
+.ndv-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: transparent;
+  color: #6B7280;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+.ndv-ghost-btn:hover {
+  border-color: #C9A45C;
+  color: #C9A45C;
+}
+
+/* ── Benefits dentro l'hero ── */
+.ndv-hero-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.13);
+  position: relative;
+  z-index: 1;
+}
+
+.ndv-hero-benefit {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ndv-hb-ico {
+  width: 56px;
+  height: 56px;
+  background: rgba(201,164,92,0.14);
+  border: 1px solid rgba(201,164,92,0.3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C9A45C;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.ndv-hb-text strong {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ndv-hb-text span {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.52);
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .ndv-hero-benefits { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .ndv-hero-benefits { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* ── Section common ── */
+.ndv-section { padding: 52px 0 0; }
+
+.ndv-sec-hdr {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ndv-sec-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #071B3A;
+  margin: 0 0 7px;
+  letter-spacing: -0.3px;
+}
+
+.ndv-sec-sub {
+  color: #6B7280;
+  font-size: 0.93rem;
+  margin: 0;
+}
+
+.ndv-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #071B3A;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.ndv-view-all:hover { color: #C9A45C; }
+.ndv-view-all i { font-size: 0.72rem; }
+
+.ndv-results-count {
+  color: #9CA3AF;
+  font-size: 0.88rem;
+  align-self: flex-end;
+}
+
+/* ── Hotel Grid ── */
+.ndv-hotel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+}
+
+/* ── Hotel Card ── */
+.ndv-hotel-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1.5px solid #E5E7EB;
+  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), box-shadow 0.28s ease, border-color 0.28s ease;
+  box-shadow: 0 2px 12px rgba(7,27,58,0.05);
+}
+.ndv-hotel-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 52px rgba(7,27,58,0.13);
+  border-color: #C9A45C;
+}
+
+.ndv-card-img-wrap {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background: #E5E7EB;
+}
+
+.ndv-card-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.42s ease;
+  display: block;
+}
+.ndv-hotel-card:hover .ndv-card-photo { transform: scale(1.06); }
+
+.ndv-no-photo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(140deg, #061B3A 0%, #0A2B50 60%);
+}
+.ndv-no-photo i { font-size: 2.6rem; color: rgba(201,164,92,0.65); }
+.ndv-no-photo span {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.38);
+  font-family: 'Poppins', sans-serif;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ndv-star-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(7,27,58,0.7);
+  color: #E8D5A0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.5px;
+}
+
+.ndv-premium-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, #C9A45C, #A67828);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.ndv-heart-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  background: rgba(255,255,255,0.92);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6B7280;
+  font-size: 0.88rem;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.ndv-heart-btn:hover {
+  background: #fff;
+  color: #EF4444;
+  transform: scale(1.1);
+}
+
+.ndv-card-body { padding: 20px 22px; }
+
+.ndv-card-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #071B3A;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.ndv-card-loc {
+  font-size: 0.82rem;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 12px;
+}
+.ndv-card-loc i { color: #C9A45C; font-size: 0.7rem; }
+
+.ndv-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.ndv-rating-stars { color: #F59E0B; font-size: 0.82rem; letter-spacing: 1.5px; }
+.ndv-rating-val { font-weight: 700; color: #111827; font-size: 0.88rem; }
+
+.ndv-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #F3F4F6;
+}
+
+.ndv-price-block { display: flex; align-items: baseline; gap: 3px; }
+.ndv-price-from { font-size: 0.82rem; color: #9CA3AF; }
+.ndv-price-val { font-size: 1.05rem; font-weight: 700; color: #071B3A; }
+.ndv-price-per { font-size: 0.78rem; color: #9CA3AF; }
+
+.ndv-detail-btn {
+  padding: 8px 18px;
+  background: transparent;
+  color: #071B3A;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+.ndv-detail-btn:hover {
+  background: #071B3A;
+  color: #fff;
+  border-color: #071B3A;
+}
+
+/* ── Skeleton ── */
+.ndv-card-skel {
+  height: 350px;
+  background: linear-gradient(90deg, #F3F4F6 25%, #E9ECEF 50%, #F3F4F6 75%);
+  background-size: 200%;
+  border-radius: 18px;
+  animation: ndv-shimmer 1.5s infinite;
+}
+@keyframes ndv-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Empty State ── */
+.ndv-empty {
+  text-align: center;
+  padding: 80px 20px 60px;
+}
+.ndv-empty-ico {
+  width: 72px; height: 72px;
+  background: #F3F4F6;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.8rem;
+  color: #9CA3AF;
+}
+.ndv-empty h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem; font-weight: 700;
+  color: #111827; margin: 0 0 8px;
+}
+.ndv-empty p { color: #6B7280; margin: 0 0 24px; font-size: 0.94rem; }
+
+/* ── Popular Destinations ── */
+.ndv-dest-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.ndv-dest-card {
+  border-radius: 14px;
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.ndv-dest-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+}
+.ndv-dest-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.12) 55%, transparent 100%);
+}
+
+.ndv-dest-bali      { background: linear-gradient(155deg, #0b4031 0%, #1a5e40 55%, #0a3024 100%); }
+.ndv-dest-paris     { background: linear-gradient(155deg, #26326a 0%, #1e2b6c 55%, #3848a8 100%); }
+.ndv-dest-dubai     { background: linear-gradient(155deg, #7a4e18 0%, #c29840 55%, #6a3e10 100%); }
+.ndv-dest-london    { background: linear-gradient(155deg, #212b38 0%, #3a4e64 55%, #19222e 100%); }
+.ndv-dest-tokyo     { background: linear-gradient(155deg, #6b1a34 0%, #8b2850 55%, #581425 100%); }
+.ndv-dest-santorini { background: linear-gradient(155deg, #1a3878 0%, #2c5dc0 55%, #192f5c 100%); }
+
+.ndv-dest-info {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ndv-dest-city {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.ndv-dest-ctry {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ── Benefits Bar ── */
+.ndv-benefits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #fff;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 18px;
+  margin: 52px 0 8px;
+  overflow: hidden;
+}
+
+.ndv-benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 24px;
+  border-right: 1.5px solid #E5E7EB;
+}
+.ndv-benefit-item:last-child { border-right: none; }
+
+.ndv-ben-ico {
+  width: 48px; height: 48px;
+  background: #F0F4F8;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  color: #071B3A;
+  flex-shrink: 0;
+}
+
+.ndv-ben-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ndv-ben-text strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+  font-family: 'Poppins', sans-serif;
+}
+.ndv-ben-text span {
+  font-size: 0.77rem;
+  color: #6B7280;
+  line-height: 1.45;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1280px) {
+  .ndv-dest-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 1100px) {
+  .ndv-benefits { grid-template-columns: repeat(2, 1fr); }
+  .ndv-benefit-item:nth-child(2) { border-right: none; }
+  .ndv-benefit-item:nth-child(3) { border-top: 1.5px solid #E5E7EB; }
+  .ndv-benefit-item:nth-child(4) { border-top: 1.5px solid #E5E7EB; }
+}
+
+@media (max-width: 900px) {
+  .ndv-hero {
+    padding: 60px 40px 48px;
+  }
+  .ndv-hero-title { font-size: 2.4rem; }
+  .ndv-search-row {
+    grid-template-columns: 1fr 1fr;
+    border-radius: 12px;
+  }
+  .ndv-sf-sep { border-left: none; }
+  /* Row 2 fields (price + guests) get a top divider */
+  .ndv-search-row > *:nth-child(n+3) { border-top: 1.5px solid #E5E7EB; }
+  .ndv-sf-action {
+    grid-column: 1 / -1;
+    border-left: none;
+    border-top: 1.5px solid #E5E7EB;
+    padding: 14px;
+    justify-content: center;
+  }
+  .ndv-primary-btn { width: 100%; justify-content: center; padding: 14px 28px; }
+  .ndv-dest-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  /* ndv-main at ≤640px has padding: 20px */
+  .ndv-hero {
+    margin: -20px -20px 0;
+    padding: 48px 24px 40px;
+  }
+  .ndv-hero-title { font-size: 2rem; }
+  .ndv-hero-sub { font-size: 0.95rem; }
+  .ndv-search-row { grid-template-columns: 1fr; }
+  .ndv-sf-sep { border-left: none; border-top: 1.5px solid #E5E7EB; }
+  .ndv-sf-action { border-left: none; border-top: 1.5px solid #E5E7EB; }
+  .ndv-dest-grid { grid-template-columns: repeat(2, 1fr); }
+  .ndv-hotel-grid { grid-template-columns: 1fr; }
+  .ndv-benefits { grid-template-columns: 1fr; }
+  .ndv-benefit-item {
+    border-right: none;
+    border-bottom: 1.5px solid #E5E7EB;
+  }
+  .ndv-benefit-item:last-child { border-bottom: none; }
+  .ndv-benefit-item:nth-child(2) { border-right: none; }
+  .ndv-benefit-item:nth-child(3) { border-top: none; }
+  .ndv-benefit-item:nth-child(4) { border-top: none; }
+  .ndv-sec-hdr { gap: 8px; }
+}

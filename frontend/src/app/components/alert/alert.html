@@ -1,0 +1,12 @@
+<div [class]="'alert-container ' + type">
+  <div class="alert-icon">
+    @switch (type) {
+      @case ('success') { <i class="fas fa-check-circle"></i> }
+      @case ('error')   { <i class="fas fa-times-circle"></i> }
+      @case ('warning') { <i class="fas fa-exclamation-triangle"></i> }
+      @case ('info')    { <i class="fas fa-info-circle"></i> }
+    }
+  </div>
+  <div class="message">{{ message }}</div>
+  <button class="close-btn" (click)="dismiss()">&times;</button>
+</div>

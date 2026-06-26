@@ -1,0 +1,30 @@
+<div class="chat-container" *ngIf="chatService.chatOpen$ | async">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <span class="chat-avatar">✦</span>
+      <div>
+        <span class="chat-name">NdovAI</span>
+        <span class="chat-status">● Online</span>
+      </div>
+    </div>
+    <button (click)="chatService.toggleChat()">✕</button>
+  </div>
+
+  <div class="chat-body">
+    <div class="bot-msg">Ciao! Sono NdovAI, il tuo assistente virtuale. Come posso aiutarti oggi?</div>
+
+    <div *ngFor="let msg of chatService.messaggi"
+         [ngClass]="msg.daUtente ? 'user-msg' : 'bot-msg'">
+      {{ msg.testo }}
+    </div>
+  </div>
+
+  <div class="chat-footer">
+    <input type="text"
+           [(ngModel)]="nuovoMessaggio"
+           (keyup.enter)="spedisci()"
+           placeholder="Scrivi un messaggio...">
+
+    <button (click)="spedisci()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
