@@ -26,7 +26,7 @@ public class PrenotazioneController {
     }
 
     @GetMapping("/mie")
-    @PreAuthorize("hasAnyRole('GUEST','ADMIN')")
+    @PreAuthorize("hasAnyRole('GUEST','HOST','ADMIN')")
     public ResponseEntity<?> getMie(Authentication auth) {
         try {
             return ResponseEntity.ok(prenotazioneService.getPrenotazioniUtente(auth.getName()));

@@ -96,6 +96,22 @@ public class PrenotazioneDAO {
         return jdbcTemplate.query(sql, prenotazioneConDettagliRowMapper, idUtente);
     }
 
+    public List<Prenotazione> trovaPerProprietario(Integer idProprietario) {
+        String sql = """
+                SELECT p.*,
+                       u.nome || ' ' || u.cognome AS nome_utente,
+                       c.tipo                     AS tipo_camera,
+                       h.nome                     AS nome_hotel
+                FROM prenotazioni p
+                JOIN utenti  u ON u.id_utente = p.id_utente
+                JOIN camere  c ON c.id_camera = p.id_camera
+                JOIN hotel   h ON h.id_hotel  = c.id_hotel
+                WHERE h.id_proprietario = ?
+                ORDER BY p.data_checkin DESC
+                """;
+        return jdbcTemplate.query(sql, prenotazioneConDettagliRowMapper, idProprietario);
+    }
+
     public List<Prenotazione> trovaPerHotel(Integer idHotel) {
         String sql = """
                 SELECT p.*,

@@ -1,80 +1,382 @@
-<div class="statistiche-container">
-  <header class="page-header">
+<div class="host-statistics-page">
+
+  <!-- ── BREADCRUMB ── -->
+  <nav class="host-stats-breadcrumb">
+    <a routerLink="/dashboard/home" class="bc-home"><i class="fas fa-home"></i> Home</a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">Statistiche</span>
+  </nav>
+
+  <!-- ── PAGE HEADER ── -->
+  <div class="host-statistics-header">
     <h1>Statistiche</h1>
-    <p class="subtitle">{{ isAdmin ? 'Panoramica globale della piattaforma' : 'Andamento delle tue strutture' }}</p>
-  </header>
+    <p class="host-stats-subtitle">Monitora le performance delle tue strutture e delle prenotazioni nel tempo.</p>
+  </div>
 
+  <!-- ── LOADING ── -->
   @if (loading) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Caricamento statistiche...</p>
-    </div>
-  }
-
-  @if (!loading && stats) {
-    <!-- KPI CARDS -->
-    <div class="kpi-grid">
-      @if (isAdmin) {
-        <div class="kpi-card">
-          <div class="kpi-icon"><i class="fas fa-hotel"></i></div>
-          <div class="kpi-value">{{ stats.totaleHotel ?? 0 }}</div>
-          <div class="kpi-label">Hotel attivi</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-icon"><i class="fas fa-users"></i></div>
-          <div class="kpi-value">{{ stats.totaleUtenti ?? 0 }}</div>
-          <div class="kpi-label">Utenti registrati</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-icon"><i class="fas fa-clipboard-list"></i></div>
-          <div class="kpi-value">{{ stats.totalePrenotazioni ?? 0 }}</div>
-          <div class="kpi-label">Prenotazioni totali</div>
-        </div>
-        <div class="kpi-card highlight">
-          <div class="kpi-icon"><i class="fas fa-euro-sign"></i></div>
-          <div class="kpi-value">€{{ (stats.entrateMesseCorrente ?? 0) | number:'1.0-0' }}</div>
-          <div class="kpi-label">Entrate mese corrente</div>
-        </div>
-      } @else {
-        <div class="kpi-card">
-          <div class="kpi-icon"><i class="fas fa-hotel"></i></div>
-          <div class="kpi-value">{{ stats.mieiHotel ?? 0 }}</div>
-          <div class="kpi-label">Le mie strutture</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-icon"><i class="fas fa-clipboard-list"></i></div>
-          <div class="kpi-value">{{ stats.prenotazioniRicevute ?? 0 }}</div>
-          <div class="kpi-label">Prenotazioni ricevute</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-icon"><i class="fas fa-clock"></i></div>
-          <div class="kpi-value">{{ stats.prenotazioniInAttesa ?? 0 }}</div>
-          <div class="kpi-label">In attesa di conferma</div>
-        </div>
-        <div class="kpi-card highlight">
-          <div class="kpi-icon"><i class="fas fa-euro-sign"></i></div>
-          <div class="kpi-value">€{{ (stats.entrateMesseCorrente ?? 0) | number:'1.0-0' }}</div>
-          <div class="kpi-label">Entrate mese corrente</div>
+    <div class="host-stats-grid">
+      @for (i of skeletonItems; track i) {
+        <div class="host-stat-card skel-card">
+          <div class="skel skel-icon-wrap"></div>
+          <div class="skel-info">
+            <div class="skel skel-label"></div>
+            <div class="skel skel-value"></div>
+          </div>
         </div>
       }
     </div>
+    <div class="stats-loading-body">
+      <div class="stats-spinner"></div>
+      <p>Caricamento statistiche…</p>
+    </div>
+  }
 
-    <!-- CHARTS -->
-    @if (charts) {
-      <div class="charts-grid">
-        <div class="chart-card">
-          <h3>Prenotazioni per mese</h3>
-          <div class="chart-wrapper">
-            <canvas #chartPrenotazioni></canvas>
-          </div>
-        </div>
-        <div class="chart-card">
-          <h3>{{ isAdmin ? 'Hotel più prenotati' : 'Prenotazioni per struttura' }}</h3>
-          <div class="chart-wrapper doughnut-wrapper">
-            <canvas #chartHotel></canvas>
-          </div>
+  <!-- ── ERROR ── -->
+  @else if (loadingError) {
+    <div class="stats-empty-state">
+      <div class="empty-icon-wrap empty-red"><i class="fas fa-exclamation-triangle"></i></div>
+      <h3>Impossibile caricare le statistiche</h3>
+      <p>Controlla la connessione e riprova.</p>
+      <button class="btn-stats-primary" (click)="caricaDati()"><i class="fas fa-redo"></i> Riprova</button>
+    </div>
+  }
+
+  <!-- ── NO HOTELS EMPTY STATE ── -->
+  @else if (hotels.length === 0) {
+    <div class="stats-empty-state">
+      <div class="empty-icon-wrap"><i class="fas fa-hotel"></i></div>
+      <h3>Non hai ancora strutture</h3>
+      <p>Aggiungi il tuo primo hotel per iniziare a visualizzare le statistiche.</p>
+      <button class="btn-stats-primary" (click)="vaiGestioneHotel()"><i class="fas fa-plus"></i> Aggiungi hotel</button>
+    </div>
+  }
+
+  <!-- ── MAIN CONTENT ── -->
+  @else {
+
+    <!-- ── 5 KPI CARDS ── -->
+    <div class="host-stats-grid">
+
+      <div class="host-stat-card">
+        <div class="stat-icon-wrap sic-green"><i class="fas fa-building"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Totale strutture</span>
+          <span class="stat-value">{{ totaleStrutture }}</span>
         </div>
       </div>
-    }
-  }
+
+      <div class="host-stat-card">
+        <div class="stat-icon-wrap sic-blue"><i class="fas fa-calendar-alt"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Prenotazioni ricevute</span>
+          <span class="stat-value">{{ prenotazioniRicevute }}</span>
+        </div>
+      </div>
+
+      <div class="host-stat-card">
+        <div class="stat-icon-wrap sic-orange"><i class="fas fa-clock"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">In attesa di conferma</span>
+          <span class="stat-value">{{ prenotazioniInAttesa }}</span>
+        </div>
+      </div>
+
+      <div class="host-stat-card">
+        <div class="stat-icon-wrap sic-purple"><i class="fas fa-wallet"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Entrate mese corrente</span>
+          <span class="stat-value stat-value-sm">{{ fmtEuro(entrateMeseCorrente) }}</span>
+        </div>
+      </div>
+
+      <div class="host-stat-card">
+        <div class="stat-icon-wrap sic-teal"><i class="fas fa-chart-pie"></i></div>
+        <div class="stat-info">
+          <span class="stat-label">Tasso occupazione medio</span>
+          <span class="stat-value">{{ tassoOccupazione }}</span>
+        </div>
+      </div>
+
+    </div><!-- /kpi grid -->
+
+    <!-- ── FILTERS + EXPORT ── -->
+    <div class="host-filters-card">
+      <div class="filters-left">
+
+        <div class="filter-group">
+          <label class="filter-label"><i class="fas fa-calendar-week"></i> Periodo</label>
+          <select class="filter-select" [(ngModel)]="periodoSelezionato" (ngModelChange)="onFiltroChange()">
+            @for (p of periodi; track p.value) {
+              <option [value]="p.value">{{ p.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label"><i class="fas fa-hotel"></i> Struttura</label>
+          <select class="filter-select" [(ngModel)]="strutturaSelezionata" (ngModelChange)="onFiltroChange()">
+            <option value="tutte">Tutte le strutture</option>
+            @for (h of hotels; track h.id) {
+              <option [value]="h.nome">{{ h.nome }}</option>
+            }
+          </select>
+        </div>
+
+      </div>
+      <button class="btn-export" (click)="esportaReport()">
+        <i class="fas fa-download"></i> Esporta report
+      </button>
+    </div>
+
+    <!-- ── TWO COLUMN LAYOUT ── -->
+    <div class="host-statistics-layout">
+
+      <!-- ════ LEFT COLUMN ════ -->
+      <div class="host-statistics-main">
+
+        <!-- Row 1: Monthly bookings + Revenue trend -->
+        <div class="charts-row">
+
+          <div class="chart-card">
+            <div class="chart-card-head">
+              <h3>Prenotazioni per mese</h3>
+            </div>
+            <div class="chart-wrapper">
+              @if (prenotazioniRicevute === 0) {
+                <div class="chart-empty">
+                  <i class="fas fa-chart-bar"></i>
+                  <span>Nessuna prenotazione nel periodo selezionato</span>
+                </div>
+              } @else {
+                <canvas #chartMensile></canvas>
+              }
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-head">
+              <h3>Andamento entrate</h3>
+            </div>
+            <div class="chart-wrapper">
+              @if (entrateMeseCorrente === 0 && prenotazioniRicevute === 0) {
+                <div class="chart-empty">
+                  <i class="fas fa-chart-line"></i>
+                  <span>Entrate non disponibili per il periodo selezionato</span>
+                </div>
+              } @else {
+                <canvas #chartEntrate></canvas>
+              }
+            </div>
+          </div>
+
+        </div><!-- /charts-row -->
+
+        <!-- Row 2: By property + Status donut -->
+        <div class="charts-row">
+
+          <div class="chart-card bookings-by-property-card">
+            <div class="chart-card-head">
+              <h3>Prenotazioni per struttura</h3>
+            </div>
+            <div class="chart-wrapper chart-wrapper-property">
+              @if (prenotazioniRicevute === 0) {
+                <div class="chart-empty">
+                  <i class="fas fa-building"></i>
+                  <span>Nessuna prenotazione nel periodo selezionato</span>
+                </div>
+              } @else {
+                <canvas #chartStruttura></canvas>
+              }
+            </div>
+          </div>
+
+          <div class="chart-card booking-status-card">
+            <div class="chart-card-head">
+              <h3>Stato prenotazioni</h3>
+            </div>
+            <div class="status-donut-layout">
+              <div class="donut-wrapper">
+                @if (prenotazioniRicevute === 0) {
+                  <div class="chart-empty">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Nessun dato</span>
+                  </div>
+                } @else {
+                  <div class="donut-center-wrap">
+                    <canvas #chartStato></canvas>
+                    <div class="donut-center-label">
+                      <span class="donut-center-num">{{ prenotazioniRicevute }}</span>
+                      <span class="donut-center-txt">Totali</span>
+                    </div>
+                  </div>
+                }
+              </div>
+              <div class="status-legend">
+                @for (item of statoItems; track item.label) {
+                  <div class="status-legend-item">
+                    <span class="legend-dot" [style.background]="item.color"></span>
+                    <span class="legend-label">{{ item.label }}</span>
+                    <span class="legend-count">{{ item.count }} ({{ item.pct }})</span>
+                  </div>
+                }
+                @if (statoItems.length === 0) {
+                  <p class="legend-empty">Nessun dato disponibile</p>
+                }
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /charts-row 2 -->
+
+        <!-- Row 3: Best property + Booking origin + Recent activity -->
+        <div class="cards-row-three">
+
+          <!-- Best property -->
+          <div class="best-property-card">
+            <h3 class="card-section-title"><i class="fas fa-trophy"></i> Migliore struttura del mese</h3>
+            @if (miglioreStruttura) {
+              <div class="best-property-content">
+                <div class="best-property-img">
+                  @if (getHotelImg(miglioreStruttura.hotel)) {
+                    <img [src]="getHotelImg(miglioreStruttura.hotel)" [alt]="miglioreStruttura.hotel.nome" class="bp-img">
+                  } @else {
+                    <div class="bp-img-placeholder">
+                      <span>{{ getHotelInitials(miglioreStruttura.hotel.nome) }}</span>
+                    </div>
+                  }
+                </div>
+                <div class="best-property-info">
+                  <h4 class="bp-name">{{ miglioreStruttura.hotel.nome }}</h4>
+                  <div class="bp-stats">
+                    <div class="bp-stat">
+                      <span class="bp-stat-label">Tasso di occupazione</span>
+                      <span class="bp-stat-value bp-green">{{ miglioreStrutturaOccupazione }}</span>
+                    </div>
+                    <div class="bp-stat">
+                      <span class="bp-stat-label">Entrate generate</span>
+                      <span class="bp-stat-value">{{ fmtEuro(miglioreStruttura.rev) }}</span>
+                    </div>
+                  </div>
+                  <button class="btn-stats-outline btn-bp" (click)="vaiHotel(miglioreStruttura.hotel)">
+                    Vedi dettagli struttura <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="chart-empty">
+                <i class="fas fa-trophy"></i>
+                <span>Dati insufficienti per determinare la migliore struttura</span>
+              </div>
+            }
+          </div>
+
+          <!-- Booking origin -->
+          <div class="booking-source-card">
+            <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Origine prenotazioni</h3>
+            <div class="source-empty">
+              <i class="fas fa-info-circle"></i>
+              <span>Dati sull'origine delle prenotazioni non disponibili al momento</span>
+            </div>
+          </div>
+
+          <!-- Recent activity -->
+          <div class="recent-activity-card">
+            <h3 class="card-section-title"><i class="fas fa-history"></i> Ultime attività</h3>
+            @if (ultimaAttivita.length === 0) {
+              <div class="chart-empty">
+                <i class="fas fa-bell-slash"></i>
+                <span>Nessuna attività recente</span>
+              </div>
+            } @else {
+              <div class="activity-list">
+                @for (a of ultimaAttivita; track $index) {
+                  <div class="activity-item">
+                    <div class="activity-icon" [ngClass]="a.iconClass">
+                      <i class="fas {{ a.icon }}"></i>
+                    </div>
+                    <div class="activity-body">
+                      <span class="activity-title">{{ a.title }}</span>
+                      <span class="activity-detail">{{ a.detail }}</span>
+                    </div>
+                    <span class="activity-tempo">{{ a.tempo }}</span>
+                  </div>
+                }
+              </div>
+              <button class="btn-link-more" (click)="vaiPrenotazioni()">
+                Vedi tutte le attività <i class="fas fa-chevron-right"></i>
+              </button>
+            }
+          </div>
+
+        </div><!-- /cards-row-three -->
+
+      </div><!-- /host-statistics-main -->
+
+      <!-- ════ RIGHT SIDEBAR ════ -->
+      <aside class="host-statistics-sidebar">
+
+        <!-- Obiettivi del mese -->
+        <div class="month-goals-card">
+          <div class="sidebar-card-head">
+            <span class="sidebar-card-icon"><i class="fas fa-bullseye"></i></span>
+            <h3>Obiettivi del mese</h3>
+          </div>
+          <div class="goals-list">
+            @for (ob of obiettivi; track ob.label) {
+              <div class="goal-item">
+                <div class="goal-header">
+                  <span class="goal-label">{{ ob.label }}</span>
+                  <span class="goal-pct" [class.goal-pct-high]="ob.perc >= 80">{{ ob.perc }}%</span>
+                </div>
+                <div class="goal-vals">
+                  <span>{{ ob.val }}</span>
+                  <span class="goal-sep">/</span>
+                  <span class="goal-target">{{ ob.target }}</span>
+                </div>
+                <div class="goal-bar-bg">
+                  <div class="goal-bar-fill" [style.width.%]="ob.perc"
+                       [class.goal-bar-high]="ob.perc >= 80"
+                       [class.goal-bar-med]="ob.perc >= 50 && ob.perc < 80"
+                       [class.goal-bar-low]="ob.perc < 50"></div>
+                </div>
+              </div>
+            }
+          </div>
+          <button class="btn-sidebar-more" (click)="vaiPrenotazioni()">Vedi tutti gli obiettivi</button>
+        </div>
+
+        <!-- Suggerimenti per migliorare -->
+        <div class="improvement-suggestions-card">
+          <div class="sidebar-card-head">
+            <span class="sidebar-card-icon sug-head-icon"><i class="fas fa-lightbulb"></i></span>
+            <h3>Suggerimenti per migliorare</h3>
+          </div>
+          @if (suggerimenti.length === 0) {
+            <p class="sug-empty">Nessun suggerimento disponibile al momento.</p>
+          } @else {
+            <div class="sug-list">
+              @for (s of suggerimenti; track s.title) {
+                <div class="sug-item" (click)="navigateTo(s.route)" role="button" tabindex="0">
+                  <div class="sug-icon" [ngClass]="s.cls">
+                    <i class="fas {{ s.icon }}"></i>
+                  </div>
+                  <div class="sug-body">
+                    <span class="sug-title">{{ s.title }}</span>
+                    <span class="sug-desc">{{ s.desc }}</span>
+                  </div>
+                  <i class="fas fa-chevron-right sug-arrow"></i>
+                </div>
+              }
+            </div>
+          }
+          <button class="btn-sidebar-more" (click)="vaiGestioneHotel()">Vedi tutti i suggerimenti</button>
+        </div>
+
+      </aside><!-- /sidebar -->
+
+    </div><!-- /host-statistics-layout -->
+
+  }<!-- /else main content -->
+
 </div>

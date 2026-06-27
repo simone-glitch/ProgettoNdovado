@@ -30,6 +30,9 @@ public class PrenotazioneService {
     public List<Prenotazione> getPrenotazioniUtente(String email) {
         Utente utente = utenteJDBC.trovaPerEmail(email);
         if (utente == null) throw new RuntimeException("Utente non trovato.");
+        if ("HOST".equals(utente.getRuolo())) {
+            return prenotazioneDAO.trovaPerProprietario(utente.getId());
+        }
         return prenotazioneDAO.trovaPerUtente(utente.getId());
     }
 
