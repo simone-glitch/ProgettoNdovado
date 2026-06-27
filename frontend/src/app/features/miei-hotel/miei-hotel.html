@@ -1,0 +1,436 @@
+<div class="host-hotels-page">
+
+  <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+
+  <!-- BREADCRUMB -->
+  <nav class="host-breadcrumb" aria-label="Percorso">
+    <a routerLink="/dashboard/home" class="breadcrumb-link">
+      <i class="fas fa-home"></i> Home
+    </a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">I miei hotel</span>
+  </nav>
+
+  <!-- HEADER -->
+  <div class="host-hotels-header">
+    <div class="host-hotels-header-left">
+      <h1 class="host-hotels-title">I miei hotel</h1>
+      <p class="host-hotels-subtitle">Gestisci tutte le tue strutture, le prenotazioni e le prestazioni in un unico posto.</p>
+    </div>
+    <button class="btn-add-hotel-header" (click)="apriNuovoHotel()">
+      <i class="fas fa-plus-circle"></i> Aggiungi hotel
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="host-hotels-stats-grid">
+      @for (s of skeletonItems; track s) {
+        <div class="host-hotel-stat-card skeleton-card">
+          <div class="sk-icon"></div>
+          <div class="sk-text">
+            <div class="sk-line sk-line-sm"></div>
+            <div class="sk-line sk-line-lg"></div>
+          </div>
+        </div>
+      }
+      <div class="host-hotel-stat-card skeleton-card">
+        <div class="sk-icon"></div>
+        <div class="sk-text">
+          <div class="sk-line sk-line-sm"></div>
+          <div class="sk-line sk-line-lg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="host-hotels-layout">
+      <div class="host-hotels-main">
+        <div class="host-hotels-filters-card skeleton-card" style="height:72px;"></div>
+        @for (s of skeletonItems; track s) {
+          <div class="skeleton-card" style="height:170px;margin-top:14px;border-radius:16px;"></div>
+        }
+      </div>
+      <div class="host-hotels-sidebar">
+        <div class="skeleton-card" style="height:190px;"></div>
+        <div class="skeleton-card" style="height:230px;margin-top:16px;"></div>
+        <div class="skeleton-card" style="height:130px;margin-top:16px;"></div>
+      </div>
+    </div>
+
+  } @else if (loadingError) {
+    <div class="host-empty-state">
+      <div class="empty-icon-wrap error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <h3>Errore durante il caricamento</h3>
+      <p>Non è stato possibile recuperare i tuoi hotel. Controlla la connessione e riprova.</p>
+      <button class="btn-primary-navy" (click)="riprova()"><i class="fas fa-redo"></i> Riprova</button>
+    </div>
+
+  } @else {
+
+    <!-- STATS -->
+    <div class="host-hotels-stats-grid">
+      <div class="host-hotel-stat-card">
+        <div class="stat-icon-wrap stat-green"><i class="fas fa-hotel"></i></div>
+        <div class="stat-content">
+          <span class="stat-label">Hotel pubblicati</span>
+          <span class="stat-value">{{ hotelsPublicati }}</span>
+        </div>
+      </div>
+      <div class="host-hotel-stat-card">
+        <div class="stat-icon-wrap stat-orange"><i class="fas fa-file-alt"></i></div>
+        <div class="stat-content">
+          <span class="stat-label">Bozze</span>
+          <span class="stat-value">{{ hotelsBozze }}</span>
+        </div>
+      </div>
+      <div class="host-hotel-stat-card">
+        <div class="stat-icon-wrap stat-blue"><i class="fas fa-calendar-check"></i></div>
+        <div class="stat-content">
+          <span class="stat-label">Prenotazioni attive</span>
+          <span class="stat-value">{{ prenotazioniAttive }}</span>
+        </div>
+      </div>
+      <div class="host-hotel-stat-card">
+        <div class="stat-icon-wrap stat-purple"><i class="fas fa-wallet"></i></div>
+        <div class="stat-content">
+          <span class="stat-label">Entrate mese</span>
+          <span class="stat-value stat-value-sm">{{ fmtEuro(entrateMese) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="host-hotels-layout">
+
+      <!-- LEFT -->
+      <div class="host-hotels-main">
+
+        <!-- FILTRI -->
+        <div class="host-hotels-filters-card">
+          <div class="filters-inner">
+            <div class="search-wrap">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="search-input" placeholder="Cerca hotel o città"
+                [(ngModel)]="searchQuery" aria-label="Cerca hotel o città">
+            </div>
+            <select class="filter-select" [(ngModel)]="filterStato" aria-label="Filtra per stato">
+              <option value="">Stato</option>
+              <option value="PUBBLICATO">Pubblicato</option>
+              <option value="IN_REVISIONE">In revisione</option>
+              <option value="BOZZA">Bozza</option>
+              <option value="NON_ATTIVO">Non attivo</option>
+              <option value="SOSPESO">Sospeso</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- LISTA HOTEL -->
+        <div class="host-hotels-list">
+          @if (hotels.length === 0) {
+            <div class="host-empty-state">
+              <div class="empty-icon-wrap"><i class="fas fa-hotel"></i></div>
+              <h3>Non hai ancora strutture</h3>
+              <p>Aggiungi il tuo primo hotel e inizia a ricevere prenotazioni dagli ospiti.</p>
+              <button class="btn-primary-navy" (click)="apriNuovoHotel()">
+                <i class="fas fa-plus-circle"></i> Aggiungi hotel
+              </button>
+            </div>
+          } @else if (hotelsFiltrati.length === 0) {
+            <div class="host-empty-state host-empty-state-compact">
+              <i class="fas fa-search" style="font-size:2rem;color:#D1D9E6;margin-bottom:12px;"></i>
+              <h3>Nessun risultato</h3>
+              <p>Nessuna struttura corrisponde ai filtri applicati.</p>
+            </div>
+          } @else {
+            @for (hotel of hotelsFiltrati; track hotel.id) {
+              <div class="host-hotel-card">
+
+                <!-- IMMAGINE -->
+                <div class="host-hotel-image">
+                  @if (getHotelImg(hotel)) {
+                    <img [src]="getHotelImg(hotel)" [alt]="hotel.nome || 'Hotel'" loading="lazy">
+                  } @else {
+                    <div class="hotel-img-placeholder">
+                      <div class="placeholder-initials">{{ getHotelInitials(hotel.nome) }}</div>
+                      <span class="placeholder-label">Nessuna immagine</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- CONTENUTO -->
+                <div class="host-hotel-content">
+                  <div class="hotel-name-row">
+                    <h3 class="hotel-name">{{ hotel.nome || 'Nome struttura non disponibile' }}</h3>
+                    <span class="host-hotel-status-badge" [ngClass]="getStatoBadgeClass(hotel)">
+                      {{ getStatoLabel(hotel) }}
+                    </span>
+                  </div>
+                  <div class="hotel-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ hotel.citta || 'Posizione non disponibile' }}{{ hotel.indirizzo ? ', ' + hotel.indirizzo : '' }}</span>
+                  </div>
+                  <div class="hotel-details">
+                    <span class="detail-item"><i class="fas fa-bed"></i> {{ getCamereCount(hotel) }} {{ getCamereCount(hotel) === 1 ? 'camera' : 'camere' }}</span>
+                    <span class="detail-sep">·</span>
+                    <span class="detail-item"><i class="fas fa-calendar"></i> {{ getPrenotazioniMese(hotel) }} prenotazioni questo mese</span>
+                    @if (getRatingMedia(hotel) !== null) {
+                      <span class="detail-sep">·</span>
+                      <span class="detail-item rating"><i class="fas fa-star"></i> {{ getRatingMedia(hotel) | number:'1.1-1' }}</span>
+                    }
+                    @if (hotel.stelle) {
+                      <span class="detail-sep">·</span>
+                      <span class="detail-item stelle-item">{{ stelle(hotel.stelle) }}</span>
+                    }
+                  </div>
+                  @if (getServiziPrincipali(hotel).length > 0) {
+                    <div class="host-hotel-services">
+                      @for (s of getServiziPrincipali(hotel); track s.id) {
+                        <span class="service-tag">
+                          <i class="fas {{ getServizioIcon(s.nome) }}"></i> {{ s.nome }}
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <!-- DESTRA: STATS + AZIONI -->
+                <div class="host-hotel-right">
+                  <div class="host-hotel-occupancy">
+                    <span class="occ-label">Occupazione</span>
+                    <span class="occ-value">{{ getOccupazioneHotel(hotel) }}%</span>
+                    <div class="occ-bar">
+                      <div class="occ-bar-fill"
+                        [style.width.%]="getOccupazioneHotel(hotel)"
+                        [style.background]="getOccupazioneColor(getOccupazioneHotel(hotel))">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="host-hotel-revenue">
+                    <span class="rev-label">Entrate mese</span>
+                    <span class="rev-value">{{ fmtEuro(getEntrateMeseHotel(hotel)) }}</span>
+                  </div>
+                  <div class="host-hotel-actions">
+                    <button class="btn-action btn-outline" (click)="vaiDettagli(hotel)">Vedi dettagli</button>
+                    <button class="btn-action btn-outline" (click)="apriModificaHotel(hotel)">
+                      <i class="fas fa-pen"></i> Modifica
+                    </button>
+                    <button class="btn-action btn-navy" (click)="vaiGestisciCamere(hotel)">
+                      <i class="fas fa-bed"></i> Gestisci camere
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <div class="host-hotels-sidebar">
+
+        <div class="quick-actions-card sidebar-card">
+          <h3 class="sidebar-card-title">Azioni rapide</h3>
+          <div class="quick-actions-list">
+            <button class="quick-action-item" (click)="apriNuovoHotel()">
+              <span class="qa-icon-wrap qa-green"><i class="fas fa-plus-circle"></i></span>
+              <span class="qa-text">Aggiungi nuova struttura</span>
+              <i class="fas fa-chevron-right qa-arrow"></i>
+            </button>
+            <button class="quick-action-item" (click)="vaiStatistiche()">
+              <span class="qa-icon-wrap qa-blue"><i class="fas fa-calendar-alt"></i></span>
+              <span class="qa-text">Gestisci disponibilità</span>
+              <i class="fas fa-chevron-right qa-arrow"></i>
+            </button>
+            <button class="quick-action-item" (click)="vaiPrenotazioni()">
+              <span class="qa-icon-wrap qa-purple"><i class="fas fa-comments"></i></span>
+              <span class="qa-text">Messaggi ospiti</span>
+              <i class="fas fa-chevron-right qa-arrow"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="host-reminders-card sidebar-card">
+          <h3 class="sidebar-card-title">Promemoria</h3>
+          @if (promemoria.length === 0) {
+            <p class="no-reminders">Nessun promemoria al momento</p>
+          } @else {
+            <div class="reminders-list">
+              @for (r of promemoria; track r.title) {
+                <button class="reminder-item" (click)="navigateTo(r.route)">
+                  <span class="reminder-icon-wrap" [ngClass]="r.iconClass">
+                    <i class="fas {{ r.icon }}"></i>
+                  </span>
+                  <div class="reminder-content">
+                    <span class="reminder-title">{{ r.title }}</span>
+                    <span class="reminder-sub">{{ r.subtitle }}</span>
+                  </div>
+                  <i class="fas fa-chevron-right reminder-arrow"></i>
+                </button>
+              }
+            </div>
+          }
+          <button class="view-all-link" (click)="vaiPrenotazioni()">
+            Vedi tutti i promemoria <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="host-support-card sidebar-card">
+          <h3 class="sidebar-card-title">Supporto host</h3>
+          <p class="support-text">Hai domande o hai bisogno di aiuto?</p>
+          <button class="btn-support" (click)="vaiSupporto()">
+            <i class="fas fa-headset"></i> Contatta assistenza
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MEGA MODAL — AGGIUNGI / MODIFICA HOTEL        -->
+<!-- ══════════════════════════════════════════════ -->
+@if (showHotelModal) {
+  <div class="hm-overlay" (click)="chiudiModal()" role="dialog" aria-modal="true"
+    [attr.aria-label]="editingHotel ? 'Modifica hotel' : 'Aggiungi hotel'">
+    <div class="hm-modal" (click)="$event.stopPropagation()">
+
+      <!-- HEADER -->
+      <div class="hm-header">
+        <div class="hm-header-left">
+          <div class="hm-header-icon" [class.hm-icon-edit]="editingHotel">
+            <i class="fas" [ngClass]="editingHotel ? 'fa-pen' : 'fa-hotel'"></i>
+          </div>
+          <div>
+            <h2 class="hm-title">{{ editingHotel ? 'Modifica struttura' : 'Aggiungi nuova struttura' }}</h2>
+            <p class="hm-subtitle">{{ editingHotel ? 'Aggiorna i dati della struttura' : 'Inserisci i dati per pubblicare la tua struttura su Ndovado' }}</p>
+          </div>
+        </div>
+        <button class="hm-close" (click)="chiudiModal()" aria-label="Chiudi">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="hm-body">
+        <form [formGroup]="hotelForm" (ngSubmit)="salvaHotel()" novalidate>
+
+          <!-- SEZIONE 1: Informazioni principali -->
+          <div class="hm-section">
+            <h3 class="hm-section-title">
+              <span class="hm-step">1</span> Informazioni principali
+            </h3>
+            <div class="hm-grid-2">
+              <div class="hm-field hm-field-full">
+                <label class="hm-label">Nome struttura <span class="hm-required">*</span></label>
+                <input type="text" formControlName="nome" class="hm-input"
+                  placeholder="Es. Hotel Belvedere Roma"
+                  [class.hm-input-error]="hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid">
+                @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                }
+              </div>
+              <div class="hm-field">
+                <label class="hm-label">Città <span class="hm-required">*</span></label>
+                <input type="text" formControlName="citta" class="hm-input" placeholder="Es. Roma"
+                  [class.hm-input-error]="hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid">
+                @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                }
+              </div>
+              <div class="hm-field">
+                <label class="hm-label">Stelle <span class="hm-required">*</span></label>
+                <select formControlName="stelle" class="hm-input hm-select">
+                  <option value="1">★ 1 stella</option>
+                  <option value="2">★★ 2 stelle</option>
+                  <option value="3">★★★ 3 stelle</option>
+                  <option value="4">★★★★ 4 stelle</option>
+                  <option value="5">★★★★★ 5 stelle</option>
+                </select>
+              </div>
+              <div class="hm-field hm-field-full">
+                <label class="hm-label">Indirizzo <span class="hm-required">*</span></label>
+                <input type="text" formControlName="indirizzo" class="hm-input" placeholder="Es. Via Roma 1"
+                  [class.hm-input-error]="hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid">
+                @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- SEZIONE 2: Descrizione -->
+          <div class="hm-section">
+            <h3 class="hm-section-title">
+              <span class="hm-step">2</span> Descrizione
+            </h3>
+            <div class="hm-field">
+              <label class="hm-label">Descrizione struttura <span class="hm-required">*</span></label>
+              <textarea formControlName="descrizione" class="hm-input hm-textarea" rows="4"
+                placeholder="Descrivi la tua struttura: posizione, atmosfera, punti di forza, servizi inclusi..."
+                [class.hm-input-error]="hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid">
+              </textarea>
+              @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
+                <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+              }
+            </div>
+          </div>
+
+          <!-- SEZIONE 3: Posizione GPS (opzionale) -->
+          <div class="hm-section">
+            <h3 class="hm-section-title">
+              <span class="hm-step">3</span> Posizione GPS <span class="hm-optional">(opzionale)</span>
+            </h3>
+            <div class="hm-grid-2">
+              <div class="hm-field">
+                <label class="hm-label">Latitudine</label>
+                <input type="number" formControlName="latitudine" class="hm-input"
+                  step="0.000001" placeholder="Es. 41.9028">
+              </div>
+              <div class="hm-field">
+                <label class="hm-label">Longitudine</label>
+                <input type="number" formControlName="longitudine" class="hm-input"
+                  step="0.000001" placeholder="Es. 12.4964">
+              </div>
+            </div>
+          </div>
+
+          <!-- SEZIONE 4: Servizi -->
+          @if (serviziDisponibili.length > 0) {
+            <div class="hm-section">
+              <h3 class="hm-section-title">
+                <span class="hm-step">4</span> Servizi offerti <span class="hm-optional">(opzionale)</span>
+              </h3>
+              <div class="hm-servizi-grid">
+                @for (s of serviziDisponibili; track s.id) {
+                  <label class="hm-servizio-chip" [class.hm-chip-selected]="isServizioSelezionato(s.id)">
+                    <input type="checkbox" [checked]="isServizioSelezionato(s.id)" (change)="toggleServizio(s.id)">
+                    <i class="fas {{ getServizioIcon(s.nome) }}"></i>
+                    {{ s.nome }}
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- FOOTER AZIONI -->
+          <div class="hm-footer">
+            <button type="button" class="hm-btn-cancel" (click)="chiudiModal()" [disabled]="savingHotel">
+              Annulla
+            </button>
+            <button type="submit" class="hm-btn-save" [disabled]="savingHotel">
+              @if (savingHotel) {
+                <span class="hm-spinner"></span> Salvataggio...
+              } @else {
+                <i class="fas" [ngClass]="editingHotel ? 'fa-save' : 'fa-plus-circle'"></i>
+                {{ editingHotel ? 'Salva modifiche' : 'Crea struttura' }}
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+}

@@ -17,9 +17,9 @@
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">Le Mie Prenotazioni</a>
         }
         @if (isHost) {
-          <a routerLink="/dashboard/gestione-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">I Miei Hotel</a>
-          <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">Prenotazioni</a>
+          <a routerLink="/dashboard/miei-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">I Miei Hotel</a>
           <a routerLink="/dashboard/statistiche" routerLinkActive="ndv-nav-active" class="ndv-nav-item">Statistiche</a>
+          <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">Prenotazioni</a>
         }
         @if (isAdmin) {
           <a routerLink="/dashboard/gestione-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">Hotel</a>
@@ -66,17 +66,17 @@
             </a>
           }
           @if (isHost) {
-            <a routerLink="/dashboard/gestione-hotel" routerLinkActive="ndv-mob-active"
+            <a routerLink="/dashboard/miei-hotel" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-hotel"></i> I Miei Hotel
-            </a>
-            <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-mob-active"
-               class="ndv-mob-link" (click)="closeSidebar()">
-              <i class="fas fa-calendar-check"></i> Prenotazioni
             </a>
             <a routerLink="/dashboard/statistiche" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-chart-bar"></i> Statistiche
+            </a>
+            <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-mob-active"
+               class="ndv-mob-link" (click)="closeSidebar()">
+              <i class="fas fa-calendar-check"></i> Prenotazioni
             </a>
           }
           @if (isAdmin) {

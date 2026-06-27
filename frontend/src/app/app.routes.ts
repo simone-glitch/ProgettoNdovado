@@ -9,6 +9,7 @@ import { Home }          from './features/home/home';
 import { HotelDetail }   from './features/hotel-detail/hotel-detail';
 import { Prenotazioni }  from './features/prenotazioni/prenotazioni';
 import { GestioneHotel } from './features/gestione-hotel/gestione-hotel';
+import { MieiHotel }     from './features/miei-hotel/miei-hotel';
 import { Statistiche }   from './features/statistiche/statistiche';
 
 export const routes: Routes = [
@@ -25,6 +26,7 @@ export const routes: Routes = [
       { path: 'hotel-detail/:id',    component: HotelDetail },
       { path: 'prenotazioni',        component: Prenotazioni },
       { path: 'gestione-hotel',      component: GestioneHotel },
+      { path: 'miei-hotel',          component: MieiHotel },
       { path: 'statistiche',         component: Statistiche },
       { path: 'utenti',              component: Utenti },
       { path: 'settings',            component: Setting },
