@@ -2,10 +2,12 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { SharedModule }        from '../../shared/shared.module';
 import { DashboardService }    from '../../services/dashboard.service';
 import { HotelService }        from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService }         from '../../services/auth.service';
+import { PreferencesService }  from '../../services/preferences.service';
 import { Chart, registerables } from 'chart.js';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -15,7 +17,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-statistiche',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SharedModule],
   templateUrl: './statistiche.html',
   styleUrl: './statistiche.css',
 })
@@ -53,6 +55,7 @@ export class Statistiche implements OnInit, OnDestroy {
     private hotelService:        HotelService,
     private prenotazioneService: PrenotazioneService,
     private authService:         AuthService,
+    private prefsService:        PreferencesService,
     private router:              Router
   ) {}
 
@@ -282,7 +285,7 @@ export class Statistiche implements OnInit, OnDestroy {
         scales: {
           y: {
             beginAtZero: true, grid: { color: '#f1f5f9' },
-            ticks: { callback: (v: any) => '€' + Number(v).toLocaleString('it-IT') },
+            ticks: { callback: (v: any) => this.fmtEuro(Number(v)) },
           },
           x: { grid: { display: false } },
         },
@@ -449,8 +452,7 @@ export class Statistiche implements OnInit, OnDestroy {
   // ─── Formatting ───────────────────────────────────────────────────────────────
 
   fmtEuro(val: number | null | undefined): string {
-    if (val == null || isNaN(Number(val))) return '€ 0';
-    return '€ ' + Number(val).toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    return this.prefsService.formatCurrency(val ?? 0);
   }
 
   // ─── Navigation ───────────────────────────────────────────────────────────────

@@ -584,7 +584,7 @@
 ═══════════════════════════════════════════════ */
 .pref-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
@@ -676,6 +676,256 @@
   margin-inline: auto;
   line-height: 1.5;
 }
+
+/* ═══════════════════════════════════════════════
+   PAYMENT CARD LIST
+═══════════════════════════════════════════════ */
+.payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.payment-card-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #F5F7FA;
+  border: 1.5px solid #E8EDF4;
+  border-radius: 12px;
+  transition: border-color 0.2s;
+}
+.payment-card-item:hover { border-color: #C9943A; }
+
+.payment-card-brand {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  color: #374151;
+}
+
+.payment-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.payment-card-masked {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1A2238;
+  letter-spacing: 0.5px;
+}
+
+.payment-card-meta {
+  font-size: 0.78rem;
+  color: #9CA3AF;
+}
+
+.payment-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.payment-card-actions .btn-outline-action {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+}
+
+.payment-card-actions .btn-danger-outline {
+  padding: 6px 10px;
+}
+
+.payment-badge-default {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #059669;
+  background: rgba(5,150,105,0.1);
+  border: 1px solid rgba(5,150,105,0.25);
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* Add card form */
+.add-card-form {
+  background: #F9FAFB;
+  border: 1.5px solid #E8EDF4;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 12px;
+}
+
+.add-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0A2342;
+  margin: 0 0 16px;
+}
+
+.add-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.add-card-full { grid-column: 1 / -1; }
+
+.card-number-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.card-number-wrap input {
+  padding-left: 38px !important;
+  padding-right: 52px !important;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+
+.card-number-ico {
+  position: absolute;
+  left: 12px;
+  color: #9CA3AF;
+  font-size: 0.85rem;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.card-type-badge {
+  position: absolute;
+  right: 12px;
+  font-size: 1.5rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.add-card-default-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #374151;
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+.add-card-default-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #C9943A;
+  cursor: pointer;
+}
+
+.add-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  align-items: center;
+}
+
+@media (max-width: 500px) {
+  .add-card-grid { grid-template-columns: 1fr; }
+  .add-card-full { grid-column: 1; }
+}
+
+/* ═══════════════════════════════════════════════
+   DARK MODE
+═══════════════════════════════════════════════ */
+[data-theme="dark"] .settings-page { color: var(--text-main); }
+
+[data-theme="dark"] .settings-card,
+[data-theme="dark"] .settings-sidebar-menu {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .settings-page-header h1,
+[data-theme="dark"] .settings-card-header h2,
+[data-theme="dark"] .settings-card-header-row h2,
+[data-theme="dark"] .rightbar-card-title,
+[data-theme="dark"] .security-row-label,
+[data-theme="dark"] .privacy-label,
+[data-theme="dark"] .profile-user-name,
+[data-theme="dark"] .notif-label,
+[data-theme="dark"] .payment-empty-title,
+[data-theme="dark"] .add-card-title,
+[data-theme="dark"] .payment-card-masked,
+[data-theme="dark"] .account-status-item { color: var(--text-main); }
+
+[data-theme="dark"] .settings-page-header p,
+[data-theme="dark"] .security-row-sub,
+[data-theme="dark"] .privacy-sub,
+[data-theme="dark"] .payment-empty-sub,
+[data-theme="dark"] .payment-card-meta,
+[data-theme="dark"] .field-hint { color: var(--text-muted); }
+
+[data-theme="dark"] .settings-menu-item { color: var(--text-muted); }
+[data-theme="dark"] .settings-menu-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+}
+[data-theme="dark"] .settings-menu-item.active {
+  background: rgba(201,148,58,0.15);
+  color: #C9943A;
+}
+
+[data-theme="dark"] .section-divider { background: var(--border-color); }
+[data-theme="dark"] .settings-card-footer { border-color: var(--border-color); }
+
+[data-theme="dark"] .form-field input,
+[data-theme="dark"] .form-field select,
+[data-theme="dark"] .privacy-select,
+[data-theme="dark"] .pref-item-body select {
+  background: var(--bg-input);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .security-row-icon,
+[data-theme="dark"] .notif-icon,
+[data-theme="dark"] .pref-item-icon { background: rgba(255,255,255,0.06); color: #93B4D4; }
+
+[data-theme="dark"] .profile-user-role { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+[data-theme="dark"] .profile-avatar-circle { border-color: rgba(201,164,92,0.3); }
+
+[data-theme="dark"] .password-form {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .bc-home { color: #93B4D4; }
+[data-theme="dark"] .bc-current { color: var(--text-muted); }
+
+[data-theme="dark"] .btn-cancel,
+[data-theme="dark"] .btn-outline-action {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .payment-card-item,
+[data-theme="dark"] .add-card-form {
+  background: var(--bg-input);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .add-card-default-label { color: var(--text-main); }
+[data-theme="dark"] .completion-bar-bg { background: var(--border-color); }
+[data-theme="dark"] .notif-row:hover { background: rgba(255,255,255,0.04); }
 
 /* ═══════════════════════════════════════════════
    PRIVACY CARD

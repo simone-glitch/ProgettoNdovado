@@ -41,7 +41,7 @@
 
       <!-- Logo solo su mobile -->
       <div class="auth-mobile-logo">
-        Ndovado<i class="fas fa-map-marker-alt"></i>
+        <img src="/assets/images/logo-ndovado.png" alt="Ndovado" class="auth-mobile-logo-img">
       </div>
 
       <!-- Tab switcher -->
@@ -83,7 +83,7 @@
         <div class="auth-field">
           <div class="auth-label-row">
             <label class="auth-label">Password</label>
-            <a href="#" class="auth-forgot" (click)="$event.preventDefault()">Password dimenticata?</a>
+            <a routerLink="/forgot-password" class="auth-forgot">Password dimenticata?</a>
           </div>
           <div class="auth-input-wrap">
             <i class="fas fa-lock auth-ico"></i>

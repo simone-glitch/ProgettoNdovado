@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
+import { PreferencesService } from '../../services/preferences.service';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -37,6 +38,7 @@ export class Prenotazioni implements OnInit {
   constructor(
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
+    private prefsService: PreferencesService,
     private router: Router
   ) {}
 
@@ -156,7 +158,7 @@ export class Prenotazioni implements OnInit {
 
   formatPrezzo(val: number | null | undefined): string {
     if (val == null || isNaN(Number(val))) return 'N/D';
-    return '€ ' + Number(val).toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    return this.prefsService.formatCurrency(Number(val));
   }
 
   bookingCode(p: any): string {

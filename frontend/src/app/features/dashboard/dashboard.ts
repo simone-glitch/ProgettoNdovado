@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { ChatWindow }  from '../../components/chat-window/chat-window';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
+import { PreferencesService } from '../../services/preferences.service';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, ChatWindow],
+  imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, ChatWindow, SharedModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -19,11 +21,13 @@ export class Dashboard implements OnInit {
   constructor(
     private chatService: ChatService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private prefsService: PreferencesService,
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getLoggedUser() ?? {};
+    this.prefsService.load();
   }
 
   get isAdmin(): boolean { return this.currentUser?.ruolo === 'ADMIN'; }

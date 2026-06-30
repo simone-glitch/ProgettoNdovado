@@ -15,20 +15,20 @@
     </button>
     <span class="bc-sep">/</span>
     <span class="bc-current">
-      @if (isGuest) { Le Mie Prenotazioni }
-      @else if (isHost) { Prenotazioni Hotel }
-      @else { Tutte le Prenotazioni }
+      @if (isGuest) { {{ 'booking.page-title-guest' | translate }} }
+      @else if (isHost) { {{ 'booking.page-title-host' | translate }} }
+      @else { {{ 'booking.page-title-admin' | translate }} }
     </span>
   </nav>
 
   <!-- ── Page Header ── -->
   <header class="bookings-header">
     <h1>
-      @if (isGuest) { Le mie prenotazioni }
-      @else if (isHost) { Prenotazioni dei miei hotel }
-      @else { Tutte le prenotazioni }
+      @if (isGuest) { {{ 'booking.page-title-guest' | translate }} }
+      @else if (isHost) { {{ 'booking.page-title-host' | translate }} }
+      @else { {{ 'booking.page-title-admin' | translate }} }
     </h1>
-    <p class="bookings-subtitle">Gestisci i tuoi soggiorni, visualizza i dettagli delle prenotazioni e scarica le conferme.</p>
+    <p class="bookings-subtitle">{{ 'booking.subtitle' | translate }}</p>
   </header>
 
   <!-- ── Two-column layout ── -->
@@ -58,7 +58,7 @@
               <i class="fas fa-calendar-check"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-label">Prenotazioni attive</span>
+              <span class="stat-label">{{ 'booking.attive' | translate }}</span>
               <span class="stat-value">{{ prenotazioniAttive }}</span>
             </div>
           </div>
@@ -67,7 +67,7 @@
               <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-label">Soggiorni completati</span>
+              <span class="stat-label">{{ 'booking.completate' | translate }}</span>
               <span class="stat-value">{{ soggiorniCompletati }}</span>
             </div>
           </div>
@@ -76,7 +76,7 @@
               <i class="fas fa-coins"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-label">Totale speso</span>
+              <span class="stat-label">{{ 'booking.speso' | translate }}</span>
               <span class="stat-value stat-value-md">{{ totaleSpeso }}</span>
             </div>
           </div>
@@ -85,7 +85,7 @@
               <i class="fas fa-calendar-alt"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-label">Prossimo check-in</span>
+              <span class="stat-label">{{ 'booking.checkin' | translate }}</span>
               <span class="stat-value stat-value-md">{{ prossimoCheckin }}</span>
             </div>
           </div>
@@ -99,19 +99,19 @@
           <input
             type="text"
             [(ngModel)]="searchQuery"
-            placeholder="Cerca per hotel, camera o codice prenotazione"
+            [placeholder]="'booking.cerca' | translate"
             class="search-input" />
         </div>
         <div class="filter-controls">
           <select [(ngModel)]="filterStatus" class="filter-select">
-            <option value="">Tutte le prenotazioni</option>
-            <option value="IN_ATTESA">In attesa</option>
-            <option value="CONFERMATA">Confermate</option>
-            <option value="CANCELLATA">Cancellate</option>
+            <option value="">{{ 'tab.filtro-tutte' | translate }}</option>
+            <option value="IN_ATTESA">{{ 'tab.filtro-attesa' | translate }}</option>
+            <option value="CONFERMATA">{{ 'tab.filtro-confermate' | translate }}</option>
+            <option value="CANCELLATA">{{ 'tab.filtro-cancellate' | translate }}</option>
           </select>
           <input type="date" [(ngModel)]="filterPeriodo" class="filter-date" title="Filtra per periodo" />
           <button class="btn-filtra" (click)="applyFilters()">
-            <i class="fas fa-filter"></i> Filtra
+            <i class="fas fa-filter"></i> {{ 'booking.filtra' | translate }}
           </button>
         </div>
       </div>
@@ -119,25 +119,25 @@
       <!-- ── Tabs ── -->
       <div class="bookings-tabs">
         <button class="tab-btn" [class.tab-active]="activeTab === 'tutte'" (click)="setTab('tutte')">
-          Tutte
+          {{ 'tab.tutte' | translate }}
           @if (!loading && prenotazioni.length > 0) {
             <span class="tab-count">{{ prenotazioni.length }}</span>
           }
         </button>
         <button class="tab-btn" [class.tab-active]="activeTab === 'arrivo'" (click)="setTab('arrivo')">
-          In arrivo
+          {{ 'tab.arrivo' | translate }}
           @if (!loading && countArrivo > 0) {
             <span class="tab-count tab-count-green">{{ countArrivo }}</span>
           }
         </button>
         <button class="tab-btn" [class.tab-active]="activeTab === 'completate'" (click)="setTab('completate')">
-          Completate
+          {{ 'tab.completate' | translate }}
           @if (!loading && countCompletate > 0) {
             <span class="tab-count tab-count-blue">{{ countCompletate }}</span>
           }
         </button>
         <button class="tab-btn" [class.tab-active]="activeTab === 'cancellate'" (click)="setTab('cancellate')">
-          Cancellate
+          {{ 'tab.cancellate' | translate }}
           @if (!loading && countCancellate > 0) {
             <span class="tab-count tab-count-red">{{ countCancellate }}</span>
           }

@@ -77,6 +77,23 @@
   background: rgba(201,164,92,0.14) !important;
 }
 
+.ndv-nav-item-cta {
+  background: rgba(201,164,92,0.18);
+  color: #C9A45C !important;
+  border: 1px solid rgba(201,164,92,0.35);
+  font-weight: 600;
+}
+.ndv-nav-item-cta:hover {
+  background: rgba(201,164,92,0.28) !important;
+  color: #E6BC72 !important;
+}
+
+.ndv-mob-link-cta {
+  color: #C9A45C !important;
+  background: rgba(201,164,92,0.1);
+  font-weight: 600;
+}
+
 /* ── Right section ── */
 .ndv-nav-right {
   display: flex;

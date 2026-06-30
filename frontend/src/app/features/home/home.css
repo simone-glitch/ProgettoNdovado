@@ -195,8 +195,8 @@
 }
 
 .ndv-hb-ico {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   background: rgba(201,164,92,0.14);
   border: 1px solid rgba(201,164,92,0.3);
   border-radius: 12px;
@@ -204,13 +204,13 @@
   align-items: center;
   justify-content: center;
   color: #C9A45C;
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   flex-shrink: 0;
 }
 
 .ndv-hb-text strong {
   display: block;
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
   margin-bottom: 3px;
@@ -218,7 +218,7 @@
 }
 
 .ndv-hb-text span {
-  font-size: 0.76rem;
+  font-size: 0.84rem;
   color: rgba(255,255,255,0.52);
   line-height: 1.4;
 }

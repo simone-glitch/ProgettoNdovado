@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
+import { PreferencesService } from '../../services/preferences.service';
 import { SharedModule } from '../../shared/shared.module';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -44,6 +45,7 @@ export class MieiHotel implements OnInit {
     private hotelService: HotelService,
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
+    private prefsService: PreferencesService,
     private router: Router
   ) {}
 
@@ -331,8 +333,7 @@ export class MieiHotel implements OnInit {
   // ── Formatting ──
 
   fmtEuro(val: number | null | undefined): string {
-    if (val == null || isNaN(Number(val))) return '€ 0';
-    return '€ ' + Number(val).toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    return this.prefsService.formatCurrency(val ?? 0);
   }
 
   stelle(n: number): string { return '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n)); }

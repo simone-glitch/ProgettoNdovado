@@ -14,9 +14,7 @@
     <div class="bot-msg">Ciao! Sono NdovAI, il tuo assistente virtuale. Come posso aiutarti oggi?</div>
 
     <div *ngFor="let msg of chatService.messaggi"
-         [ngClass]="msg.daUtente ? 'user-msg' : 'bot-msg'">
-      {{ msg.testo }}
-    </div>
+         [ngClass]="msg.daUtente ? 'user-msg' : 'bot-msg'">{{ msg.testo }}</div>
   </div>
 
   <div class="chat-footer">

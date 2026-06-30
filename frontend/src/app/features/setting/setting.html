@@ -20,7 +20,7 @@
   <!-- ── Page Header ── -->
   <header class="settings-page-header">
     <h1>Impostazioni</h1>
-    <p>Gestisci il tuo profilo, la sicurezza, le notifiche e le preferenze del tuo account.</p>
+    <p>Gestisci il tuo profilo, la sicurezza e le preferenze del tuo account.</p>
   </header>
 
   <!-- ── Three-column layout ── -->
@@ -40,18 +40,6 @@
           (click)="setActiveSection('sicurezza')">
           <i class="fas fa-lock"></i>
           <span>Sicurezza</span>
-        </button>
-
-        <button class="settings-menu-item" [class.active]="activeSection === 'notifiche'"
-          (click)="setActiveSection('notifiche')">
-          <i class="fas fa-bell"></i>
-          <span>Notifiche</span>
-        </button>
-
-        <button class="settings-menu-item" [class.active]="activeSection === 'pagamenti'"
-          (click)="setActiveSection('pagamenti')">
-          <i class="fas fa-credit-card"></i>
-          <span>Metodi di pagamento</span>
         </button>
 
         <button class="settings-menu-item" [class.active]="activeSection === 'preferenze'"
@@ -191,103 +179,6 @@
           </form>
         }
 
-        <div class="section-divider"></div>
-
-        <!-- 2FA row -->
-        <div class="security-row">
-          <div class="security-row-icon"><i class="fas fa-mobile-alt"></i></div>
-          <div class="security-row-info">
-            <span class="security-row-label">Autenticazione a due fattori</span>
-            <span class="security-row-sub">Proteggi il tuo account con un livello di sicurezza aggiuntivo.</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" [checked]="false" disabled>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- Accessi collegati row -->
-        <div class="security-row">
-          <div class="security-row-icon"><i class="fas fa-link"></i></div>
-          <div class="security-row-info">
-            <span class="security-row-label">Accessi collegati</span>
-            <span class="security-row-sub">Gestisci gli account e i dispositivi collegati.</span>
-          </div>
-          <button class="btn-outline-action">Gestisci accessi</button>
-        </div>
-
-      </section>
-
-      <!-- ── NOTIFICHE ── -->
-      <section id="section-notifiche" class="settings-card notification-settings-card">
-        <div class="settings-card-header">
-          <h2>Notifiche</h2>
-        </div>
-
-        <div class="notif-grid">
-
-          <div class="notif-row">
-            <div class="notif-row-left">
-              <div class="notif-icon"><i class="fas fa-tag"></i></div>
-              <span class="notif-label">Offerte e promozioni</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" [(ngModel)]="notifiche.offertePromozioni">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="notif-row">
-            <div class="notif-row-left">
-              <div class="notif-icon"><i class="fas fa-envelope"></i></div>
-              <span class="notif-label">Aggiornamenti via email</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" [(ngModel)]="notifiche.aggiornamenti">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="notif-row">
-            <div class="notif-row-left">
-              <div class="notif-icon"><i class="fas fa-calendar-check"></i></div>
-              <span class="notif-label">Conferme di prenotazione</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" [(ngModel)]="notifiche.confermePrenotazione">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="notif-row">
-            <div class="notif-row-left">
-              <div class="notif-icon"><i class="fas fa-comment-alt"></i></div>
-              <span class="notif-label">SMS importanti</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" [(ngModel)]="notifiche.smsImportanti">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="notif-row">
-            <div class="notif-row-left">
-              <div class="notif-icon"><i class="fas fa-bell"></i></div>
-              <span class="notif-label">Promemoria check-in</span>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" [(ngModel)]="notifiche.promemoria">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-        </div>
-
-        <div class="settings-card-footer">
-          <button class="btn-save-main" (click)="salvaNotifiche()">Salva preferenze notifiche</button>
-        </div>
       </section>
 
       <!-- ── PREFERENZE ── -->
@@ -329,21 +220,10 @@
             <div class="pref-item-icon"><i class="fas fa-sun"></i></div>
             <div class="pref-item-body">
               <label>Tema</label>
-              <select [(ngModel)]="preferenze.tema">
+              <select [(ngModel)]="preferenze.tema" (change)="onTemaChange()">
                 <option>Chiaro</option>
                 <option>Scuro</option>
                 <option>Sistema</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="pref-item">
-            <div class="pref-item-icon"><i class="fas fa-newspaper"></i></div>
-            <div class="pref-item-body">
-              <label>Newsletter</label>
-              <select [(ngModel)]="preferenze.newsletter">
-                <option>Attiva</option>
-                <option>Disattiva</option>
               </select>
             </div>
           </div>
@@ -355,68 +235,11 @@
         </div>
       </section>
 
-      <!-- ── PAGAMENTI ── -->
-      <section id="section-pagamenti" class="settings-card payment-methods-card">
-        <div class="settings-card-header-row">
-          <h2>Metodi di pagamento</h2>
-          <button class="btn-add-method">
-            <i class="fas fa-plus"></i> Aggiungi metodo
-          </button>
-        </div>
-
-        <div class="payment-empty-state">
-          <div class="payment-empty-icon"><i class="fas fa-credit-card"></i></div>
-          <p class="payment-empty-title">Nessun metodo di pagamento</p>
-          <p class="payment-empty-sub">
-            Aggiungi una carta di credito o un altro metodo di pagamento per prenotare più velocemente.
-          </p>
-          <button class="btn-save-main" style="margin-top: 8px;">
-            <i class="fas fa-plus"></i> Aggiungi metodo
-          </button>
-        </div>
-      </section>
-
       <!-- ── PRIVACY ── -->
       <section id="section-privacy" class="settings-card privacy-settings-card">
         <div class="settings-card-header">
           <h2>Privacy</h2>
         </div>
-
-        <div class="privacy-row">
-          <div class="privacy-row-info">
-            <span class="privacy-label">Visibilità profilo</span>
-            <span class="privacy-sub">Scegli chi può vedere le tue informazioni personali.</span>
-          </div>
-          <select class="privacy-select">
-            <option>Solo io</option>
-            <option>Pubblico</option>
-          </select>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <div class="privacy-row">
-          <div class="privacy-row-info">
-            <span class="privacy-label">Consenso ai dati</span>
-            <span class="privacy-sub">Permetti a Ndovado di utilizzare i dati di navigazione per migliorare la tua esperienza.</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" [checked]="true">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <div class="privacy-row">
-          <div class="privacy-row-info">
-            <span class="privacy-label">Richiesta copia dei dati</span>
-            <span class="privacy-sub">Scarica una copia completa di tutti i tuoi dati personali.</span>
-          </div>
-          <button class="btn-outline-action">Richiedi dati</button>
-        </div>
-
-        <div class="section-divider"></div>
 
         <div class="privacy-row">
           <div class="privacy-row-info">

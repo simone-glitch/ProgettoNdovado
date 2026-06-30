@@ -24,6 +24,10 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/register`, dati);
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
   logout(): void {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('utente');

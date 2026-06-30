@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
+import { PreferencesService } from '../../services/preferences.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -20,29 +21,20 @@ export class Setting implements OnInit {
   passwordForm: FormGroup;
   currentUser: any;
 
-  showAlert: boolean = false;
-  alertMessage: string = '';
+  showAlert = false;
+  alertMessage = '';
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
-  isSavingProfile: boolean = false;
-  isChangingPassword: boolean = false;
+  isSavingProfile = false;
+  isChangingPassword = false;
 
-  activeSection: string = 'profilo';
-  showPasswordForm: boolean = false;
-
-  notifiche = {
-    offertePromozioni: true,
-    confermePrenotazione: true,
-    promemoria: true,
-    aggiornamenti: true,
-    smsImportanti: false,
-  };
+  activeSection = 'profilo';
+  showPasswordForm = false;
 
   preferenze = {
     lingua: 'Italiano',
     valuta: 'EUR (€)',
     tema: 'Chiaro',
-    newsletter: 'Attiva',
   };
 
   readonly passwordRulesMessage =
@@ -51,6 +43,7 @@ export class Setting implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private prefsService: PreferencesService,
     private http: HttpClient,
     private router: Router
   ) {
@@ -104,26 +97,19 @@ export class Setting implements OnInit {
         localStorage.setItem('utente', JSON.stringify(user));
       },
       error: (err) => {
-        if (err.status === 401) {
-          this.gestisciSessioneScaduta();
-        }
+        if (err.status === 401) this.gestisciSessioneScaduta();
       },
     });
   }
 
   caricaPreferenze(): void {
-    const savedPref = localStorage.getItem('ndv_preferenze');
-    if (savedPref) {
-      try {
-        this.preferenze = { ...this.preferenze, ...JSON.parse(savedPref) };
-      } catch {}
-    }
-    const savedNotif = localStorage.getItem('ndv_notifiche');
-    if (savedNotif) {
-      try {
-        this.notifiche = { ...this.notifiche, ...JSON.parse(savedNotif) };
-      } catch {}
-    }
+    this.prefsService.load();
+    this.preferenze = {
+      lingua: this.prefsService.lingua,
+      valuta: this.prefsService.valuta,
+      tema:   this.prefsService.tema,
+    };
+    this.applicaTema(this.preferenze.tema);
   }
 
   aggiornaProfilo(): void {
@@ -158,15 +144,8 @@ export class Setting implements OnInit {
         this.isSavingProfile = false;
       },
       error: (err) => {
-        if (err.status === 401) {
-          this.isSavingProfile = false;
-          this.gestisciSessioneScaduta();
-          return;
-        }
-        this.mostraAlert(
-          this.estraiMessaggioErrore(err, "Errore durante l'aggiornamento del profilo."),
-          'error'
-        );
+        if (err.status === 401) { this.isSavingProfile = false; this.gestisciSessioneScaduta(); return; }
+        this.mostraAlert(this.estraiMessaggioErrore(err, "Errore durante l'aggiornamento del profilo."), 'error');
         this.isSavingProfile = false;
       },
     });
@@ -197,63 +176,43 @@ export class Setting implements OnInit {
 
     this.isChangingPassword = true;
 
-    this.http
-      .post(`${environment.apiUrl}/utenti/profilo/cambia-password`, payload, {
-        responseType: 'text',
-      })
+    this.http.post(`${environment.apiUrl}/utenti/profilo/cambia-password`, payload, { responseType: 'text' })
       .subscribe({
         next: () => {
-          this.mostraAlert(
-            'Password cambiata con successo. Effettua il login con la nuova password.',
-            'success'
-          );
+          this.mostraAlert('Password cambiata con successo. Effettua il login con la nuova password.', 'success');
           this.passwordForm.reset();
           this.isChangingPassword = false;
           this.showPasswordForm = false;
-
-          setTimeout(() => {
-            this.authService.logout();
-            this.router.navigate(['/login']);
-          }, 1500);
+          setTimeout(() => { this.authService.logout(); this.router.navigate(['/login']); }, 1500);
         },
         error: (err) => {
-          if (err.status === 401) {
-            this.isChangingPassword = false;
-            this.gestisciSessioneScaduta();
-            return;
-          }
-          this.mostraAlert(
-            this.estraiMessaggioErrore(err, 'Errore. Controlla la vecchia password e riprova.'),
-            'error'
-          );
+          if (err.status === 401) { this.isChangingPassword = false; this.gestisciSessioneScaduta(); return; }
+          this.mostraAlert(this.estraiMessaggioErrore(err, 'Errore. Controlla la vecchia password e riprova.'), 'error');
           this.isChangingPassword = false;
         },
       });
   }
 
-  salvaNotifiche(): void {
-    localStorage.setItem('ndv_notifiche', JSON.stringify(this.notifiche));
-    this.mostraAlert('Preferenze notifiche salvate.', 'success');
-  }
-
   salvaPreferenze(): void {
-    localStorage.setItem('ndv_preferenze', JSON.stringify(this.preferenze));
+    this.prefsService.save({
+      lingua: this.preferenze.lingua,
+      valuta: this.preferenze.valuta,
+      tema:   this.preferenze.tema,
+    });
+    this.applicaTema(this.preferenze.tema);
     this.mostraAlert('Preferenze aggiornate con successo.', 'success');
   }
+
+  onTemaChange(): void {
+    this.applicaTema(this.preferenze.tema);
+  }
+
+  // ── Misc ─────────────────────────────────────────
 
   setActiveSection(section: string): void {
     this.activeSection = section;
     const el = document.getElementById('section-' + section);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  contattaSupporto(): void {
-    this.mostraAlert(
-      'Il team di supporto è disponibile 24/7. Scrivici a support@ndovado.com',
-      'info'
-    );
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   vaiAHome(): void {
@@ -268,7 +227,7 @@ export class Setting implements OnInit {
       this.profileForm.value.telefono,
       this.currentUser?.ruolo,
     ];
-    const filled = fields.filter((v) => v && String(v).trim().length > 0).length;
+    const filled = fields.filter(v => v && String(v).trim().length > 0).length;
     return Math.round((filled / fields.length) * 100);
   }
 
@@ -316,13 +275,25 @@ export class Setting implements OnInit {
     this.showAlert = false;
   }
 
+  private applicaTema(tema: string): void {
+    const el = document.documentElement;
+    if (tema === 'Scuro') {
+      el.setAttribute('data-theme', 'dark');
+    } else if (tema === 'Sistema') {
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? el.setAttribute('data-theme', 'dark')
+        : el.removeAttribute('data-theme');
+    } else {
+      el.removeAttribute('data-theme');
+    }
+  }
+
   private normalizzaUtente(data: any): any {
     return data?.userDetails ?? data ?? null;
   }
 
   private estraiMessaggioErrore(err: any, fallback: string): string {
-    if (err?.status === 401)
-      return 'Sessione scaduta o credenziali non valide. Effettua nuovamente il login.';
+    if (err?.status === 401) return 'Sessione scaduta. Effettua nuovamente il login.';
     if (typeof err?.error === 'string') return err.error;
     if (err?.error?.message) return err.error.message;
     if (err?.message) return err.message;
@@ -330,33 +301,19 @@ export class Setting implements OnInit {
   }
 
   private gestisciSessioneScaduta(): void {
-    this.mostraAlert(
-      'Sessione scaduta o credenziali non valide. Effettua nuovamente il login.',
-      'error'
-    );
-    setTimeout(() => {
-      this.authService.logout();
-      this.router.navigate(['/login']);
-    }, 1500);
+    this.mostraAlert('Sessione scaduta. Effettua nuovamente il login.', 'error');
+    setTimeout(() => { this.authService.logout(); this.router.navigate(['/login']); }, 1500);
   }
 
   private aggiornaEmailNelTokenBasic(oldEmail: string, newEmail: string): void {
     const token = localStorage.getItem('auth_token');
-    if (!token || !token.startsWith('Basic ')) return;
-
+    if (!token?.startsWith('Basic ')) return;
     try {
-      const encoded = token.replace('Basic ', '');
-      const decoded = atob(encoded);
+      const decoded = atob(token.replace('Basic ', ''));
       const sep = decoded.indexOf(':');
       if (sep === -1) return;
-
-      const currentEmail = decoded.substring(0, sep);
-      const currentPassword = decoded.substring(sep + 1);
-      if (currentEmail !== oldEmail) return;
-
-      localStorage.setItem('auth_token', `Basic ${btoa(`${newEmail}:${currentPassword}`)}`);
-    } catch (error) {
-      console.error('Errore aggiornamento token Basic:', error);
-    }
+      if (decoded.substring(0, sep) !== oldEmail) return;
+      localStorage.setItem('auth_token', `Basic ${btoa(`${newEmail}:${decoded.substring(sep + 1)}`)}`);
+    } catch {}
   }
 }
