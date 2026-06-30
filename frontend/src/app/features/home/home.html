@@ -111,9 +111,7 @@
           @if (cercato) { {{ 'home.sec.corrispondenti' | translate }} } @else { {{ 'home.sec.soggiorni-selezionati' | translate }} }
         </p>
       </div>
-      @if (!cercato) {
-        <span class="ndv-view-all">{{ 'home.vedi-tutti-hotel' | translate }} <i class="fas fa-chevron-right"></i></span>
-      }
+
       @if (cercato) {
         <span class="ndv-results-count">({{ hotels.length }} {{ 'home.risultati' | translate }})</span>
       }
@@ -139,14 +137,10 @@
         @for (hotel of hotels; track hotel.id) {
           <div class="ndv-hotel-card" (click)="vaiDettaglio(hotel.id)">
             <div class="ndv-card-img-wrap">
-              @if (hotel.fotoUrls && hotel.fotoUrls.length > 0) {
-                <img [src]="hotel.fotoUrls[0]" [alt]="hotel.nome" class="ndv-card-photo">
-              } @else {
-                <div class="ndv-no-photo">
-                  <i class="fas fa-hotel"></i>
-                  <span>{{ hotel.nome }}</span>
-                </div>
-              }
+              <img
+                [src]="getHotelImage(hotel)"
+                [alt]="hotel.nome"
+                class="ndv-card-photo">
               <div class="ndv-star-badge">{{ stelle(hotel.stelle) }}</div>
               @if (hotel.stelle >= 4) {
                 <div class="ndv-premium-tag">Premium</div>
@@ -191,7 +185,7 @@
           <h2 class="ndv-sec-title">{{ 'home.destinazioni-popolari' | translate }}</h2>
           <p class="ndv-sec-sub">{{ 'home.destinazioni-sub' | translate }}</p>
         </div>
-        <span class="ndv-view-all">{{ 'home.vedi-destinazioni' | translate }} <i class="fas fa-chevron-right"></i></span>
+
       </div>
       <div class="ndv-dest-grid">
         <div class="ndv-dest-card ndv-dest-bali">
