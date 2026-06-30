@@ -60,7 +60,29 @@ export class Home implements OnInit {
   vaiDettaglio(id: number) {
     this.router.navigate(['/dashboard/hotel-detail', id]);
   }
+  getHotelImage(hotel: any): string {
 
+    if (hotel.fotoUrls && hotel.fotoUrls.length > 0) {
+      return hotel.fotoUrls[0];
+    }
+
+    switch (hotel.citta?.toLowerCase()) {
+      case 'napoli':
+        return '/assets/images/Hotel_Image/Napoli.jpg';
+
+      case 'roma':
+        return '/assets/images/Hotel_Image/Roma.jpg';
+
+      case 'venezia':
+        return '/assets/images/Hotel_Image/Venezia.jpg';
+
+      case 'siena':
+        return '/assets/images/Hotel_Image/Toscana.jpg';
+
+      default:
+        return '/assets/images/Hotel_Image/default.jpg';
+    }
+  }
   stelle(n: number): string { return '★'.repeat(n) + '☆'.repeat(5 - n); }
   skeletons(): number[] { return [1, 2, 3, 4, 5, 6]; }
 }

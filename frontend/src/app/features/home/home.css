@@ -1,4 +1,4 @@
-/* ── Home Container ── */
+* ── Home Container ── */
 .home-container {
   min-height: 100%;
   font-family: 'Inter', sans-serif;
@@ -502,6 +502,7 @@
   transform: scale(1.04);
   box-shadow: 0 12px 36px rgba(0,0,0,0.2);
 }
+
 .ndv-dest-card::after {
   content: '';
   position: absolute;
@@ -509,12 +510,42 @@
   background: linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.12) 55%, transparent 100%);
 }
 
-.ndv-dest-bali      { background: linear-gradient(155deg, #0b4031 0%, #1a5e40 55%, #0a3024 100%); }
-.ndv-dest-paris     { background: linear-gradient(155deg, #26326a 0%, #1e2b6c 55%, #3848a8 100%); }
-.ndv-dest-dubai     { background: linear-gradient(155deg, #7a4e18 0%, #c29840 55%, #6a3e10 100%); }
-.ndv-dest-london    { background: linear-gradient(155deg, #212b38 0%, #3a4e64 55%, #19222e 100%); }
-.ndv-dest-tokyo     { background: linear-gradient(155deg, #6b1a34 0%, #8b2850 55%, #581425 100%); }
-.ndv-dest-santorini { background: linear-gradient(155deg, #1a3878 0%, #2c5dc0 55%, #192f5c 100%); }
+
+.ndv-dest-bali {
+  background-image: url('../../../../public/assets/images/Destinations_Images/Bali.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.ndv-dest-paris {
+  background-image: url('../../../../public/assets/images/Destinations_Images/Parigi.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.ndv-dest-dubai {
+  background-image: url('../../../../public/assets/images/Destinations_Images/Dubai.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.ndv-dest-london {
+  background-image: url('../../../../public/assets/images/Destinations_Images/Londra.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.ndv-dest-tokyo {
+  background-image: url('../../../../public/assets/images/Destinations_Images/Tokyo.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.ndv-dest-santorini {
+  background-image: url('../../../../public/assets/images/Destinations_Images/Santorini.jpg');
+  background-size: cover;
+  background-position: center;
+}
 
 .ndv-dest-info {
   position: absolute;
@@ -645,3 +676,4 @@
   .ndv-benefit-item:nth-child(4) { border-top: none; }
   .ndv-sec-hdr { gap: 8px; }
 }
+/
