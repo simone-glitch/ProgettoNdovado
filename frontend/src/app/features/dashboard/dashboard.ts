@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs';
 import { ChatWindow }  from '../../components/chat-window/chat-window';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
@@ -17,6 +18,8 @@ import { SharedModule } from '../../shared/shared.module';
 export class Dashboard implements OnInit {
   currentUser: any = {};
   sidebarOpen = false;
+  isPrenotazioniRoute = false;
+  showLogoutConfirm = false;
 
   constructor(
     private chatService: ChatService,
@@ -28,6 +31,11 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.getLoggedUser() ?? {};
     this.prefsService.load();
+
+    this.isPrenotazioniRoute = this.router.url.includes('/dashboard/prenotazioni');
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
+      this.isPrenotazioniRoute = this.router.url.includes('/dashboard/prenotazioni');
+    });
   }
 
   get isAdmin(): boolean { return this.currentUser?.ruolo === 'ADMIN'; }
@@ -50,7 +58,16 @@ export class Dashboard implements OnInit {
 
   toggleChat(): void { this.chatService.toggleChat(); }
 
-  logout(): void {
+  goToSettings(): void { this.router.navigate(['/dashboard/settings']); }
+
+  requestLogout(): void { this.showLogoutConfirm = true; }
+
+  onLogoutConfirm(confermato: boolean): void {
+    this.showLogoutConfirm = false;
+    if (confermato) this.logout();
+  }
+
+  private logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

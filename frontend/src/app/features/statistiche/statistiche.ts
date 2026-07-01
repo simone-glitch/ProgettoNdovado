@@ -8,6 +8,7 @@ import { HotelService }        from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService }         from '../../services/auth.service';
 import { PreferencesService }  from '../../services/preferences.service';
+import { TranslationService }  from '../../services/translation.service';
 import { Chart, registerables } from 'chart.js';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -38,13 +39,15 @@ export class Statistiche implements OnInit, OnDestroy {
   periodoSelezionato   = '12m';
   strutturaSelezionata = 'tutte';
 
-  periodi = [
-    { value: '7d',  label: 'Ultimi 7 giorni'  },
-    { value: '30d', label: 'Ultimi 30 giorni' },
-    { value: '3m',  label: 'Ultimi 3 mesi'    },
-    { value: '6m',  label: 'Ultimi 6 mesi'    },
-    { value: '12m', label: 'Ultimi 12 mesi'   },
-  ];
+  get periodi() {
+    return [
+      { value: '7d',  label: this.i18n.translate('stat.periodo.7d')  },
+      { value: '30d', label: this.i18n.translate('stat.periodo.30d') },
+      { value: '3m',  label: this.i18n.translate('stat.periodo.3m')  },
+      { value: '6m',  label: this.i18n.translate('stat.periodo.6m')  },
+      { value: '12m', label: this.i18n.translate('stat.periodo.12m') },
+    ];
+  }
 
   readonly skeletonItems = [1, 2, 3, 4, 5];
 
@@ -56,7 +59,8 @@ export class Statistiche implements OnInit, OnDestroy {
     private prenotazioneService: PrenotazioneService,
     private authService:         AuthService,
     private prefsService:        PreferencesService,
-    private router:              Router
+    private router:              Router,
+    private i18n:                TranslationService
   ) {}
 
   get isAdmin()      { return this.authService.isAdmin(); }
@@ -96,6 +100,12 @@ export class Statistiche implements OnInit, OnDestroy {
   }
 
   // ─── Date helpers ─────────────────────────────────────────────────────────────
+
+  private readonly localeMap: Record<string, string> = { it: 'it-IT', en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE' };
+
+  private get locale(): string {
+    return this.localeMap[this.prefsService.langCode] ?? 'it-IT';
+  }
 
   private toDate(val: any): Date | null {
     if (!val) return null;
@@ -180,7 +190,7 @@ export class Statistiche implements OnInit, OnDestroy {
       const d = this.toDate(p.dataCheckin);
       if (!d) return;
       const sk = d.getFullYear() * 100 + d.getMonth();
-      const lbl = d.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' });
+      const lbl = d.toLocaleDateString(this.locale, { month: 'short', year: '2-digit' });
       const e = bucket.get(sk) ?? { label: lbl, count: 0 };
       e.count++;
       bucket.set(sk, e);
@@ -197,7 +207,7 @@ export class Statistiche implements OnInit, OnDestroy {
         const d = this.toDate(p.dataCheckin);
         if (!d) return;
         const sk = d.getFullYear() * 100 + d.getMonth();
-        const lbl = d.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' });
+        const lbl = d.toLocaleDateString(this.locale, { month: 'short', year: '2-digit' });
         const e = bucket.get(sk) ?? { label: lbl, rev: 0 };
         e.rev += Number(p.prezzoTotale || 0);
         bucket.set(sk, e);
@@ -209,7 +219,7 @@ export class Statistiche implements OnInit, OnDestroy {
   private buildStruttura(): { labels: string[]; data: number[] } {
     const map: Record<string, number> = {};
     this.prenotazioniFiltrate.forEach(p => {
-      const nome = p.nomeHotel || 'Struttura sconosciuta';
+      const nome = p.nomeHotel || this.i18n.translate('stat.struttura-sconosciuta');
       map[nome] = (map[nome] || 0) + 1;
     });
     const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 8);
@@ -222,10 +232,10 @@ export class Statistiche implements OnInit, OnDestroy {
     const att  = pf.filter(p => p.stato === 'IN_ATTESA').length;
     const canc = pf.filter(p => p.stato === 'CANCELLATA').length;
     const entries = [];
-    if (conf > 0) entries.push({ l: 'Confermate', v: conf, c: '#22c55e' });
-    if (att  > 0) entries.push({ l: 'In attesa',  v: att,  c: '#f59e0b' });
-    if (canc > 0) entries.push({ l: 'Cancellate', v: canc, c: '#ef4444' });
-    if (entries.length === 0) entries.push({ l: 'Nessuna', v: 1, c: '#E8EDF4' });
+    if (conf > 0) entries.push({ l: this.i18n.translate('tab.filtro-confermate'), v: conf, c: '#22c55e' });
+    if (att  > 0) entries.push({ l: this.i18n.translate('tab.filtro-attesa'),     v: att,  c: '#f59e0b' });
+    if (canc > 0) entries.push({ l: this.i18n.translate('tab.filtro-cancellate'), v: canc, c: '#ef4444' });
+    if (entries.length === 0) entries.push({ l: this.i18n.translate('stat.nessuna'), v: 1, c: '#E8EDF4' });
     return { labels: entries.map(e => e.l), data: entries.map(e => e.v), colors: entries.map(e => e.c) };
   }
 
@@ -248,7 +258,7 @@ export class Statistiche implements OnInit, OnDestroy {
       type: 'bar',
       data: {
         labels,
-        datasets: [{ label: 'Prenotazioni', data, backgroundColor: 'rgba(15,52,96,0.82)', borderRadius: 6, borderSkipped: false }],
+        datasets: [{ label: this.i18n.translate('nav.prenotazioni'), data, backgroundColor: 'rgba(15,52,96,0.82)', borderRadius: 6, borderSkipped: false }],
       },
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -273,7 +283,7 @@ export class Statistiche implements OnInit, OnDestroy {
       data: {
         labels,
         datasets: [{
-          label: 'Entrate (€)', data,
+          label: this.i18n.translate('stat.entrate-chart'), data,
           borderColor: '#6366f1', backgroundColor: grad,
           fill: true, tension: 0.4,
           pointBackgroundColor: '#6366f1', pointRadius: 4, borderWidth: 2,
@@ -301,7 +311,7 @@ export class Statistiche implements OnInit, OnDestroy {
       type: 'bar',
       data: {
         labels,
-        datasets: [{ label: 'Prenotazioni', data, backgroundColor: 'rgba(15,52,96,0.78)', borderRadius: 4 }],
+        datasets: [{ label: this.i18n.translate('nav.prenotazioni'), data, backgroundColor: 'rgba(15,52,96,0.78)', borderRadius: 4 }],
       },
       options: {
         indexAxis: 'y' as const,
@@ -340,9 +350,9 @@ export class Statistiche implements OnInit, OnDestroy {
     const att  = pf.filter(p => p.stato === 'IN_ATTESA').length;
     const canc = pf.filter(p => p.stato === 'CANCELLATA').length;
     return [
-      { label: 'Confermate', count: conf, pct: pct(conf), color: '#22c55e' },
-      { label: 'In attesa',  count: att,  pct: pct(att),  color: '#f59e0b' },
-      { label: 'Cancellate', count: canc, pct: pct(canc), color: '#ef4444' },
+      { label: this.i18n.translate('tab.filtro-confermate'), count: conf, pct: pct(conf), color: '#22c55e' },
+      { label: this.i18n.translate('tab.filtro-attesa'),     count: att,  pct: pct(att),  color: '#f59e0b' },
+      { label: this.i18n.translate('tab.filtro-cancellate'), count: canc, pct: pct(canc), color: '#ef4444' },
     ];
   }
 
@@ -384,7 +394,13 @@ export class Statistiche implements OnInit, OnDestroy {
   // ─── Recent activity ──────────────────────────────────────────────────────────
 
   get ultimaAttivita(): any[] {
-    const tempi = ['10 min fa', '1 ora fa', '3 ore fa', 'Ieri', '2 giorni fa'];
+    const tempi = [
+      this.i18n.translate('stat.tempo.min-fa'),
+      this.i18n.translate('stat.tempo.ora-fa'),
+      this.i18n.translate('stat.tempo.ore-fa'),
+      this.i18n.translate('stat.tempo.ieri'),
+      this.i18n.translate('stat.tempo.giorni-fa'),
+    ];
     return [...this.prenotazioni]
       .sort((a, b) => (b.id || 0) - (a.id || 0))
       .slice(0, 5)
@@ -392,21 +408,29 @@ export class Statistiche implements OnInit, OnDestroy {
         icon:      this.actIcon(p.stato),
         iconClass: this.actClass(p.stato),
         title:     this.actTitle(p.stato),
-        detail:    `${p.nomeHotel || 'Hotel'} — ${this.notti(p)}`,
-        tempo:     tempi[i] ?? 'Recentemente',
+        detail:    `${p.nomeHotel || this.i18n.translate('stat.hotel-fallback')} — ${this.notti(p)}`,
+        tempo:     tempi[i] ?? this.i18n.translate('stat.tempo.recentemente'),
       }));
   }
 
   private actIcon(s: string)  { const m: any = { IN_ATTESA: 'fa-clock', CONFERMATA: 'fa-calendar-check', CANCELLATA: 'fa-times-circle' }; return m[s] || 'fa-bell'; }
   private actClass(s: string) { const m: any = { IN_ATTESA: 'act-orange', CONFERMATA: 'act-green', CANCELLATA: 'act-red' }; return m[s] || 'act-blue'; }
-  private actTitle(s: string) { const m: any = { IN_ATTESA: 'In attesa di conferma', CONFERMATA: 'Nuova prenotazione', CANCELLATA: 'Cancellazione ospite' }; return m[s] || 'Nuova attività'; }
+  private actTitle(s: string) {
+    const m: any = {
+      IN_ATTESA:  this.i18n.translate('stat.attivita.attesa'),
+      CONFERMATA: this.i18n.translate('stat.attivita.nuova'),
+      CANCELLATA: this.i18n.translate('stat.attivita.cancellata'),
+    };
+    return m[s] || this.i18n.translate('stat.attivita.generica');
+  }
 
   private notti(p: any): string {
     const ci = this.toDate(p.dataCheckin);
     const co = this.toDate(p.dataCheckout);
     if (!ci || !co) return '';
     const n = Math.max(1, Math.round((co.getTime() - ci.getTime()) / 86400000));
-    return `${n} nott${n === 1 ? 'e' : 'i'}`;
+    const unit = n === 1 ? this.i18n.translate('stat.notte-singolare') : this.i18n.translate('stat.notte-plurale');
+    return `${n} ${unit}`;
   }
 
   // ─── Goals ────────────────────────────────────────────────────────────────────
@@ -419,9 +443,9 @@ export class Statistiche implements OnInit, OnDestroy {
     const occAtt  = tot > 0 ? Math.round((conf / tot) * 100) : 0;
     const preTgt  = 150;
     return [
-      { label: 'Entrate mese corrente', val: this.fmtEuro(entAtt), target: this.fmtEuro(entTgt), perc: Math.min(100, entTgt > 0 ? Math.round((entAtt / entTgt) * 100) : 0) },
-      { label: 'Tasso occupazione',     val: occAtt + '%',         target: '75%',                perc: Math.min(100, Math.round((occAtt / 75) * 100)) },
-      { label: 'Nuove prenotazioni',    val: String(tot),          target: String(preTgt),       perc: Math.min(100, preTgt > 0 ? Math.round((tot / preTgt) * 100) : 0) },
+      { label: this.i18n.translate('stat.obiettivo.entrate'),     val: this.fmtEuro(entAtt), target: this.fmtEuro(entTgt), perc: Math.min(100, entTgt > 0 ? Math.round((entAtt / entTgt) * 100) : 0) },
+      { label: this.i18n.translate('stat.obiettivo.occupazione'), val: occAtt + '%',         target: '75%',                perc: Math.min(100, Math.round((occAtt / 75) * 100)) },
+      { label: this.i18n.translate('stat.obiettivo.nuove-prenotazioni'), val: String(tot),   target: String(preTgt),       perc: Math.min(100, preTgt > 0 ? Math.round((tot / preTgt) * 100) : 0) },
     ];
   }
 
@@ -435,16 +459,16 @@ export class Statistiche implements OnInit, OnDestroy {
     const senzaFoto = this.hotels.filter(h => !h.foto?.length);
 
     if (senzaFoto.length > 0) {
-      list.push({ icon: 'fa-camera', cls: 'sug-blue', title: 'Migliora le foto', desc: 'Le strutture con foto aggiornate ottengono il 30% di prenotazioni in più.', route: '/dashboard/gestione-hotel' });
+      list.push({ icon: 'fa-camera', cls: 'sug-blue', title: this.i18n.translate('stat.sug.foto.titolo'), desc: this.i18n.translate('stat.sug.foto.desc'), route: '/dashboard/gestione-hotel' });
     }
     if (tot > 0 && canc / tot > 0.2) {
-      list.push({ icon: 'fa-tag', cls: 'sug-gold', title: 'Aggiorna i prezzi', desc: 'I tuoi prezzi potrebbero essere meno competitivi in alcune date di alta stagione.', route: '/dashboard/gestione-hotel' });
+      list.push({ icon: 'fa-tag', cls: 'sug-gold', title: this.i18n.translate('stat.sug.prezzi.titolo'), desc: this.i18n.translate('stat.sug.prezzi.desc'), route: '/dashboard/gestione-hotel' });
     }
     if (inAtt > 0) {
-      list.push({ icon: 'fa-reply', cls: 'sug-orange', title: 'Rispondi più velocemente', desc: 'Rispondere entro 1 ora aumenta le prenotazioni del 20%.', route: '/dashboard/prenotazioni' });
+      list.push({ icon: 'fa-reply', cls: 'sug-orange', title: this.i18n.translate('stat.sug.rispondi.titolo'), desc: this.i18n.translate('stat.sug.rispondi.desc'), route: '/dashboard/prenotazioni' });
     }
     if (list.length < 2) {
-      list.push({ icon: 'fa-info-circle', cls: 'sug-green', title: 'Completa le informazioni', desc: 'Una descrizione dettagliata aumenta la fiducia dei potenziali ospiti.', route: '/dashboard/gestione-hotel' });
+      list.push({ icon: 'fa-info-circle', cls: 'sug-green', title: this.i18n.translate('stat.sug.completa.titolo'), desc: this.i18n.translate('stat.sug.completa.desc'), route: '/dashboard/gestione-hotel' });
     }
     return list.slice(0, 3);
   }
@@ -471,7 +495,17 @@ export class Statistiche implements OnInit, OnDestroy {
   esportaReport() {
     const pf = this.prenotazioniFiltrate;
     if (!pf.length) return;
-    const head = ['ID', 'Hotel', 'Camera', 'Ospite', 'Check-in', 'Check-out', 'Ospiti', 'Totale (€)', 'Stato'];
+    const head = [
+      this.i18n.translate('stat.csv.id'),
+      this.i18n.translate('stat.csv.hotel'),
+      this.i18n.translate('stat.csv.camera'),
+      this.i18n.translate('stat.csv.ospite'),
+      this.i18n.translate('stat.csv.checkin'),
+      this.i18n.translate('stat.csv.checkout'),
+      this.i18n.translate('stat.csv.ospiti'),
+      this.i18n.translate('stat.csv.totale'),
+      this.i18n.translate('stat.csv.stato'),
+    ];
     const fmtD = (v: any) => {
       const d = this.toDate(v);
       if (!d) return '';

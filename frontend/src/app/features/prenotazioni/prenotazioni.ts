@@ -6,6 +6,8 @@ import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
 import { SharedModule } from '../../shared/shared.module';
+import { TranslationService } from '../../services/translation.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-prenotazioni',
@@ -39,7 +41,9 @@ export class Prenotazioni implements OnInit {
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
     private prefsService: PreferencesService,
-    private router: Router
+    private router: Router,
+    public i18n: TranslationService,
+    private chatService: ChatService
   ) {}
 
   get isAdmin() { return this.authService.isAdmin(); }
@@ -122,7 +126,7 @@ export class Prenotazioni implements OnInit {
       .map(p => this.toLocalDate(p.dataCheckin))
       .filter((d): d is Date => d != null && d >= oggi)
       .sort((a, b) => a.getTime() - b.getTime());
-    return dates.length > 0 ? this.formatDate(dates[0]) : 'Nessuno';
+    return dates.length > 0 ? this.formatDate(dates[0]) : this.i18n.translate('booking.nessuno');
   }
 
   // ── Filtered list (reactive) ──
@@ -150,23 +154,59 @@ export class Prenotazioni implements OnInit {
 
   // ── Formatting ──
 
+  private readonly localeMap: Record<string, string> = { it: 'it-IT', en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE' };
+
+  private get locale(): string {
+    return this.localeMap[this.prefsService.langCode] ?? 'it-IT';
+  }
+
   formatDate(val: any): string {
     const d = this.toLocalDate(val);
-    if (!d) return 'Data non disponibile';
-    return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
+    if (!d) return this.i18n.translate('booking.data-non-disponibile');
+    return d.toLocaleDateString(this.locale, { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   formatPrezzo(val: number | null | undefined): string {
-    if (val == null || isNaN(Number(val))) return 'N/D';
+    if (val == null || isNaN(Number(val))) return this.i18n.translate('booking.nd');
     return this.prefsService.formatCurrency(Number(val));
   }
 
+  private readonly tipoCameraKeys: Record<string, string> = {
+    SINGOLA: 'booking.camera.singola',
+    DOPPIA: 'booking.camera.doppia',
+    TRIPLA: 'booking.camera.tripla',
+    SUITE: 'booking.camera.suite',
+    FAMILIARE: 'booking.camera.familiare',
+    DELUXE: 'booking.camera.deluxe',
+  };
+
+  formatTipoCamera(tipo: string | null | undefined): string {
+    if (!tipo) return this.i18n.translate('booking.camera-non-specificata');
+    const key = this.tipoCameraKeys[tipo.toUpperCase()];
+    return key ? this.i18n.translate(key) : tipo;
+  }
+
+  private readonly currencyIconClasses: Record<string, string> = {
+    EUR: 'fa-euro-sign',
+    USD: 'fa-dollar-sign',
+    GBP: 'fa-pound-sign',
+    CHF: 'fa-franc-sign',
+  };
+
+  get currencyIconClass(): string {
+    return this.currencyIconClasses[this.prefsService.currencyCode] ?? 'fa-euro-sign';
+  }
+
   bookingCode(p: any): string {
-    return p.id ? `NDV-${String(p.id).padStart(5, '0')}` : 'N/D';
+    return p.id ? `NDV-${String(p.id).padStart(5, '0')}` : this.i18n.translate('booking.nd');
   }
 
   getStatoLabel(stato: string): string {
-    const m: Record<string, string> = { IN_ATTESA: 'In attesa', CONFERMATA: 'Confermata', CANCELLATA: 'Cancellata' };
+    const m: Record<string, string> = {
+      IN_ATTESA: this.i18n.translate('booking.stato-attesa'),
+      CONFERMATA: this.i18n.translate('booking.stato-confermata'),
+      CANCELLATA: this.i18n.translate('booking.stato-cancellata'),
+    };
     return m[stato] ?? stato;
   }
 
@@ -204,25 +244,25 @@ export class Prenotazioni implements OnInit {
 
   aggiornaStato(id: number, stato: string) {
     this.prenotazioneService.aggiornaStato(id, stato).subscribe({
-      next: () => { this.showAlertMessage('Stato aggiornato.', 'success'); this.carica(); },
-      error: () => this.showAlertMessage('Errore aggiornamento stato.', 'error')
+      next: () => { this.showAlertMessage(this.i18n.translate('booking.msg.stato-aggiornato'), 'success'); this.carica(); },
+      error: () => this.showAlertMessage(this.i18n.translate('booking.msg.errore-stato'), 'error')
     });
   }
 
   elimina(id: number) {
-    this.chiediConferma('Eliminare questa prenotazione?', () => {
+    this.chiediConferma(this.i18n.translate('booking.msg.eliminare-conferma'), () => {
       this.prenotazioneService.elimina(id).subscribe({
-        next: () => { this.showAlertMessage('Prenotazione eliminata.', 'success'); this.carica(); },
-        error: () => this.showAlertMessage('Errore eliminazione.', 'error')
+        next: () => { this.showAlertMessage(this.i18n.translate('booking.msg.eliminata'), 'success'); this.carica(); },
+        error: () => this.showAlertMessage(this.i18n.translate('booking.msg.errore-eliminazione'), 'error')
       });
     });
   }
 
   cancella(id: number) {
-    this.chiediConferma('Annullare questa prenotazione?', () => {
+    this.chiediConferma(this.i18n.translate('booking.msg.annullare-conferma'), () => {
       this.prenotazioneService.aggiornaStato(id, 'CANCELLATA').subscribe({
-        next: () => { this.showAlertMessage('Prenotazione annullata.', 'success'); this.carica(); },
-        error: () => this.showAlertMessage('Errore.', 'error')
+        next: () => { this.showAlertMessage(this.i18n.translate('booking.msg.annullata'), 'success'); this.carica(); },
+        error: () => this.showAlertMessage(this.i18n.translate('booking.msg.errore-generico'), 'error')
       });
     });
   }
@@ -234,14 +274,14 @@ export class Prenotazioni implements OnInit {
   }
 
   vaiAssistenza() {
-    this.showAlertMessage('Per assistenza immediata usa il pulsante chat in basso a destra.', 'info');
+    this.chatService.openChat();
   }
 
   vaiDettagli(p: any) {
     const codice = this.bookingCode(p);
-    const hotel  = p.nomeHotel || 'Hotel';
+    const hotel  = p.nomeHotel || this.i18n.translate('booking.hotel-generico');
     const checkin = this.formatDate(p.dataCheckin);
-    this.showAlertMessage(`${hotel} · ${codice} · Check-in: ${checkin}`, 'info');
+    this.showAlertMessage(`${hotel} · ${codice} · ${this.i18n.translate('booking.checkin-label')}: ${checkin}`, 'info');
   }
 
   // ── Tab counts (for badges) ──

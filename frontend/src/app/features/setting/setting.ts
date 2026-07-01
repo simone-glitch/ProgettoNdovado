@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
+import { TranslationService } from '../../services/translation.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -34,16 +35,13 @@ export class Setting implements OnInit {
   preferenze = {
     lingua: 'Italiano',
     valuta: 'EUR (€)',
-    tema: 'Chiaro',
   };
-
-  readonly passwordRulesMessage =
-    'La password deve avere almeno 8 caratteri, almeno una lettera maiuscola e almeno un numero.';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private prefsService: PreferencesService,
+    private i18n: TranslationService,
     private http: HttpClient,
     private router: Router
   ) {
@@ -107,15 +105,13 @@ export class Setting implements OnInit {
     this.preferenze = {
       lingua: this.prefsService.lingua,
       valuta: this.prefsService.valuta,
-      tema:   this.prefsService.tema,
     };
-    this.applicaTema(this.preferenze.tema);
   }
 
   aggiornaProfilo(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
-      this.mostraAlert('Compila correttamente tutti i campi del profilo.', 'warning');
+      this.mostraAlert(this.i18n.translate('settings.msg.compila-campi'), 'warning');
       return;
     }
 
@@ -140,12 +136,12 @@ export class Setting implements OnInit {
           this.aggiornaEmailNelTokenBasic(oldEmail, updatedUser.email);
         }
 
-        this.mostraAlert('Profilo aggiornato con successo!', 'success');
+        this.mostraAlert(this.i18n.translate('settings.msg.profilo-ok'), 'success');
         this.isSavingProfile = false;
       },
       error: (err) => {
         if (err.status === 401) { this.isSavingProfile = false; this.gestisciSessioneScaduta(); return; }
-        this.mostraAlert(this.estraiMessaggioErrore(err, "Errore durante l'aggiornamento del profilo."), 'error');
+        this.mostraAlert(this.estraiMessaggioErrore(err, this.i18n.translate('settings.msg.profilo-err')), 'error');
         this.isSavingProfile = false;
       },
     });
@@ -165,7 +161,7 @@ export class Setting implements OnInit {
   cambiaPassword(): void {
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
-      this.mostraAlert(this.passwordRulesMessage, 'warning');
+      this.mostraAlert(this.i18n.translate('settings.password-rules'), 'warning');
       return;
     }
 
@@ -179,7 +175,7 @@ export class Setting implements OnInit {
     this.http.post(`${environment.apiUrl}/utenti/profilo/cambia-password`, payload, { responseType: 'text' })
       .subscribe({
         next: () => {
-          this.mostraAlert('Password cambiata con successo. Effettua il login con la nuova password.', 'success');
+          this.mostraAlert(this.i18n.translate('settings.msg.password-ok'), 'success');
           this.passwordForm.reset();
           this.isChangingPassword = false;
           this.showPasswordForm = false;
@@ -187,7 +183,7 @@ export class Setting implements OnInit {
         },
         error: (err) => {
           if (err.status === 401) { this.isChangingPassword = false; this.gestisciSessioneScaduta(); return; }
-          this.mostraAlert(this.estraiMessaggioErrore(err, 'Errore. Controlla la vecchia password e riprova.'), 'error');
+          this.mostraAlert(this.estraiMessaggioErrore(err, this.i18n.translate('settings.msg.password-err')), 'error');
           this.isChangingPassword = false;
         },
       });
@@ -197,14 +193,8 @@ export class Setting implements OnInit {
     this.prefsService.save({
       lingua: this.preferenze.lingua,
       valuta: this.preferenze.valuta,
-      tema:   this.preferenze.tema,
     });
-    this.applicaTema(this.preferenze.tema);
-    this.mostraAlert('Preferenze aggiornate con successo.', 'success');
-  }
-
-  onTemaChange(): void {
-    this.applicaTema(this.preferenze.tema);
+    this.mostraAlert(this.i18n.translate('settings.msg.preferenze-ok'), 'success');
   }
 
   // ── Misc ─────────────────────────────────────────
@@ -275,25 +265,12 @@ export class Setting implements OnInit {
     this.showAlert = false;
   }
 
-  private applicaTema(tema: string): void {
-    const el = document.documentElement;
-    if (tema === 'Scuro') {
-      el.setAttribute('data-theme', 'dark');
-    } else if (tema === 'Sistema') {
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? el.setAttribute('data-theme', 'dark')
-        : el.removeAttribute('data-theme');
-    } else {
-      el.removeAttribute('data-theme');
-    }
-  }
-
   private normalizzaUtente(data: any): any {
     return data?.userDetails ?? data ?? null;
   }
 
   private estraiMessaggioErrore(err: any, fallback: string): string {
-    if (err?.status === 401) return 'Sessione scaduta. Effettua nuovamente il login.';
+    if (err?.status === 401) return this.i18n.translate('settings.msg.sessione-scaduta');
     if (typeof err?.error === 'string') return err.error;
     if (err?.error?.message) return err.error.message;
     if (err?.message) return err.message;
@@ -301,7 +278,7 @@ export class Setting implements OnInit {
   }
 
   private gestisciSessioneScaduta(): void {
-    this.mostraAlert('Sessione scaduta. Effettua nuovamente il login.', 'error');
+    this.mostraAlert(this.i18n.translate('settings.msg.sessione-scaduta'), 'error');
     setTimeout(() => { this.authService.logout(); this.router.navigate(['/login']); }, 1500);
   }
 

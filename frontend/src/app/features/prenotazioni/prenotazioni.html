@@ -11,7 +11,7 @@
   <!-- ── Breadcrumb ── -->
   <nav class="bookings-breadcrumb">
     <button class="bc-home" (click)="vaiAgliHotel()">
-      <i class="fas fa-home"></i> Home
+      <i class="fas fa-home"></i> {{ 'booking.home' | translate }}
     </button>
     <span class="bc-sep">/</span>
     <span class="bc-current">
@@ -109,7 +109,7 @@
             <option value="CONFERMATA">{{ 'tab.filtro-confermate' | translate }}</option>
             <option value="CANCELLATA">{{ 'tab.filtro-cancellate' | translate }}</option>
           </select>
-          <input type="date" [(ngModel)]="filterPeriodo" class="filter-date" title="Filtra per periodo" />
+          <input type="date" [(ngModel)]="filterPeriodo" class="filter-date" [title]="'booking.filtra-periodo' | translate" />
           <button class="btn-filtra" (click)="applyFilters()">
             <i class="fas fa-filter"></i> {{ 'booking.filtra' | translate }}
           </button>
@@ -167,10 +167,10 @@
           <div class="empty-icon-wrap empty-icon-red">
             <i class="fas fa-exclamation-triangle"></i>
           </div>
-          <h3>Impossibile caricare le prenotazioni</h3>
-          <p>Controlla la connessione al server e riprova.</p>
+          <h3>{{ 'booking.errore-titolo' | translate }}</h3>
+          <p>{{ 'booking.errore-sub' | translate }}</p>
           <button class="btn-booking-primary" (click)="carica()">
-            <i class="fas fa-redo"></i>&nbsp; Riprova
+            <i class="fas fa-redo"></i>&nbsp; {{ 'booking.riprova' | translate }}
           </button>
         </div>
       }
@@ -181,10 +181,10 @@
           <div class="empty-icon-wrap">
             <i class="fas fa-calendar-times"></i>
           </div>
-          <h3>Non hai ancora prenotazioni</h3>
-          <p>Inizia a esplorare i nostri hotel e prenota il tuo prossimo soggiorno.</p>
+          <h3>{{ 'booking.vuota-titolo' | translate }}</h3>
+          <p>{{ 'booking.vuota-sub' | translate }}</p>
           <button class="btn-booking-primary" (click)="vaiAgliHotel()">
-            <i class="fas fa-search"></i>&nbsp; Cerca un hotel
+            <i class="fas fa-search"></i>&nbsp; {{ 'booking.cerca-hotel' | translate }}
           </button>
         </div>
       }
@@ -195,8 +195,8 @@
           <div class="empty-icon-wrap">
             <i class="fas fa-search"></i>
           </div>
-          <h3>Nessun risultato trovato</h3>
-          <p>Modifica i filtri di ricerca per vedere altre prenotazioni.</p>
+          <h3>{{ 'booking.nessun-risultato-titolo' | translate }}</h3>
+          <p>{{ 'booking.nessun-risultato-sub' | translate }}</p>
         </div>
       }
 
@@ -226,7 +226,7 @@
                 <!-- Top row: name + badge | code + total -->
                 <div class="booking-top-row">
                   <div class="booking-name-status">
-                    <h3 class="booking-hotel-name">{{ p.nomeHotel || 'Hotel non disponibile' }}</h3>
+                    <h3 class="booking-hotel-name">{{ p.nomeHotel || ('booking.hotel-non-disponibile' | translate) }}</h3>
                     <span class="booking-status-badge" [ngClass]="getStatoBadgeClass(p.stato)">
                       <i class="fas fa-circle badge-dot"></i>
                       {{ getStatoLabel(p.stato) }}
@@ -234,14 +234,14 @@
                   </div>
                   <div class="booking-meta-right">
                     <div class="booking-meta-block">
-                      <span class="meta-label"><i class="fas fa-hashtag meta-icon"></i> Codice</span>
+                      <span class="meta-label"><i class="fas fa-hashtag meta-icon"></i> {{ 'booking.codice' | translate }}</span>
                       <span class="booking-code">{{ bookingCode(p) }}</span>
                     </div>
                     <div class="booking-meta-divider"></div>
                     <div class="booking-meta-block">
-                      <span class="meta-label"><i class="fas fa-euro-sign meta-icon"></i> Totale</span>
+                      <span class="meta-label"><i class="fas meta-icon" [ngClass]="currencyIconClass"></i> {{ 'booking.totale' | translate }}</span>
                       <span class="booking-total">
-                        {{ p.prezzoTotale != null ? formatPrezzo(p.prezzoTotale) : 'N/D' }}
+                        {{ p.prezzoTotale != null ? formatPrezzo(p.prezzoTotale) : ('booking.nd' | translate) }}
                       </span>
                     </div>
                   </div>
@@ -250,31 +250,31 @@
                 <!-- Details grid -->
                 <div class="booking-details-grid">
                   <div class="booking-detail-item">
-                    <span class="detail-label"><i class="fas fa-sign-in-alt detail-icon"></i> Check-in</span>
+                    <span class="detail-label"><i class="fas fa-sign-in-alt detail-icon"></i> {{ 'booking.checkin-label' | translate }}</span>
                     <span class="detail-value">{{ formatDate(p.dataCheckin) }}</span>
                   </div>
                   <div class="detail-sep"></div>
                   <div class="booking-detail-item">
-                    <span class="detail-label"><i class="fas fa-sign-out-alt detail-icon"></i> Check-out</span>
+                    <span class="detail-label"><i class="fas fa-sign-out-alt detail-icon"></i> {{ 'booking.checkout-label' | translate }}</span>
                     <span class="detail-value">{{ formatDate(p.dataCheckout) }}</span>
                   </div>
                   <div class="detail-sep"></div>
                   <div class="booking-detail-item">
-                    <span class="detail-label"><i class="fas fa-user detail-icon"></i> Ospiti</span>
+                    <span class="detail-label"><i class="fas fa-user detail-icon"></i> {{ 'booking.ospiti' | translate }}</span>
                     <span class="detail-value">
-                      {{ p.numOspiti || 1 }}&nbsp;{{ (p.numOspiti || 1) === 1 ? 'adulto' : 'adulti' }}
+                      {{ p.numOspiti || 1 }}&nbsp;{{ (p.numOspiti || 1) === 1 ? ('booking.adulto' | translate) : ('booking.adulti' | translate) }}
                     </span>
                   </div>
                   <div class="detail-sep"></div>
                   <div class="booking-detail-item">
-                    <span class="detail-label"><i class="fas fa-bed detail-icon"></i> Camera</span>
-                    <span class="detail-value">{{ p.tipoCamera || 'Camera non specificata' }}</span>
+                    <span class="detail-label"><i class="fas fa-bed detail-icon"></i> {{ 'booking.camera' | translate }}</span>
+                    <span class="detail-value">{{ formatTipoCamera(p.tipoCamera) }}</span>
                   </div>
                   @if (!isGuest) {
                     <div class="detail-sep"></div>
                     <div class="booking-detail-item">
-                      <span class="detail-label"><i class="fas fa-user-circle detail-icon"></i> Ospite</span>
-                      <span class="detail-value">{{ p.nomeUtente || 'N/D' }}</span>
+                      <span class="detail-label"><i class="fas fa-user-circle detail-icon"></i> {{ 'booking.ospite' | translate }}</span>
+                      <span class="detail-value">{{ p.nomeUtente || ('booking.nd' | translate) }}</span>
                     </div>
                   }
                 </div>
@@ -293,22 +293,22 @@
 
                   <!-- Always available: view details -->
                   <button class="btn-booking-secondary" (click)="vaiDettagli(p)">
-                    <i class="fas fa-eye"></i> Vedi dettagli
+                    <i class="fas fa-eye"></i> {{ 'booking.vedi-dettagli' | translate }}
                   </button>
 
                   <!-- GUEST actions -->
                   @if (isGuest) {
                     @if (p.stato === 'IN_ATTESA') {
                       <button class="btn-booking-secondary btn-danger-outline" (click)="cancella(p.id)">
-                        <i class="fas fa-times-circle"></i> Annulla prenotazione
+                        <i class="fas fa-times-circle"></i> {{ 'booking.annulla-prenotazione' | translate }}
                       </button>
                     }
                     @if (isCompletataBooking(p)) {
                       <button class="btn-booking-secondary" (click)="vaiAgliHotel()">
-                        <i class="fas fa-star"></i> Lascia una recensione
+                        <i class="fas fa-star"></i> {{ 'booking.lascia-recensione' | translate }}
                       </button>
                       <button class="btn-booking-secondary" (click)="vaiAgliHotel()">
-                        <i class="fas fa-redo"></i> Prenota di nuovo
+                        <i class="fas fa-redo"></i> {{ 'booking.prenota-di-nuovo' | translate }}
                       </button>
                     }
                   }
@@ -317,14 +317,14 @@
                   @if (isHost || isAdmin) {
                     @if (p.stato === 'IN_ATTESA') {
                       <button class="btn-booking-primary" (click)="aggiornaStato(p.id, 'CONFERMATA')">
-                        <i class="fas fa-check"></i> Conferma
+                        <i class="fas fa-check"></i> {{ 'common.conferma' | translate }}
                       </button>
                       <button class="btn-booking-secondary btn-danger-outline" (click)="aggiornaStato(p.id, 'CANCELLATA')">
-                        <i class="fas fa-times"></i> Rifiuta
+                        <i class="fas fa-times"></i> {{ 'booking.rifiuta' | translate }}
                       </button>
                     }
                     @if (isAdmin) {
-                      <button class="btn-booking-icon btn-danger-icon" (click)="elimina(p.id)" title="Elimina prenotazione">
+                      <button class="btn-booking-icon btn-danger-icon" (click)="elimina(p.id)" [title]="'booking.elimina-prenotazione' | translate">
                         <i class="fas fa-trash"></i>
                       </button>
                     }
@@ -347,55 +347,55 @@
         <div class="support-icon-wrap">
           <i class="fas fa-headset"></i>
         </div>
-        <h4 class="sidebar-card-title">Hai bisogno di aiuto?</h4>
-        <p class="sidebar-card-text">Il nostro team è a tua disposizione 24 ore su 24, 7 giorni su 7.</p>
+        <h4 class="sidebar-card-title">{{ 'booking.aiuto-titolo' | translate }}</h4>
+        <p class="sidebar-card-text">{{ 'booking.aiuto-testo' | translate }}</p>
         <button class="btn-booking-primary btn-full" (click)="vaiAssistenza()">
-          <i class="fas fa-comment-dots"></i> Contatta assistenza
+          <i class="fas fa-comment-dots"></i> {{ 'booking.contatta-assistenza' | translate }}
         </button>
       </div>
 
       <!-- Benefits card -->
       <div class="booking-benefits-card">
-        <h4 class="sidebar-card-title">Vantaggi prenotazione</h4>
+        <h4 class="sidebar-card-title">{{ 'booking.vantaggi-titolo' | translate }}</h4>
         <div class="benefit-item">
           <div class="benefit-icon"><i class="fas fa-tag"></i></div>
           <div class="benefit-text">
-            <span class="benefit-title">Miglior prezzo garantito</span>
-            <span class="benefit-desc">Ti offriamo sempre il miglior prezzo.</span>
+            <span class="benefit-title">{{ 'booking.prezzo-garantito' | translate }}</span>
+            <span class="benefit-desc">{{ 'booking.prezzo-garantito-desc' | translate }}</span>
           </div>
         </div>
         <div class="benefit-item">
           <div class="benefit-icon"><i class="fas fa-times-circle"></i></div>
           <div class="benefit-text">
-            <span class="benefit-title">Cancellazione gratuita</span>
-            <span class="benefit-desc">Fino al giorno prima del check-in.</span>
+            <span class="benefit-title">{{ 'booking.cancellazione-gratuita' | translate }}</span>
+            <span class="benefit-desc">{{ 'booking.cancellazione-gratuita-desc' | translate }}</span>
           </div>
         </div>
         <div class="benefit-item">
           <div class="benefit-icon"><i class="fas fa-headset"></i></div>
           <div class="benefit-text">
-            <span class="benefit-title">Assistenza clienti 24/7</span>
-            <span class="benefit-desc">Siamo sempre qui per te.</span>
+            <span class="benefit-title">{{ 'booking.assistenza-247' | translate }}</span>
+            <span class="benefit-desc">{{ 'booking.assistenza-247-desc' | translate }}</span>
           </div>
         </div>
       </div>
 
       <!-- Quick documents card -->
       <div class="quick-documents-card">
-        <h4 class="sidebar-card-title">Documenti rapidi</h4>
-        <div class="doc-item" (click)="showAlertMessage('Sezione fatture disponibile a breve.', 'info')">
+        <h4 class="sidebar-card-title">{{ 'booking.documenti-titolo' | translate }}</h4>
+        <div class="doc-item" (click)="showAlertMessage(i18n.translate('booking.msg.fatture-presto'), 'info')">
           <div class="doc-icon-wrap"><i class="fas fa-file-invoice"></i></div>
-          <span class="doc-label">Fatture</span>
+          <span class="doc-label">{{ 'booking.fatture' | translate }}</span>
           <i class="fas fa-chevron-right doc-arrow"></i>
         </div>
-        <div class="doc-item" (click)="showAlertMessage('Sezione conferme disponibile a breve.', 'info')">
+        <div class="doc-item" (click)="showAlertMessage(i18n.translate('booking.msg.conferme-presto'), 'info')">
           <div class="doc-icon-wrap"><i class="fas fa-file-alt"></i></div>
-          <span class="doc-label">Conferme</span>
+          <span class="doc-label">{{ 'booking.conferme' | translate }}</span>
           <i class="fas fa-chevron-right doc-arrow"></i>
         </div>
-        <div class="doc-item" (click)="showAlertMessage('Sezione metodi di pagamento disponibile a breve.', 'info')">
+        <div class="doc-item" (click)="showAlertMessage(i18n.translate('booking.msg.pagamenti-presto'), 'info')">
           <div class="doc-icon-wrap"><i class="fas fa-credit-card"></i></div>
-          <span class="doc-label">Metodi di pagamento</span>
+          <span class="doc-label">{{ 'booking.metodi-pagamento' | translate }}</span>
           <i class="fas fa-chevron-right doc-arrow"></i>
         </div>
       </div>

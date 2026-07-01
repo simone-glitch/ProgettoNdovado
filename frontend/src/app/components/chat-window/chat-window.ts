@@ -1,19 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../../services/chat.service';
+import { TranslationService } from '../../services/translation.service';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,SharedModule],
   templateUrl: './chat-window.html',
   styleUrl: './chat-window.css',
 })
 export class ChatWindow implements OnInit {
   nuovoMessaggio: string = '';
 
-  constructor(public chatService: ChatService) {
+  constructor(public chatService: ChatService, private i18n: TranslationService) {
   }
   ngOnInit() {
   }
@@ -48,7 +50,7 @@ export class ChatWindow implements OnInit {
             testoBot = response;
           }
         } else {
-          testoBot = "Non sono riuscito a elaborare la risposta.";
+          testoBot = this.i18n.translate('chat.msg.no-response');
         }
 
         this.chatService.messaggi.push({
@@ -59,7 +61,7 @@ export class ChatWindow implements OnInit {
       error: (err) => {
         console.error("Errore reale di rete:", err);
         this.chatService.messaggi.push({
-          testo: "❌ Errore di connessione con il server.",
+          testo: this.i18n.translate('chat.msg.errore-connessione'),
           daUtente: false
         });
       }

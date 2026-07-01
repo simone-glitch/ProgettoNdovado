@@ -6,28 +6,28 @@
 
       <img src="/assets/images/logo-ndovado.png" alt="Ndovado" class="auth-logo-img">
 
-      <p class="auth-visual-tagline">Prenota oggi, vivi il tuo<br>prossimo viaggio.</p>
+      <p class="auth-visual-tagline">{{ 'auth.login.tagline1' | translate:'it' }}<br>{{ 'auth.login.tagline2' | translate:'it' }}</p>
 
       <div class="auth-visual-feats">
         <div class="auth-feat">
           <div class="auth-feat-ico"><i class="fas fa-calendar-check"></i></div>
           <div>
-            <strong>Migliaia di strutture</strong>
-            <span>per ogni esigenza</span>
+            <strong>{{ 'auth.feat.strutture-title' | translate:'it' }}</strong>
+            <span>{{ 'auth.feat.strutture-sub' | translate:'it' }}</span>
           </div>
         </div>
         <div class="auth-feat">
           <div class="auth-feat-ico"><i class="fas fa-shield-alt"></i></div>
           <div>
-            <strong>Prenotazione sicura</strong>
-            <span>e affidabile</span>
+            <strong>{{ 'auth.feat.sicura-title' | translate:'it' }}</strong>
+            <span>{{ 'auth.feat.sicura-sub' | translate:'it' }}</span>
           </div>
         </div>
         <div class="auth-feat">
           <div class="auth-feat-ico"><i class="fas fa-tag"></i></div>
           <div>
-            <strong>Le migliori offerte</strong>
-            <span>al miglior prezzo</span>
+            <strong>{{ 'auth.feat.offerte-title' | translate:'it' }}</strong>
+            <span>{{ 'auth.feat.offerte-sub' | translate:'it' }}</span>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
       <!-- Tab switcher -->
       <div class="auth-tabs">
         <span class="auth-tab auth-tab--active">Login</span>
-        <a routerLink="/register" class="auth-tab">Registrati</a>
+        <a routerLink="/register" class="auth-tab">{{ 'auth.registrati' | translate:'it' }}</a>
       </div>
 
       <app-alert
@@ -57,24 +57,24 @@
         (dismissEvent)="onAlertDismiss()">
       </app-alert>
 
-      <h2 class="auth-heading">Bentornato!</h2>
-      <p class="auth-sub">Accedi per continuare a prenotare le tue esperienze.</p>
+      <h2 class="auth-heading">{{ 'auth.bentornato' | translate:'it' }}</h2>
+      <p class="auth-sub">{{ 'auth.login.subtitle' | translate:'it' }}</p>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
         <div class="auth-field">
-          <label class="auth-label">Email</label>
+          <label class="auth-label">{{ 'common.email' | translate:'it' }}</label>
           <div class="auth-input-wrap">
             <i class="fas fa-envelope auth-ico"></i>
-            <input class="auth-input" type="email" formControlName="email" placeholder="esempio@email.com">
+            <input class="auth-input" type="email" formControlName="email" [placeholder]="'auth.placeholder.email' | translate:'it'">
           </div>
           @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
             <div class="auth-errors">
               @if (loginForm.get('email')?.errors?.['required']) {
-                <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</small>
+                <small class="auth-err"><i class="fas fa-exclamation-circle"></i> {{ 'auth.campo-obbligatorio' | translate:'it' }}</small>
               }
               @if (loginForm.get('email')?.errors?.['email']) {
-                <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Formato email non valido</small>
+                <small class="auth-err"><i class="fas fa-exclamation-circle"></i> {{ 'auth.email-non-valido' | translate:'it' }}</small>
               }
             </div>
           }
@@ -82,12 +82,12 @@
 
         <div class="auth-field">
           <div class="auth-label-row">
-            <label class="auth-label">Password</label>
-            <a routerLink="/forgot-password" class="auth-forgot">Password dimenticata?</a>
+            <label class="auth-label">{{ 'common.password' | translate:'it' }}</label>
+            <a routerLink="/forgot-password" class="auth-forgot">{{ 'auth.password-dimenticata' | translate:'it' }}</a>
           </div>
           <div class="auth-input-wrap">
             <i class="fas fa-lock auth-ico"></i>
-            <input class="auth-input" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Inserisci la tua password">
+            <input class="auth-input" [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'auth.placeholder.password' | translate:'it'">
             <button type="button" class="auth-eye-btn" (click)="showPassword = !showPassword" tabindex="-1">
               <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
@@ -95,23 +95,23 @@
           @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
             <div class="auth-errors">
               @if (loginForm.get('password')?.errors?.['required']) {
-                <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Password obbligatoria</small>
+                <small class="auth-err"><i class="fas fa-exclamation-circle"></i> {{ 'auth.password-obbligatoria' | translate:'it' }}</small>
               }
               @if (loginForm.get('password')?.errors?.['minlength']) {
-                <small class="auth-err"><i class="fas fa-lock"></i> Almeno 6 caratteri</small>
+                <small class="auth-err"><i class="fas fa-lock"></i> {{ 'auth.almeno-6' | translate:'it' }}</small>
               }
             </div>
           }
         </div>
 
         <button type="submit" class="auth-btn-primary" [disabled]="loginForm.invalid">
-          Accedi
+          {{ 'auth.accedi' | translate:'it' }}
         </button>
 
       </form>
 
       <p class="auth-switch">
-        Non hai un account? <a routerLink="/register">Registrati</a>
+        {{ 'auth.non-hai-account' | translate:'it' }} <a routerLink="/register">{{ 'auth.registrati' | translate:'it' }}</a>
       </p>
 
     </div>

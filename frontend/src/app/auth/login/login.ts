@@ -2,13 +2,15 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import {Alert} from '../../components/alert/alert';
 import { NgIf, NgClass } from '@angular/common';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, Alert, NgIf, NgClass],
+  imports: [RouterLink, ReactiveFormsModule, Alert, NgIf, NgClass, SharedModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -26,7 +28,8 @@ export class Login {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private i18n: TranslationService
   ) {}
 
   onSubmit() {
@@ -36,13 +39,10 @@ export class Login {
 
       this.authService.login(email, password).subscribe({
         next: (response) => {
-          console.log('Login effettuato con successo!', response);
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
-          console.error('Errore durante il login:', err);
-          this.showAlertMessage('Credenziali errate. Riprova.', 'error');
-         // alert('Credenziali errate. Riprova.');
+          this.showAlertMessage(this.i18n.translate('auth.msg.credenziali-errate', 'it'), 'error');
         }
       });
     }

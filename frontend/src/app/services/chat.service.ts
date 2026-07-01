@@ -23,6 +23,10 @@ export class ChatService {
     this.chatVisibile.next(!this.chatVisibile.value);
   }
 
+  openChat(){
+    this.chatVisibile.next(true);
+  }
+
   inviaMessaggioAlBackend(testoInviato: string): Observable<any>{
     const payload={messaggio:testoInviato};
 

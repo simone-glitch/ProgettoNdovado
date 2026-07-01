@@ -1,8 +1,9 @@
 import { Component, Input,Output,EventEmitter } from '@angular/core';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-conferma-box',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './conferma-box.html',
   styleUrl: './conferma-box.css',
   standalone: true

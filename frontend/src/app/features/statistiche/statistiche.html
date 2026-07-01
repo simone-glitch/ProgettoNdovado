@@ -2,9 +2,9 @@
 
   <!-- ── BREADCRUMB ── -->
   <nav class="host-stats-breadcrumb">
-    <a routerLink="/dashboard/home" class="bc-home"><i class="fas fa-home"></i> Home</a>
+    <a routerLink="/dashboard/home" class="bc-home"><i class="fas fa-home"></i> {{ 'stat.breadcrumb.home' | translate }}</a>
     <span class="bc-sep">/</span>
-    <span class="bc-current">Statistiche</span>
+    <span class="bc-current">{{ 'stat.breadcrumb.corrente' | translate }}</span>
   </nav>
 
   <!-- ── PAGE HEADER ── -->
@@ -28,7 +28,7 @@
     </div>
     <div class="stats-loading-body">
       <div class="stats-spinner"></div>
-      <p>Caricamento statistiche…</p>
+      <p>{{ 'stat.caricamento' | translate }}</p>
     </div>
   }
 
@@ -36,9 +36,9 @@
   @else if (loadingError) {
     <div class="stats-empty-state">
       <div class="empty-icon-wrap empty-red"><i class="fas fa-exclamation-triangle"></i></div>
-      <h3>Impossibile caricare le statistiche</h3>
-      <p>Controlla la connessione e riprova.</p>
-      <button class="btn-stats-primary" (click)="caricaDati()"><i class="fas fa-redo"></i> Riprova</button>
+      <h3>{{ 'stat.errore-titolo' | translate }}</h3>
+      <p>{{ 'stat.errore-sub' | translate }}</p>
+      <button class="btn-stats-primary" (click)="caricaDati()"><i class="fas fa-redo"></i> {{ 'stat.riprova' | translate }}</button>
     </div>
   }
 
@@ -46,9 +46,9 @@
   @else if (hotels.length === 0) {
     <div class="stats-empty-state">
       <div class="empty-icon-wrap"><i class="fas fa-hotel"></i></div>
-      <h3>Non hai ancora strutture</h3>
-      <p>Aggiungi il tuo primo hotel per iniziare a visualizzare le statistiche.</p>
-      <button class="btn-stats-primary" (click)="vaiGestioneHotel()"><i class="fas fa-plus"></i> Aggiungi hotel</button>
+      <h3>{{ 'stat.no-strutture-titolo' | translate }}</h3>
+      <p>{{ 'stat.no-strutture-sub' | translate }}</p>
+      <button class="btn-stats-primary" (click)="vaiGestioneHotel()"><i class="fas fa-plus"></i> {{ 'stat.aggiungi-hotel' | translate }}</button>
     </div>
   }
 
@@ -146,7 +146,7 @@
               @if (prenotazioniRicevute === 0) {
                 <div class="chart-empty">
                   <i class="fas fa-chart-bar"></i>
-                  <span>Nessuna prenotazione nel periodo selezionato</span>
+                  <span>{{ 'stat.nessuna-prenotazione-periodo' | translate }}</span>
                 </div>
               } @else {
                 <canvas #chartMensile></canvas>
@@ -162,7 +162,7 @@
               @if (entrateMeseCorrente === 0 && prenotazioniRicevute === 0) {
                 <div class="chart-empty">
                   <i class="fas fa-chart-line"></i>
-                  <span>Entrate non disponibili per il periodo selezionato</span>
+                  <span>{{ 'stat.entrate-non-disponibili' | translate }}</span>
                 </div>
               } @else {
                 <canvas #chartEntrate></canvas>
@@ -183,7 +183,7 @@
               @if (prenotazioniRicevute === 0) {
                 <div class="chart-empty">
                   <i class="fas fa-building"></i>
-                  <span>Nessuna prenotazione nel periodo selezionato</span>
+                  <span>{{ 'stat.nessuna-prenotazione-periodo' | translate }}</span>
                 </div>
               } @else {
                 <canvas #chartStruttura></canvas>
@@ -200,14 +200,14 @@
                 @if (prenotazioniRicevute === 0) {
                   <div class="chart-empty">
                     <i class="fas fa-chart-pie"></i>
-                    <span>Nessun dato</span>
+                    <span>{{ 'stat.nessun-dato' | translate }}</span>
                   </div>
                 } @else {
                   <div class="donut-center-wrap">
                     <canvas #chartStato></canvas>
                     <div class="donut-center-label">
                       <span class="donut-center-num">{{ prenotazioniRicevute }}</span>
-                      <span class="donut-center-txt">Totali</span>
+                      <span class="donut-center-txt">{{ 'stat.totali' | translate }}</span>
                     </div>
                   </div>
                 }
@@ -221,7 +221,7 @@
                   </div>
                 }
                 @if (statoItems.length === 0) {
-                  <p class="legend-empty">Nessun dato disponibile</p>
+                  <p class="legend-empty">{{ 'stat.nessun-dato-disponibile' | translate }}</p>
                 }
               </div>
             </div>
@@ -234,7 +234,7 @@
 
           <!-- Best property -->
           <div class="best-property-card">
-            <h3 class="card-section-title"><i class="fas fa-trophy"></i> Migliore struttura del mese</h3>
+            <h3 class="card-section-title"><i class="fas fa-trophy"></i> {{ 'stat.migliore-struttura' | translate }}</h3>
             @if (miglioreStruttura) {
               <div class="best-property-content">
                 <div class="best-property-img">
@@ -250,43 +250,43 @@
                   <h4 class="bp-name">{{ miglioreStruttura.hotel.nome }}</h4>
                   <div class="bp-stats">
                     <div class="bp-stat">
-                      <span class="bp-stat-label">Tasso di occupazione</span>
+                      <span class="bp-stat-label">{{ 'stat.tasso-occupazione' | translate }}</span>
                       <span class="bp-stat-value bp-green">{{ miglioreStrutturaOccupazione }}</span>
                     </div>
                     <div class="bp-stat">
-                      <span class="bp-stat-label">Entrate generate</span>
+                      <span class="bp-stat-label">{{ 'stat.entrate-generate' | translate }}</span>
                       <span class="bp-stat-value">{{ fmtEuro(miglioreStruttura.rev) }}</span>
                     </div>
                   </div>
                   <button class="btn-stats-outline btn-bp" (click)="vaiHotel(miglioreStruttura.hotel)">
-                    Vedi dettagli struttura <i class="fas fa-arrow-right"></i>
+                    {{ 'stat.vedi-dettagli-struttura' | translate }} <i class="fas fa-arrow-right"></i>
                   </button>
                 </div>
               </div>
             } @else {
               <div class="chart-empty">
                 <i class="fas fa-trophy"></i>
-                <span>Dati insufficienti per determinare la migliore struttura</span>
+                <span>{{ 'stat.dati-insufficienti' | translate }}</span>
               </div>
             }
           </div>
 
           <!-- Booking origin -->
           <div class="booking-source-card">
-            <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Origine prenotazioni</h3>
+            <h3 class="card-section-title"><i class="fas fa-share-alt"></i> {{ 'stat.origine-prenotazioni' | translate }}</h3>
             <div class="source-empty">
               <i class="fas fa-info-circle"></i>
-              <span>Dati sull'origine delle prenotazioni non disponibili al momento</span>
+              <span>{{ 'stat.origine-non-disponibile' | translate }}</span>
             </div>
           </div>
 
           <!-- Recent activity -->
           <div class="recent-activity-card">
-            <h3 class="card-section-title"><i class="fas fa-history"></i> Ultime attività</h3>
+            <h3 class="card-section-title"><i class="fas fa-history"></i> {{ 'stat.ultime-attivita' | translate }}</h3>
             @if (ultimaAttivita.length === 0) {
               <div class="chart-empty">
                 <i class="fas fa-bell-slash"></i>
-                <span>Nessuna attività recente</span>
+                <span>{{ 'stat.nessuna-attivita' | translate }}</span>
               </div>
             } @else {
               <div class="activity-list">
@@ -304,7 +304,7 @@
                 }
               </div>
               <button class="btn-link-more" (click)="vaiPrenotazioni()">
-                Vedi tutte le attività <i class="fas fa-chevron-right"></i>
+                {{ 'stat.vedi-tutte-attivita' | translate }} <i class="fas fa-chevron-right"></i>
               </button>
             }
           </div>
@@ -320,7 +320,7 @@
         <div class="month-goals-card">
           <div class="sidebar-card-head">
             <span class="sidebar-card-icon"><i class="fas fa-bullseye"></i></span>
-            <h3>Obiettivi del mese</h3>
+            <h3>{{ 'stat.obiettivi-mese' | translate }}</h3>
           </div>
           <div class="goals-list">
             @for (ob of obiettivi; track ob.label) {
@@ -343,17 +343,17 @@
               </div>
             }
           </div>
-          <button class="btn-sidebar-more" (click)="vaiPrenotazioni()">Vedi tutti gli obiettivi</button>
+          <button class="btn-sidebar-more" (click)="vaiPrenotazioni()">{{ 'stat.vedi-tutti-obiettivi' | translate }}</button>
         </div>
 
         <!-- Suggerimenti per migliorare -->
         <div class="improvement-suggestions-card">
           <div class="sidebar-card-head">
             <span class="sidebar-card-icon sug-head-icon"><i class="fas fa-lightbulb"></i></span>
-            <h3>Suggerimenti per migliorare</h3>
+            <h3>{{ 'stat.suggerimenti-migliorare' | translate }}</h3>
           </div>
           @if (suggerimenti.length === 0) {
-            <p class="sug-empty">Nessun suggerimento disponibile al momento.</p>
+            <p class="sug-empty">{{ 'stat.nessun-suggerimento' | translate }}</p>
           } @else {
             <div class="sug-list">
               @for (s of suggerimenti; track s.title) {
@@ -370,7 +370,7 @@
               }
             </div>
           }
-          <button class="btn-sidebar-more" (click)="vaiGestioneHotel()">Vedi tutti i suggerimenti</button>
+          <button class="btn-sidebar-more" (click)="vaiGestioneHotel()">{{ 'stat.vedi-tutti-suggerimenti' | translate }}</button>
         </div>
 
       </aside><!-- /sidebar -->

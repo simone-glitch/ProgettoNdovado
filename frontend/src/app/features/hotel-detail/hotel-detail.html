@@ -4,15 +4,15 @@
   @if (loading) {
     <div class="ndv-loading">
       <div class="ndv-spinner"></div>
-      <p>Caricamento in corso...</p>
+      <p>{{ 'common.caricamento' | translate }}</p>
     </div>
   }
 
   @if (!loading && !hotel) {
     <div class="ndv-not-found">
       <i class="fas fa-hotel"></i>
-      <h2>Hotel non trovato</h2>
-      <button class="ndv-btn-back" (click)="indietro()">Torna alla ricerca</button>
+      <h2>{{ 'hoteldetail.not-found' | translate }}</h2>
+      <button class="ndv-btn-back" (click)="indietro()">{{ 'hoteldetail.torna-ricerca' | translate }}</button>
     </div>
   }
 
@@ -21,10 +21,10 @@
     <!-- BREADCRUMB -->
     <nav class="ndv-breadcrumb">
       <button class="ndv-btn-back" (click)="indietro()">
-        <i class="fas fa-arrow-left"></i> Torna indietro
+        <i class="fas fa-arrow-left"></i> {{ 'hoteldetail.torna-indietro' | translate }}
       </button>
       <span class="ndv-bc-sep">/</span>
-      <span class="ndv-bc-link" (click)="indietro()">Hotel</span>
+      <span class="ndv-bc-link" (click)="indietro()">{{ 'nav.hotel' | translate }}</span>
       <span class="ndv-bc-sep">/</span>
       <span class="ndv-bc-current">{{ hotel.nome }}</span>
     </nav>
@@ -59,7 +59,7 @@
                     @if (i === 4 && fotoUrls.length > 4) {
                       <div class="ndv-gallery-overlay">
                         <span>+{{ fotoUrls.length - 4 }}</span>
-                        <small>Vedi tutte le foto</small>
+                        <small>{{ 'hoteldetail.vedi-foto' | translate }}</small>
                       </div>
                     }
                   </div>
@@ -74,7 +74,7 @@
         } @else {
           <div class="ndv-gallery-empty">
             <i class="fas fa-hotel"></i>
-            <p>Nessuna foto disponibile</p>
+            <p>{{ 'hoteldetail.no-foto' | translate }}</p>
           </div>
         }
 
@@ -90,7 +90,7 @@
               {{ hotel.indirizzo }}{{ hotel.indirizzo && hotel.citta ? ', ' : '' }}{{ hotel.citta }}
               @if (hotel.latitudine && hotel.longitudine) {
                 <a class="ndv-map-link" [href]="'https://www.openstreetmap.org/?mlat=' + hotel.latitudine + '&mlon=' + hotel.longitudine" target="_blank" rel="noopener">
-                  Vedi su mappa
+                  {{ 'hoteldetail.vedi-mappa' | translate }}
                 </a>
               }
             </p>
@@ -99,8 +99,8 @@
             <div class="ndv-hotel-rating">
               <span class="ndv-rating-score">{{ hotel.votoMedio | number:'1.1-1' }}</span>
               <div>
-                <span class="ndv-rating-label">Eccellente</span>
-                <span class="ndv-rating-count">{{ recensioni.length }} recensioni</span>
+                <span class="ndv-rating-label">{{ 'hoteldetail.eccellente' | translate }}</span>
+                <span class="ndv-rating-count">{{ recensioni.length }} {{ 'hoteldetail.recensioni' | translate }}</span>
               </div>
             </div>
           }
@@ -117,7 +117,7 @@
 
         <!-- DESCRIPTION -->
         <div class="ndv-card">
-          <p class="ndv-desc">{{ hotel.descrizione || 'Descrizione non disponibile.' }}</p>
+          <p class="ndv-desc">{{ hotel.descrizione || ('hoteldetail.no-descrizione' | translate) }}</p>
         </div>
 
         <!-- TWO-COL: Location + Services -->
@@ -125,7 +125,7 @@
 
           <!-- POSIZIONE -->
           <div class="ndv-card">
-            <h2 class="ndv-card-title">Posizione</h2>
+            <h2 class="ndv-card-title">{{ 'hoteldetail.posizione' | translate }}</h2>
             @if (hotel.latitudine && hotel.longitudine) {
               <div #mapContainer class="ndv-map-box"></div>
             }
@@ -134,7 +134,7 @@
                 <div class="ndv-loc-row">
                   <i class="fas fa-city ndv-loc-icon"></i>
                   <div>
-                    <span class="ndv-loc-label">Città</span>
+                    <span class="ndv-loc-label">{{ 'hoteldetail.citta' | translate }}</span>
                     <span class="ndv-loc-val">{{ hotel.citta }}</span>
                   </div>
                 </div>
@@ -143,7 +143,7 @@
                 <div class="ndv-loc-row">
                   <i class="fas fa-map-marker-alt ndv-loc-icon"></i>
                   <div>
-                    <span class="ndv-loc-label">Indirizzo</span>
+                    <span class="ndv-loc-label">{{ 'hoteldetail.indirizzo' | translate }}</span>
                     <span class="ndv-loc-val">{{ hotel.indirizzo }}</span>
                   </div>
                 </div>
@@ -154,7 +154,7 @@
           <!-- SERVIZI E COMFORT -->
           @if (hotel.servizi && hotel.servizi.length > 0) {
             <div class="ndv-card">
-              <h2 class="ndv-card-title">Servizi e comfort</h2>
+              <h2 class="ndv-card-title">{{ 'hoteldetail.servizi' | translate }}</h2>
               <div class="ndv-services-grid">
                 @for (s of hotel.servizi; track s) {
                   <div class="ndv-service-item">
@@ -176,16 +176,16 @@
                 <div class="ndv-reviews-summary">
                   <div class="ndv-review-score">{{ hotel.votoMedio | number:'1.1-1' }}</div>
                   <div>
-                    <div class="ndv-review-label">Eccellente</div>
-                    <div class="ndv-review-count">{{ recensioni.length }} recensioni</div>
+                    <div class="ndv-review-label">{{ 'hoteldetail.eccellente' | translate }}</div>
+                    <div class="ndv-review-count">{{ recensioni.length }} {{ 'hoteldetail.recensioni' | translate }}</div>
                   </div>
                 </div>
               }
               <div class="ndv-card-header-right">
-                <h2 class="ndv-card-title">Cosa dicono gli ospiti</h2>
+                <h2 class="ndv-card-title">{{ 'hoteldetail.cosa-dicono' | translate }}</h2>
                 @if (isGuest) {
                   <button class="ndv-btn-review" (click)="showReviewForm = !showReviewForm">
-                    {{ showReviewForm ? 'Annulla' : '+ Scrivi recensione' }}
+                    {{ showReviewForm ? ('common.annulla' | translate) : ('hoteldetail.scrivi-recensione' | translate) }}
                   </button>
                 }
               </div>
@@ -193,22 +193,22 @@
 
             @if (showReviewForm) {
               <form [formGroup]="reviewForm" (ngSubmit)="inviaRecensione()" class="ndv-review-form">
-                <input type="text" formControlName="titolo" placeholder="Titolo (opzionale)" class="ndv-input">
-                <textarea formControlName="testo" placeholder="La tua recensione..." rows="4" class="ndv-input ndv-textarea"></textarea>
+                <input type="text" formControlName="titolo" [placeholder]="'hoteldetail.titolo-opzionale' | translate" class="ndv-input">
+                <textarea formControlName="testo" [placeholder]="'hoteldetail.la-tua-recensione' | translate" rows="4" class="ndv-input ndv-textarea"></textarea>
                 @if (reviewForm.get('testo')?.touched && reviewForm.get('testo')?.invalid) {
-                  <small class="ndv-err">Campo obbligatorio</small>
+                  <small class="ndv-err">{{ 'hoteldetail.campo-obbligatorio' | translate }}</small>
                 }
                 <div class="ndv-voto-row">
-                  <label>Voto:</label>
+                  <label>{{ 'hoteldetail.voto' | translate }}</label>
                   <input type="number" formControlName="voto" min="1" max="5" class="ndv-input ndv-voto-input">
                   <span class="ndv-stars-gold">{{ stelle(reviewForm.get('voto')?.value ?? 5) }}</span>
                 </div>
-                <button type="submit" class="ndv-btn-primary">Pubblica recensione</button>
+                <button type="submit" class="ndv-btn-primary">{{ 'hoteldetail.pubblica-recensione' | translate }}</button>
               </form>
             }
 
             @if (recensioni.length === 0) {
-              <p class="ndv-no-data">Ancora nessuna recensione. Sii il primo!</p>
+              <p class="ndv-no-data">{{ 'hoteldetail.no-recensioni' | translate }}</p>
             }
 
             <div class="ndv-reviews-list">
@@ -223,7 +223,7 @@
                     <div class="ndv-review-right">
                       <span class="ndv-review-stars">{{ stelle(rec.voto) }}</span>
                       @if (isAdmin || rec.idUtente === currentUserId) {
-                        <button class="ndv-btn-del" (click)="chiediEliminaRecensione(rec)" title="Elimina">
+                        <button class="ndv-btn-del" (click)="chiediEliminaRecensione(rec)" [title]="'common.elimina' | translate">
                           <i class="fas fa-trash-alt"></i>
                         </button>
                       }
@@ -239,9 +239,9 @@
 
         <!-- CAMERE DISPONIBILI -->
         <div class="ndv-card">
-          <h2 class="ndv-card-title">Camere disponibili</h2>
+          <h2 class="ndv-card-title">{{ 'hoteldetail.camere-disponibili' | translate }}</h2>
           @if (camere.length === 0) {
-            <p class="ndv-no-data">Nessuna camera disponibile.</p>
+            <p class="ndv-no-data">{{ 'hoteldetail.no-camere' | translate }}</p>
           }
           <div class="ndv-rooms-list">
             @for (camera of camere; track camera.id) {
@@ -255,30 +255,30 @@
                 </div>
                 <div class="ndv-room-info">
                   <div class="ndv-room-top">
-                    <span class="ndv-room-tipo">{{ camera.tipo }}</span>
+                    <span class="ndv-room-tipo">{{ formatTipoCamera(camera.tipo) }}</span>
                     <span class="ndv-room-badge" [class.ndv-badge-ok]="camera.disponibile" [class.ndv-badge-no]="!camera.disponibile">
-                      {{ camera.disponibile ? 'Disponibile' : 'Occupata' }}
+                      {{ camera.disponibile ? ('hoteldetail.disponibile' | translate) : ('hoteldetail.occupata' | translate) }}
                     </span>
                   </div>
-                  <p class="ndv-room-desc">{{ camera.descrizione || 'Camera ' + camera.tipo }}</p>
+                  <p class="ndv-room-desc">{{ camera.descrizione || (('hoteldetail.camera-fallback' | translate) + ' ' + formatTipoCamera(camera.tipo)) }}</p>
                   <div class="ndv-room-features">
-                    <span><i class="fas fa-users"></i> Max {{ camera.capienza }} ospiti</span>
+                    <span><i class="fas fa-users"></i> Max {{ camera.capienza }} {{ 'hoteldetail.ospiti' | translate }}</span>
                   </div>
                 </div>
                 <div class="ndv-room-price-col">
                   <div class="ndv-room-price">
                     <span class="ndv-price-val">€{{ camera.prezzoNotte | number:'1.0-0' }}</span>
-                    <span class="ndv-price-per">/notte</span>
+                    <span class="ndv-price-per">{{ 'common.per-notte' | translate }}</span>
                   </div>
                   @if (isGuest && camera.disponibile) {
                     <button class="ndv-btn-select"
                             [class.ndv-btn-selected]="selectedCamera?.id === camera.id"
                             (click)="selezionaCamera(camera)">
-                      {{ selectedCamera?.id === camera.id ? 'Selezionata' : 'Seleziona camera' }}
+                      {{ selectedCamera?.id === camera.id ? ('hoteldetail.selezionata' | translate) : ('hoteldetail.seleziona-camera' | translate) }}
                     </button>
                   }
                   @if (!camera.disponibile) {
-                    <span class="ndv-unavail-label">Non disponibile</span>
+                    <span class="ndv-unavail-label">{{ 'hoteldetail.non-disponibile' | translate }}</span>
                   }
                 </div>
               </div>
@@ -294,18 +294,18 @@
         <div class="ndv-sidebar-sticky">
 
           <div class="ndv-sidebar-card">
-            <h3 class="ndv-sidebar-title">Il tuo soggiorno</h3>
+            <h3 class="ndv-sidebar-title">{{ 'hoteldetail.tuo-soggiorno' | translate }}</h3>
 
             <form [formGroup]="bookingForm">
 
               <!-- DATE -->
               <div class="ndv-date-row">
                 <div class="ndv-date-col">
-                  <label class="ndv-sidebar-label">CHECK-IN</label>
+                  <label class="ndv-sidebar-label">{{ 'hoteldetail.checkin' | translate }}</label>
                   <input type="date" formControlName="dataCheckin" class="ndv-date-input" [min]="todayStr">
                 </div>
                 <div class="ndv-date-col">
-                  <label class="ndv-sidebar-label">CHECK-OUT</label>
+                  <label class="ndv-sidebar-label">{{ 'hoteldetail.checkout' | translate }}</label>
                   <input type="date" formControlName="dataCheckout" class="ndv-date-input" [min]="todayStr">
                 </div>
               </div>
@@ -313,18 +313,18 @@
               <!-- NOTTI + OSPITI -->
               @if (numNotti > 0) {
                 <div class="ndv-nights-badge">
-                  <i class="fas fa-moon"></i> {{ numNotti }} {{ numNotti === 1 ? 'notte' : 'notti' }}
+                  <i class="fas fa-moon"></i> {{ numNotti }} {{ numNotti === 1 ? ('hoteldetail.notte' | translate) : ('hoteldetail.notti' | translate) }}
                 </div>
               }
 
               <div class="ndv-sidebar-field">
-                <label class="ndv-sidebar-label">OSPITI</label>
+                <label class="ndv-sidebar-label">{{ 'home.label.ospiti' | translate }}</label>
                 <div class="ndv-guests-row">
                   <i class="fas fa-users ndv-guests-icon"></i>
                   <input type="number" formControlName="numOspiti" min="1"
                          [max]="selectedCamera?.capienza ?? 10"
                          class="ndv-guests-input">
-                  <span class="ndv-guests-label">adulti</span>
+                  <span class="ndv-guests-label">{{ 'hoteldetail.adulti' | translate }}</span>
                 </div>
               </div>
 
@@ -332,14 +332,14 @@
 
             <!-- CAMERA SELEZIONATA -->
             <div class="ndv-sidebar-divider"></div>
-            <div class="ndv-selected-camera-label">Camera selezionata</div>
+            <div class="ndv-selected-camera-label">{{ 'hoteldetail.camera-selezionata' | translate }}</div>
             @if (selectedCamera) {
               <div class="ndv-selected-camera">
                 <div class="ndv-selected-cam-img">
                   <i class="fas fa-bed"></i>
                 </div>
                 <div class="ndv-selected-cam-info">
-                  <span class="ndv-selected-cam-tipo">{{ selectedCamera.tipo }}</span>
+                  <span class="ndv-selected-cam-tipo">{{ formatTipoCamera(selectedCamera.tipo) }}</span>
                   @if (selectedCamera.descrizione) {
                     <span class="ndv-selected-cam-desc">{{ selectedCamera.descrizione }}</span>
                   }
@@ -348,7 +348,7 @@
             } @else {
               <p class="ndv-no-camera-msg">
                 <i class="fas fa-hand-pointer"></i>
-                Seleziona una camera per continuare
+                {{ 'hoteldetail.seleziona-camera-continua' | translate }}
               </p>
             }
 
@@ -356,7 +356,7 @@
             @if (selectedCamera) {
               <div class="ndv-sidebar-divider"></div>
               <div class="ndv-price-row">
-                <span>€{{ selectedCamera.prezzoNotte | number:'1.0-0' }} × {{ numNotti > 0 ? numNotti : '—' }} {{ numNotti === 1 ? 'notte' : 'notti' }}</span>
+                <span>€{{ selectedCamera.prezzoNotte | number:'1.0-0' }} × {{ numNotti > 0 ? numNotti : '—' }} {{ numNotti === 1 ? ('hoteldetail.notte' | translate) : ('hoteldetail.notti' | translate) }}</span>
                 @if (numNotti > 0) {
                   <span>€{{ totaleCalcolato | number:'1.0-0' }}</span>
                 } @else {
@@ -364,14 +364,14 @@
                 }
               </div>
               <div class="ndv-total-row">
-                <span>Totale</span>
+                <span>{{ 'hoteldetail.totale' | translate }}</span>
                 @if (numNotti > 0) {
                   <span class="ndv-total-val">€{{ totaleCalcolato | number:'1.0-0' }}</span>
                 } @else {
-                  <span class="ndv-total-hint">Scegli le date</span>
+                  <span class="ndv-total-hint">{{ 'hoteldetail.scegli-date' | translate }}</span>
                 }
               </div>
-              <small class="ndv-tax-note">Tasse e costi inclusi</small>
+              <small class="ndv-tax-note">{{ 'hoteldetail.tasse-incluse' | translate }}</small>
             }
 
             <!-- BOTTONE PRENOTA -->
@@ -379,50 +379,50 @@
               <button class="ndv-btn-book"
                       [disabled]="!canPrenotare"
                       (click)="confermaPrenotazione()">
-                Prenota ora
+                {{ 'hoteldetail.prenota-ora' | translate }}
               </button>
               @if (!selectedCamera) {
-                <p class="ndv-book-hint">Seleziona una camera per prenotare</p>
+                <p class="ndv-book-hint">{{ 'hoteldetail.seleziona-per-prenotare' | translate }}</p>
               } @else if (numNotti <= 0) {
-                <p class="ndv-book-hint">Seleziona le date del soggiorno</p>
+                <p class="ndv-book-hint">{{ 'hoteldetail.seleziona-date' | translate }}</p>
               }
             }
 
             @if (!isGuest && !isAdmin) {
-              <p class="ndv-book-hint">Accedi come ospite per prenotare</p>
+              <p class="ndv-book-hint">{{ 'hoteldetail.accedi-come-ospite' | translate }}</p>
             }
 
             <!-- CANCELLAZIONE -->
             @if (selectedCamera) {
               <div class="ndv-cancel-note">
                 <i class="fas fa-shield-alt"></i>
-                Cancellazione gratuita fino a 3 giorni prima del check-in
+                {{ 'hoteldetail.cancellazione-nota' | translate }}
               </div>
             }
           </div>
 
           <!-- TRUST BOX -->
           <div class="ndv-trust-box">
-            <h4 class="ndv-trust-title">Prenota con fiducia</h4>
+            <h4 class="ndv-trust-title">{{ 'hoteldetail.prenota-fiducia' | translate }}</h4>
             <div class="ndv-trust-item">
               <i class="fas fa-medal ndv-trust-icon"></i>
               <div>
-                <span class="ndv-trust-label">Miglior prezzo garantito</span>
-                <span class="ndv-trust-sub">O troviamo di meglio</span>
+                <span class="ndv-trust-label">{{ 'hoteldetail.trust1-title' | translate }}</span>
+                <span class="ndv-trust-sub">{{ 'hoteldetail.trust1-sub' | translate }}</span>
               </div>
             </div>
             <div class="ndv-trust-item">
               <i class="fas fa-undo ndv-trust-icon"></i>
               <div>
-                <span class="ndv-trust-label">Cancellazione gratuita</span>
-                <span class="ndv-trust-sub">Fino a 3 giorni prima del check-in</span>
+                <span class="ndv-trust-label">{{ 'hoteldetail.trust2-title' | translate }}</span>
+                <span class="ndv-trust-sub">{{ 'hoteldetail.trust2-sub' | translate }}</span>
               </div>
             </div>
             <div class="ndv-trust-item">
               <i class="fas fa-headset ndv-trust-icon"></i>
               <div>
-                <span class="ndv-trust-label">Assistenza clienti 24/7</span>
-                <span class="ndv-trust-sub">Siamo sempre qui per te</span>
+                <span class="ndv-trust-label">{{ 'hoteldetail.trust3-title' | translate }}</span>
+                <span class="ndv-trust-sub">{{ 'hoteldetail.trust3-sub' | translate }}</span>
               </div>
             </div>
           </div>

@@ -1,21 +1,21 @@
 <div class="gestione-container">
   <header class="page-header">
     <div>
-      <h1>{{ isAdmin ? 'Gestione Hotel' : 'I Miei Hotel' }}</h1>
-      <p class="subtitle">{{ isAdmin ? 'Gestisci tutte le strutture' : 'Aggiungi e gestisci le tue strutture ricettive' }}</p>
+      <h1>{{ (isAdmin ? 'gestionehotel.title-admin' : 'gestionehotel.title-host') | translate }}</h1>
+      <p class="subtitle">{{ (isAdmin ? 'gestionehotel.subtitle-admin' : 'gestionehotel.subtitle-host') | translate }}</p>
     </div>
-    <button class="btn-primary" (click)="apriNuovoHotel()">+ Nuovo Hotel</button>
+    <button class="btn-primary" (click)="apriNuovoHotel()">{{ 'gestionehotel.nuovo-hotel' | translate }}</button>
   </header>
 
   <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
   <app-conferma-box *ngIf="showConfirm" [messaggio]="confirmMessage" (risposta)="gestisciRisposta($event)"></app-conferma-box>
 
   @if (loading) {
-    <div class="loading-state"><div class="spinner"></div><p>Caricamento...</p></div>
+    <div class="loading-state"><div class="spinner"></div><p>{{ 'common.caricamento' | translate }}</p></div>
   } @else if (hotels.length === 0) {
     <div class="empty-state">
       <i class="fas fa-hotel empty-icon"></i>
-      <p>Nessun hotel ancora. Creane uno!</p>
+      <p>{{ 'gestionehotel.empty' | translate }}</p>
     </div>
   } @else {
     @for (hotel of hotels; track hotel.id) {
@@ -32,13 +32,13 @@
           <div class="hotel-card-actions">
             <button class="btn-sm btn-secondary" (click)="gestisciCamere(hotel)">
               @if (hotelAperto?.id === hotel.id) {
-                Chiudi camere
+                {{ 'gestionehotel.chiudi-camere' | translate }}
               } @else {
-                <i class="fas fa-bed"></i> Camere ({{ hotel.camere?.length ?? 0 }})
+                <i class="fas fa-bed"></i> {{ 'gestionehotel.camere-count' | translate }} ({{ hotel.camere?.length ?? 0 }})
               }
             </button>
-            <button class="btn-sm btn-edit" (click)="apriModificaHotel(hotel)"><i class="fas fa-pen"></i> Modifica</button>
-            <button class="btn-sm btn-delete" (click)="chiediEliminaHotel(hotel)"><i class="fas fa-trash"></i> Elimina</button>
+            <button class="btn-sm btn-edit" (click)="apriModificaHotel(hotel)"><i class="fas fa-pen"></i> {{ 'common.modifica' | translate }}</button>
+            <button class="btn-sm btn-delete" (click)="chiediEliminaHotel(hotel)"><i class="fas fa-trash"></i> {{ 'common.elimina' | translate }}</button>
           </div>
         </div>
 
@@ -46,16 +46,16 @@
         @if (hotelAperto?.id === hotel.id) {
           <div class="camere-panel">
             <div class="camere-header">
-              <h4>Camere di {{ hotel.nome }}</h4>
-              <button class="btn-sm btn-primary" (click)="apriNuovaCamera()">+ Aggiungi camera</button>
+              <h4>{{ 'gestionehotel.camere-di' | translate }} {{ hotel.nome }}</h4>
+              <button class="btn-sm btn-primary" (click)="apriNuovaCamera()">{{ 'gestionehotel.aggiungi-camera' | translate }}</button>
             </div>
 
             @if (showCameraForm) {
               <form [formGroup]="cameraForm" (ngSubmit)="salvaCamera()" class="camera-form">
-                <h5>{{ editingCamera ? 'Modifica Camera' : 'Nuova Camera' }}</h5>
+                <h5>{{ (editingCamera ? 'gestionehotel.modifica-camera' : 'gestionehotel.nuova-camera') | translate }}</h5>
                 <div class="form-grid">
                   <div class="form-row">
-                    <label>Tipo</label>
+                    <label>{{ 'gestionehotel.tipo' | translate }}</label>
                     <select formControlName="tipo" class="form-input">
                       @for (t of tipiCamera; track t) {
                         <option [value]="t">{{ t }}</option>
@@ -63,36 +63,36 @@
                     </select>
                   </div>
                   <div class="form-row">
-                    <label>Prezzo/notte (€)</label>
+                    <label>{{ 'gestionehotel.prezzo-notte' | translate }}</label>
                     <input type="number" formControlName="prezzoNotte" class="form-input" min="0" step="0.01">
                     @if (cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid) {
-                      <small class="err">Campo obbligatorio</small>
+                      <small class="err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</small>
                     }
                   </div>
                   <div class="form-row">
-                    <label>Capienza ospiti</label>
+                    <label>{{ 'gestionehotel.capienza-ospiti' | translate }}</label>
                     <input type="number" formControlName="capienza" class="form-input" min="1">
                   </div>
                   <div class="form-row check-row">
                     <label>
                       <input type="checkbox" formControlName="disponibile">
-                      Disponibile
+                      {{ 'gestionehotel.disponibile' | translate }}
                     </label>
                   </div>
                 </div>
                 <div class="form-row full">
-                  <label>Descrizione</label>
-                  <textarea formControlName="descrizione" class="form-input" rows="2" placeholder="Dettagli camera..."></textarea>
+                  <label>{{ 'gestionehotel.descrizione' | translate }}</label>
+                  <textarea formControlName="descrizione" class="form-input" rows="2" [placeholder]="'gestionehotel.descrizione-camera-placeholder' | translate"></textarea>
                 </div>
                 <div class="form-actions">
-                  <button type="button" class="btn-sm btn-secondary" (click)="showCameraForm = false">Annulla</button>
-                  <button type="submit" class="btn-sm btn-primary">Salva</button>
+                  <button type="button" class="btn-sm btn-secondary" (click)="showCameraForm = false">{{ 'common.annulla' | translate }}</button>
+                  <button type="submit" class="btn-sm btn-primary">{{ 'gestionehotel.salva' | translate }}</button>
                 </div>
               </form>
             }
 
             @if (camere.length === 0 && !showCameraForm) {
-              <p class="no-data">Nessuna camera. Aggiungine una!</p>
+              <p class="no-data">{{ 'gestionehotel.nessuna-camera' | translate }}</p>
             }
             <div class="camere-list">
               @for (c of camere; track c.id) {
@@ -101,12 +101,12 @@
                     <span class="tipo-badge">{{ c.tipo }}</span>
                     <span class="capienza-label"><i class="fas fa-user"></i> {{ c.capienza }}</span>
                     <span class="disp-label" [class.ok]="c.disponibile" [class.no]="!c.disponibile">
-                      {{ c.disponibile ? 'Disponibile' : 'Occupata' }}
+                      {{ (c.disponibile ? 'gestionehotel.disponibile' : 'gestionehotel.occupata') | translate }}
                     </span>
                     <p class="camera-item-desc">{{ c.descrizione }}</p>
                   </div>
                   <div class="camera-item-right">
-                    <span class="prezzo-cam">€{{ c.prezzoNotte | number:'1.2-2' }}/notte</span>
+                    <span class="prezzo-cam">€{{ c.prezzoNotte | number:'1.2-2' }}{{ 'common.per-notte' | translate }}</span>
                     <div class="camera-item-actions">
                       <button class="btn-sm btn-edit" (click)="apriModificaCamera(c)"><i class="fas fa-pen"></i></button>
                       <button class="btn-sm btn-delete" (click)="chiediEliminaCamera(c)"><i class="fas fa-trash"></i></button>
@@ -126,63 +126,63 @@
     <div class="modal-overlay" (click)="showHotelForm = false">
       <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>{{ editingHotel ? 'Modifica Hotel' : 'Nuovo Hotel' }}</h3>
+          <h3>{{ (editingHotel ? 'gestionehotel.modifica-hotel-title' : 'gestionehotel.nuovo-hotel-title') | translate }}</h3>
           <button class="modal-close" (click)="showHotelForm = false">✕</button>
         </div>
         <div class="modal-body">
           <form [formGroup]="hotelForm" (ngSubmit)="salvaHotel()">
             <div class="form-grid-2">
               <div class="form-row">
-                <label>Nome struttura *</label>
-                <input type="text" formControlName="nome" class="form-input" placeholder="Es. Hotel Roma Centro">
+                <label>{{ 'gestionehotel.nome-struttura' | translate }}</label>
+                <input type="text" formControlName="nome" class="form-input" [placeholder]="'gestionehotel.nome-struttura-placeholder' | translate">
                 @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
-                  <small class="err">Campo obbligatorio</small>
+                  <small class="err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</small>
                 }
               </div>
               <div class="form-row">
-                <label>Stelle *</label>
+                <label>{{ 'gestionehotel.stelle' | translate }}</label>
                 <select formControlName="stelle" class="form-input">
-                  <option value="1">★ 1 stella</option>
-                  <option value="2">★★ 2 stelle</option>
-                  <option value="3">★★★ 3 stelle</option>
-                  <option value="4">★★★★ 4 stelle</option>
-                  <option value="5">★★★★★ 5 stelle</option>
+                  <option value="1">{{ 'gestionehotel.stella-1' | translate }}</option>
+                  <option value="2">{{ 'gestionehotel.stella-2' | translate }}</option>
+                  <option value="3">{{ 'gestionehotel.stella-3' | translate }}</option>
+                  <option value="4">{{ 'gestionehotel.stella-4' | translate }}</option>
+                  <option value="5">{{ 'gestionehotel.stella-5' | translate }}</option>
                 </select>
               </div>
               <div class="form-row">
-                <label>Città *</label>
-                <input type="text" formControlName="citta" class="form-input" placeholder="Es. Roma">
+                <label>{{ 'gestionehotel.citta' | translate }}</label>
+                <input type="text" formControlName="citta" class="form-input" [placeholder]="'gestionehotel.citta-placeholder' | translate">
                 @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
-                  <small class="err">Campo obbligatorio</small>
+                  <small class="err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</small>
                 }
               </div>
               <div class="form-row">
-                <label>Indirizzo *</label>
-                <input type="text" formControlName="indirizzo" class="form-input" placeholder="Via Roma 1">
+                <label>{{ 'gestionehotel.indirizzo' | translate }}</label>
+                <input type="text" formControlName="indirizzo" class="form-input" [placeholder]="'gestionehotel.indirizzo-placeholder' | translate">
                 @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
-                  <small class="err">Campo obbligatorio</small>
+                  <small class="err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</small>
                 }
               </div>
               <div class="form-row">
-                <label>Latitudine (opzionale)</label>
-                <input type="number" formControlName="latitudine" class="form-input" step="0.000001" placeholder="Es. 41.9028">
+                <label>{{ 'gestionehotel.latitudine' | translate }}</label>
+                <input type="number" formControlName="latitudine" class="form-input" step="0.000001" [placeholder]="'gestionehotel.latitudine-placeholder' | translate">
               </div>
               <div class="form-row">
-                <label>Longitudine (opzionale)</label>
-                <input type="number" formControlName="longitudine" class="form-input" step="0.000001" placeholder="Es. 12.4964">
+                <label>{{ 'gestionehotel.longitudine' | translate }}</label>
+                <input type="number" formControlName="longitudine" class="form-input" step="0.000001" [placeholder]="'gestionehotel.longitudine-placeholder' | translate">
               </div>
             </div>
             <div class="form-row">
-              <label>Descrizione *</label>
-              <textarea formControlName="descrizione" class="form-input" rows="3" placeholder="Descrivi la struttura..."></textarea>
+              <label>{{ 'gestionehotel.descrizione-hotel' | translate }}</label>
+              <textarea formControlName="descrizione" class="form-input" rows="3" [placeholder]="'gestionehotel.descrizione-hotel-placeholder' | translate"></textarea>
               @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
-                <small class="err">Campo obbligatorio</small>
+                <small class="err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</small>
               }
             </div>
 
             @if (serviziDisponibili.length > 0) {
               <div class="form-row">
-                <label>Servizi offerti</label>
+                <label>{{ 'gestionehotel.servizi-offerti' | translate }}</label>
                 <div class="servizi-check-grid">
                   @for (s of serviziDisponibili; track s.id) {
                     <label class="servizio-check" [class.selected]="isServizioSelezionato(s.id)">
@@ -195,8 +195,8 @@
             }
 
             <div class="modal-actions">
-              <button type="button" class="btn-secondary" (click)="showHotelForm = false">Annulla</button>
-              <button type="submit" class="btn-primary">{{ editingHotel ? 'Salva modifiche' : 'Crea hotel' }}</button>
+              <button type="button" class="btn-secondary" (click)="showHotelForm = false">{{ 'common.annulla' | translate }}</button>
+              <button type="submit" class="btn-primary">{{ (editingHotel ? 'gestionehotel.salva-modifiche' : 'gestionehotel.crea-hotel') | translate }}</button>
             </div>
           </form>
         </div>

@@ -3,22 +3,22 @@
   <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
 
   <!-- BREADCRUMB -->
-  <nav class="host-breadcrumb" aria-label="Percorso">
+  <nav class="host-breadcrumb" [attr.aria-label]="'myhotel.breadcrumb.percorso' | translate">
     <a routerLink="/dashboard/home" class="breadcrumb-link">
-      <i class="fas fa-home"></i> Home
+      <i class="fas fa-home"></i> {{ 'myhotel.breadcrumb.home' | translate }}
     </a>
     <span class="breadcrumb-sep">/</span>
-    <span class="breadcrumb-current">I miei hotel</span>
+    <span class="breadcrumb-current">{{ 'myhotel.title' | translate }}</span>
   </nav>
 
   <!-- HEADER -->
   <div class="host-hotels-header">
     <div class="host-hotels-header-left">
-      <h1 class="host-hotels-title">I miei hotel</h1>
-      <p class="host-hotels-subtitle">Gestisci tutte le tue strutture, le prenotazioni e le prestazioni in un unico posto.</p>
+      <h1 class="host-hotels-title">{{ 'myhotel.title' | translate }}</h1>
+      <p class="host-hotels-subtitle">{{ 'myhotel.subtitle' | translate }}</p>
     </div>
     <button class="btn-add-hotel-header" (click)="apriNuovoHotel()">
-      <i class="fas fa-plus-circle"></i> Aggiungi hotel
+      <i class="fas fa-plus-circle"></i> {{ 'myhotel.aggiungi-hotel' | translate }}
     </button>
   </div>
 
@@ -58,9 +58,9 @@
   } @else if (loadingError) {
     <div class="host-empty-state">
       <div class="empty-icon-wrap error-icon"><i class="fas fa-exclamation-triangle"></i></div>
-      <h3>Errore durante il caricamento</h3>
-      <p>Non è stato possibile recuperare i tuoi hotel. Controlla la connessione e riprova.</p>
-      <button class="btn-primary-navy" (click)="riprova()"><i class="fas fa-redo"></i> Riprova</button>
+      <h3>{{ 'myhotel.errore.titolo' | translate }}</h3>
+      <p>{{ 'myhotel.errore.testo' | translate }}</p>
+      <button class="btn-primary-navy" (click)="riprova()"><i class="fas fa-redo"></i> {{ 'myhotel.errore.riprova' | translate }}</button>
     </div>
 
   } @else {
@@ -70,28 +70,28 @@
       <div class="host-hotel-stat-card">
         <div class="stat-icon-wrap stat-green"><i class="fas fa-hotel"></i></div>
         <div class="stat-content">
-          <span class="stat-label">Hotel pubblicati</span>
+          <span class="stat-label">{{ 'myhotel.stat.pubblicati' | translate }}</span>
           <span class="stat-value">{{ hotelsPublicati }}</span>
         </div>
       </div>
       <div class="host-hotel-stat-card">
         <div class="stat-icon-wrap stat-orange"><i class="fas fa-file-alt"></i></div>
         <div class="stat-content">
-          <span class="stat-label">Bozze</span>
+          <span class="stat-label">{{ 'myhotel.stat.bozze' | translate }}</span>
           <span class="stat-value">{{ hotelsBozze }}</span>
         </div>
       </div>
       <div class="host-hotel-stat-card">
         <div class="stat-icon-wrap stat-blue"><i class="fas fa-calendar-check"></i></div>
         <div class="stat-content">
-          <span class="stat-label">Prenotazioni attive</span>
+          <span class="stat-label">{{ 'myhotel.stat.prenotazioni-attive' | translate }}</span>
           <span class="stat-value">{{ prenotazioniAttive }}</span>
         </div>
       </div>
       <div class="host-hotel-stat-card">
         <div class="stat-icon-wrap stat-purple"><i class="fas fa-wallet"></i></div>
         <div class="stat-content">
-          <span class="stat-label">Entrate mese</span>
+          <span class="stat-label">{{ 'myhotel.stat.entrate-mese' | translate }}</span>
           <span class="stat-value stat-value-sm">{{ fmtEuro(entrateMese) }}</span>
         </div>
       </div>
@@ -108,16 +108,16 @@
           <div class="filters-inner">
             <div class="search-wrap">
               <i class="fas fa-search search-icon"></i>
-              <input type="text" class="search-input" placeholder="Cerca hotel o città"
-                [(ngModel)]="searchQuery" aria-label="Cerca hotel o città">
+              <input type="text" class="search-input" [placeholder]="'myhotel.cerca-placeholder' | translate"
+                [(ngModel)]="searchQuery" [attr.aria-label]="'myhotel.cerca-placeholder' | translate">
             </div>
-            <select class="filter-select" [(ngModel)]="filterStato" aria-label="Filtra per stato">
-              <option value="">Stato</option>
-              <option value="PUBBLICATO">Pubblicato</option>
-              <option value="IN_REVISIONE">In revisione</option>
-              <option value="BOZZA">Bozza</option>
-              <option value="NON_ATTIVO">Non attivo</option>
-              <option value="SOSPESO">Sospeso</option>
+            <select class="filter-select" [(ngModel)]="filterStato" [attr.aria-label]="'myhotel.filtra-stato' | translate">
+              <option value="">{{ 'myhotel.stato.tutti' | translate }}</option>
+              <option value="PUBBLICATO">{{ 'myhotel.stato.pubblicato' | translate }}</option>
+              <option value="IN_REVISIONE">{{ 'myhotel.stato.in-revisione' | translate }}</option>
+              <option value="BOZZA">{{ 'myhotel.stato.bozza' | translate }}</option>
+              <option value="NON_ATTIVO">{{ 'myhotel.stato.non-attivo' | translate }}</option>
+              <option value="SOSPESO">{{ 'myhotel.stato.sospeso' | translate }}</option>
             </select>
           </div>
         </div>
@@ -127,17 +127,17 @@
           @if (hotels.length === 0) {
             <div class="host-empty-state">
               <div class="empty-icon-wrap"><i class="fas fa-hotel"></i></div>
-              <h3>Non hai ancora strutture</h3>
-              <p>Aggiungi il tuo primo hotel e inizia a ricevere prenotazioni dagli ospiti.</p>
+              <h3>{{ 'myhotel.empty.titolo' | translate }}</h3>
+              <p>{{ 'myhotel.empty.testo' | translate }}</p>
               <button class="btn-primary-navy" (click)="apriNuovoHotel()">
-                <i class="fas fa-plus-circle"></i> Aggiungi hotel
+                <i class="fas fa-plus-circle"></i> {{ 'myhotel.aggiungi-hotel' | translate }}
               </button>
             </div>
           } @else if (hotelsFiltrati.length === 0) {
             <div class="host-empty-state host-empty-state-compact">
               <i class="fas fa-search" style="font-size:2rem;color:#D1D9E6;margin-bottom:12px;"></i>
-              <h3>Nessun risultato</h3>
-              <p>Nessuna struttura corrisponde ai filtri applicati.</p>
+              <h3>{{ 'myhotel.empty-filtri.titolo' | translate }}</h3>
+              <p>{{ 'myhotel.empty-filtri.testo' | translate }}</p>
             </div>
           } @else {
             @for (hotel of hotelsFiltrati; track hotel.id) {
@@ -146,11 +146,11 @@
                 <!-- IMMAGINE -->
                 <div class="host-hotel-image">
                   @if (getHotelImg(hotel)) {
-                    <img [src]="getHotelImg(hotel)" [alt]="hotel.nome || 'Hotel'" loading="lazy">
+                    <img [src]="getHotelImg(hotel)" [alt]="hotel.nome || ('myhotel.title' | translate)" loading="lazy">
                   } @else {
                     <div class="hotel-img-placeholder">
                       <div class="placeholder-initials">{{ getHotelInitials(hotel.nome) }}</div>
-                      <span class="placeholder-label">Nessuna immagine</span>
+                      <span class="placeholder-label">{{ 'myhotel.nessuna-immagine' | translate }}</span>
                     </div>
                   }
                 </div>
@@ -158,19 +158,19 @@
                 <!-- CONTENUTO -->
                 <div class="host-hotel-content">
                   <div class="hotel-name-row">
-                    <h3 class="hotel-name">{{ hotel.nome || 'Nome struttura non disponibile' }}</h3>
+                    <h3 class="hotel-name">{{ hotel.nome || ('myhotel.nome-non-disponibile' | translate) }}</h3>
                     <span class="host-hotel-status-badge" [ngClass]="getStatoBadgeClass(hotel)">
                       {{ getStatoLabel(hotel) }}
                     </span>
                   </div>
                   <div class="hotel-location">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ hotel.citta || 'Posizione non disponibile' }}{{ hotel.indirizzo ? ', ' + hotel.indirizzo : '' }}</span>
+                    <span>{{ hotel.citta || ('myhotel.posizione-non-disponibile' | translate) }}{{ hotel.indirizzo ? ', ' + hotel.indirizzo : '' }}</span>
                   </div>
                   <div class="hotel-details">
-                    <span class="detail-item"><i class="fas fa-bed"></i> {{ getCamereCount(hotel) }} {{ getCamereCount(hotel) === 1 ? 'camera' : 'camere' }}</span>
+                    <span class="detail-item"><i class="fas fa-bed"></i> {{ getCamereCount(hotel) }} {{ getCamereCount(hotel) === 1 ? ('myhotel.camera' | translate) : ('myhotel.camere' | translate) }}</span>
                     <span class="detail-sep">·</span>
-                    <span class="detail-item"><i class="fas fa-calendar"></i> {{ getPrenotazioniMese(hotel) }} prenotazioni questo mese</span>
+                    <span class="detail-item"><i class="fas fa-calendar"></i> {{ getPrenotazioniMese(hotel) }} {{ 'myhotel.prenotazioni-mese' | translate }}</span>
                     @if (getRatingMedia(hotel) !== null) {
                       <span class="detail-sep">·</span>
                       <span class="detail-item rating"><i class="fas fa-star"></i> {{ getRatingMedia(hotel) | number:'1.1-1' }}</span>
@@ -194,7 +194,7 @@
                 <!-- DESTRA: STATS + AZIONI -->
                 <div class="host-hotel-right">
                   <div class="host-hotel-occupancy">
-                    <span class="occ-label">Occupazione</span>
+                    <span class="occ-label">{{ 'myhotel.occupazione' | translate }}</span>
                     <span class="occ-value">{{ getOccupazioneHotel(hotel) }}%</span>
                     <div class="occ-bar">
                       <div class="occ-bar-fill"
@@ -204,16 +204,16 @@
                     </div>
                   </div>
                   <div class="host-hotel-revenue">
-                    <span class="rev-label">Entrate mese</span>
+                    <span class="rev-label">{{ 'myhotel.entrate-mese' | translate }}</span>
                     <span class="rev-value">{{ fmtEuro(getEntrateMeseHotel(hotel)) }}</span>
                   </div>
                   <div class="host-hotel-actions">
-                    <button class="btn-action btn-outline" (click)="vaiDettagli(hotel)">Vedi dettagli</button>
+                    <button class="btn-action btn-outline" (click)="vaiDettagli(hotel)">{{ 'myhotel.vedi-dettagli' | translate }}</button>
                     <button class="btn-action btn-outline" (click)="apriModificaHotel(hotel)">
-                      <i class="fas fa-pen"></i> Modifica
+                      <i class="fas fa-pen"></i> {{ 'common.modifica' | translate }}
                     </button>
                     <button class="btn-action btn-navy" (click)="vaiGestisciCamere(hotel)">
-                      <i class="fas fa-bed"></i> Gestisci camere
+                      <i class="fas fa-bed"></i> {{ 'myhotel.gestisci-camere' | translate }}
                     </button>
                   </div>
                 </div>
@@ -228,30 +228,30 @@
       <div class="host-hotels-sidebar">
 
         <div class="quick-actions-card sidebar-card">
-          <h3 class="sidebar-card-title">Azioni rapide</h3>
+          <h3 class="sidebar-card-title">{{ 'myhotel.azioni-rapide' | translate }}</h3>
           <div class="quick-actions-list">
             <button class="quick-action-item" (click)="apriNuovoHotel()">
               <span class="qa-icon-wrap qa-green"><i class="fas fa-plus-circle"></i></span>
-              <span class="qa-text">Aggiungi nuova struttura</span>
+              <span class="qa-text">{{ 'myhotel.qa.aggiungi-struttura' | translate }}</span>
               <i class="fas fa-chevron-right qa-arrow"></i>
             </button>
             <button class="quick-action-item" (click)="vaiStatistiche()">
               <span class="qa-icon-wrap qa-blue"><i class="fas fa-calendar-alt"></i></span>
-              <span class="qa-text">Gestisci disponibilità</span>
+              <span class="qa-text">{{ 'myhotel.qa.gestisci-disponibilita' | translate }}</span>
               <i class="fas fa-chevron-right qa-arrow"></i>
             </button>
             <button class="quick-action-item" (click)="vaiPrenotazioni()">
               <span class="qa-icon-wrap qa-purple"><i class="fas fa-comments"></i></span>
-              <span class="qa-text">Messaggi ospiti</span>
+              <span class="qa-text">{{ 'myhotel.qa.messaggi-ospiti' | translate }}</span>
               <i class="fas fa-chevron-right qa-arrow"></i>
             </button>
           </div>
         </div>
 
         <div class="host-reminders-card sidebar-card">
-          <h3 class="sidebar-card-title">Promemoria</h3>
+          <h3 class="sidebar-card-title">{{ 'myhotel.promemoria' | translate }}</h3>
           @if (promemoria.length === 0) {
-            <p class="no-reminders">Nessun promemoria al momento</p>
+            <p class="no-reminders">{{ 'myhotel.nessun-promemoria' | translate }}</p>
           } @else {
             <div class="reminders-list">
               @for (r of promemoria; track r.title) {
@@ -269,15 +269,15 @@
             </div>
           }
           <button class="view-all-link" (click)="vaiPrenotazioni()">
-            Vedi tutti i promemoria <i class="fas fa-chevron-right"></i>
+            {{ 'myhotel.vedi-tutti-promemoria' | translate }} <i class="fas fa-chevron-right"></i>
           </button>
         </div>
 
         <div class="host-support-card sidebar-card">
-          <h3 class="sidebar-card-title">Supporto host</h3>
-          <p class="support-text">Hai domande o hai bisogno di aiuto?</p>
+          <h3 class="sidebar-card-title">{{ 'myhotel.supporto.titolo' | translate }}</h3>
+          <p class="support-text">{{ 'myhotel.supporto.testo' | translate }}</p>
           <button class="btn-support" (click)="vaiSupporto()">
-            <i class="fas fa-headset"></i> Contatta assistenza
+            <i class="fas fa-headset"></i> {{ 'myhotel.supporto.contatta' | translate }}
           </button>
         </div>
 
@@ -292,7 +292,7 @@
 <!-- ══════════════════════════════════════════════ -->
 @if (showHotelModal) {
   <div class="hm-overlay" (click)="chiudiModal()" role="dialog" aria-modal="true"
-    [attr.aria-label]="editingHotel ? 'Modifica hotel' : 'Aggiungi hotel'">
+    [attr.aria-label]="editingHotel ? ('myhotel.modal.modifica-hotel' | translate) : ('myhotel.modal.aggiungi-hotel' | translate)">
     <div class="hm-modal" (click)="$event.stopPropagation()">
 
       <!-- HEADER -->
@@ -302,11 +302,11 @@
             <i class="fas" [ngClass]="editingHotel ? 'fa-pen' : 'fa-hotel'"></i>
           </div>
           <div>
-            <h2 class="hm-title">{{ editingHotel ? 'Modifica struttura' : 'Aggiungi nuova struttura' }}</h2>
-            <p class="hm-subtitle">{{ editingHotel ? 'Aggiorna i dati della struttura' : 'Inserisci i dati per pubblicare la tua struttura su Ndovado' }}</p>
+            <h2 class="hm-title">{{ editingHotel ? ('myhotel.modal.modifica-struttura' | translate) : ('myhotel.modal.aggiungi-struttura' | translate) }}</h2>
+            <p class="hm-subtitle">{{ editingHotel ? ('myhotel.modal.aggiorna-dati' | translate) : ('myhotel.modal.inserisci-dati' | translate) }}</p>
           </div>
         </div>
-        <button class="hm-close" (click)="chiudiModal()" aria-label="Chiudi">
+        <button class="hm-close" (click)="chiudiModal()" [attr.aria-label]="'common.chiudi' | translate">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -318,42 +318,42 @@
           <!-- SEZIONE 1: Informazioni principali -->
           <div class="hm-section">
             <h3 class="hm-section-title">
-              <span class="hm-step">1</span> Informazioni principali
+              <span class="hm-step">1</span> {{ 'myhotel.modal.sezione1' | translate }}
             </h3>
             <div class="hm-grid-2">
               <div class="hm-field hm-field-full">
-                <label class="hm-label">Nome struttura <span class="hm-required">*</span></label>
+                <label class="hm-label">{{ 'myhotel.modal.nome-struttura' | translate }} <span class="hm-required">*</span></label>
                 <input type="text" formControlName="nome" class="hm-input"
-                  placeholder="Es. Hotel Belvedere Roma"
+                  [placeholder]="'myhotel.modal.nome-placeholder' | translate"
                   [class.hm-input-error]="hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid">
                 @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
-                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
                 }
               </div>
               <div class="hm-field">
-                <label class="hm-label">Città <span class="hm-required">*</span></label>
-                <input type="text" formControlName="citta" class="hm-input" placeholder="Es. Roma"
+                <label class="hm-label">{{ 'myhotel.modal.citta' | translate }} <span class="hm-required">*</span></label>
+                <input type="text" formControlName="citta" class="hm-input" [placeholder]="'myhotel.modal.citta-placeholder' | translate"
                   [class.hm-input-error]="hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid">
                 @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
-                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
                 }
               </div>
               <div class="hm-field">
-                <label class="hm-label">Stelle <span class="hm-required">*</span></label>
+                <label class="hm-label">{{ 'myhotel.modal.stelle' | translate }} <span class="hm-required">*</span></label>
                 <select formControlName="stelle" class="hm-input hm-select">
-                  <option value="1">★ 1 stella</option>
-                  <option value="2">★★ 2 stelle</option>
-                  <option value="3">★★★ 3 stelle</option>
-                  <option value="4">★★★★ 4 stelle</option>
-                  <option value="5">★★★★★ 5 stelle</option>
+                  <option value="1">{{ 'myhotel.modal.stelle-1' | translate }}</option>
+                  <option value="2">{{ 'myhotel.modal.stelle-2' | translate }}</option>
+                  <option value="3">{{ 'myhotel.modal.stelle-3' | translate }}</option>
+                  <option value="4">{{ 'myhotel.modal.stelle-4' | translate }}</option>
+                  <option value="5">{{ 'myhotel.modal.stelle-5' | translate }}</option>
                 </select>
               </div>
               <div class="hm-field hm-field-full">
-                <label class="hm-label">Indirizzo <span class="hm-required">*</span></label>
-                <input type="text" formControlName="indirizzo" class="hm-input" placeholder="Es. Via Roma 1"
+                <label class="hm-label">{{ 'myhotel.modal.indirizzo' | translate }} <span class="hm-required">*</span></label>
+                <input type="text" formControlName="indirizzo" class="hm-input" [placeholder]="'myhotel.modal.indirizzo-placeholder' | translate"
                   [class.hm-input-error]="hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid">
                 @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
-                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
                 }
               </div>
             </div>
@@ -362,16 +362,16 @@
           <!-- SEZIONE 2: Descrizione -->
           <div class="hm-section">
             <h3 class="hm-section-title">
-              <span class="hm-step">2</span> Descrizione
+              <span class="hm-step">2</span> {{ 'myhotel.modal.sezione2' | translate }}
             </h3>
             <div class="hm-field">
-              <label class="hm-label">Descrizione struttura <span class="hm-required">*</span></label>
+              <label class="hm-label">{{ 'myhotel.modal.descrizione-struttura' | translate }} <span class="hm-required">*</span></label>
               <textarea formControlName="descrizione" class="hm-input hm-textarea" rows="4"
-                placeholder="Descrivi la tua struttura: posizione, atmosfera, punti di forza, servizi inclusi..."
+                [placeholder]="'myhotel.modal.descrizione-placeholder' | translate"
                 [class.hm-input-error]="hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid">
               </textarea>
               @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
-                <span class="hm-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
               }
             </div>
           </div>
@@ -379,18 +379,18 @@
           <!-- SEZIONE 3: Posizione GPS (opzionale) -->
           <div class="hm-section">
             <h3 class="hm-section-title">
-              <span class="hm-step">3</span> Posizione GPS <span class="hm-optional">(opzionale)</span>
+              <span class="hm-step">3</span> {{ 'myhotel.modal.sezione3' | translate }} <span class="hm-optional">{{ 'myhotel.modal.opzionale' | translate }}</span>
             </h3>
             <div class="hm-grid-2">
               <div class="hm-field">
-                <label class="hm-label">Latitudine</label>
+                <label class="hm-label">{{ 'myhotel.modal.latitudine' | translate }}</label>
                 <input type="number" formControlName="latitudine" class="hm-input"
-                  step="0.000001" placeholder="Es. 41.9028">
+                  step="0.000001" [placeholder]="'myhotel.modal.latitudine-placeholder' | translate">
               </div>
               <div class="hm-field">
-                <label class="hm-label">Longitudine</label>
+                <label class="hm-label">{{ 'myhotel.modal.longitudine' | translate }}</label>
                 <input type="number" formControlName="longitudine" class="hm-input"
-                  step="0.000001" placeholder="Es. 12.4964">
+                  step="0.000001" [placeholder]="'myhotel.modal.longitudine-placeholder' | translate">
               </div>
             </div>
           </div>
@@ -399,7 +399,7 @@
           @if (serviziDisponibili.length > 0) {
             <div class="hm-section">
               <h3 class="hm-section-title">
-                <span class="hm-step">4</span> Servizi offerti <span class="hm-optional">(opzionale)</span>
+                <span class="hm-step">4</span> {{ 'myhotel.modal.sezione4' | translate }} <span class="hm-optional">{{ 'myhotel.modal.opzionale' | translate }}</span>
               </h3>
               <div class="hm-servizi-grid">
                 @for (s of serviziDisponibili; track s.id) {
@@ -416,14 +416,14 @@
           <!-- FOOTER AZIONI -->
           <div class="hm-footer">
             <button type="button" class="hm-btn-cancel" (click)="chiudiModal()" [disabled]="savingHotel">
-              Annulla
+              {{ 'common.annulla' | translate }}
             </button>
             <button type="submit" class="hm-btn-save" [disabled]="savingHotel">
               @if (savingHotel) {
-                <span class="hm-spinner"></span> Salvataggio...
+                <span class="hm-spinner"></span> {{ 'myhotel.modal.salvataggio' | translate }}
               } @else {
                 <i class="fas" [ngClass]="editingHotel ? 'fa-save' : 'fa-plus-circle'"></i>
-                {{ editingHotel ? 'Salva modifiche' : 'Crea struttura' }}
+                {{ editingHotel ? ('myhotel.modal.salva-modifiche' | translate) : ('myhotel.modal.crea-struttura' | translate) }}
               }
             </button>
           </div>

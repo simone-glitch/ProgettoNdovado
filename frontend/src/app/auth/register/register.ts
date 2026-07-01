@@ -3,12 +3,14 @@ import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { Alert } from '../../components/alert/alert';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, CommonModule, Alert],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, Alert, SharedModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -32,7 +34,7 @@ export class Register {
     ])
   });
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private i18n: TranslationService) {}
 
   onSubmit(): void {
     if (!this.registerForm.valid) { this.registerForm.markAllAsTouched(); return; }
@@ -47,12 +49,12 @@ export class Register {
       telefono: v.telefono || undefined
     }).subscribe({
       next: () => {
-        this.showAlertMessage('Registrazione completata! Ora puoi effettuare il login.', 'success');
+        this.showAlertMessage(this.i18n.translate('auth.msg.registrazione-ok', 'it'), 'success');
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (err) => {
-        let msg = 'Impossibile completare la registrazione.';
-        if (err.status === 0)                  msg = 'Server non raggiungibile.';
+        let msg = this.i18n.translate('auth.msg.registrazione-err', 'it');
+        if (err.status === 0)                  msg = this.i18n.translate('auth.msg.server-non-raggiungibile', 'it');
         else if (typeof err.error === 'string') msg = err.error;
         else if (err.error?.message)            msg = err.error.message;
         this.showAlertMessage(msg, 'error');

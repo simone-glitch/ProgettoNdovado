@@ -6,28 +6,28 @@
 
       <img src="/assets/images/logo-ndovado.png" alt="Ndovado" class="auth-logo-img">
 
-      <p class="auth-visual-tagline">Registrati gratis e inizia<br>a esplorare il mondo.</p>
+      <p class="auth-visual-tagline">{{ 'auth.register.tagline1' | translate:'it' }}<br>{{ 'auth.register.tagline2' | translate:'it' }}</p>
 
       <div class="auth-visual-feats">
         <div class="auth-feat">
           <div class="auth-feat-ico"><i class="fas fa-bolt"></i></div>
           <div>
-            <strong>Registrazione in 30 secondi</strong>
-            <span>veloce e senza impegno</span>
+            <strong>{{ 'auth.feat.veloce-title' | translate:'it' }}</strong>
+            <span>{{ 'auth.feat.veloce-sub' | translate:'it' }}</span>
           </div>
         </div>
         <div class="auth-feat">
           <div class="auth-feat-ico"><i class="fas fa-hotel"></i></div>
           <div>
-            <strong>Ospite o Struttura</strong>
-            <span>prenota o pubblica il tuo hotel</span>
+            <strong>{{ 'auth.feat.ospite-title' | translate:'it' }}</strong>
+            <span>{{ 'auth.feat.ospite-sub' | translate:'it' }}</span>
           </div>
         </div>
         <div class="auth-feat">
           <div class="auth-feat-ico"><i class="fas fa-shield-alt"></i></div>
           <div>
-            <strong>Accesso sicuro</strong>
-            <span>autenticazione protetta JWT</span>
+            <strong>{{ 'auth.feat.jwt-title' | translate:'it' }}</strong>
+            <span>{{ 'auth.feat.jwt-sub' | translate:'it' }}</span>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
       <!-- Tab switcher -->
       <div class="auth-tabs">
         <a routerLink="/login" class="auth-tab">Login</a>
-        <span class="auth-tab auth-tab--active">Registrati</span>
+        <span class="auth-tab auth-tab--active">{{ 'auth.registrati' | translate:'it' }}</span>
       </div>
 
       <app-alert
@@ -57,93 +57,93 @@
         (dismissEvent)="onAlertDismiss()">
       </app-alert>
 
-      <h2 class="auth-heading">Crea account</h2>
-      <p class="auth-sub">Benvenuto su Ndovado — prenota il tuo prossimo soggiorno.</p>
+      <h2 class="auth-heading">{{ 'auth.crea-account' | translate:'it' }}</h2>
+      <p class="auth-sub">{{ 'auth.register.subtitle' | translate:'it' }}</p>
 
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
         <div class="auth-form-row">
           <div class="auth-field">
-            <label class="auth-label">Nome</label>
+            <label class="auth-label">{{ 'common.nome' | translate:'it' }}</label>
             <div class="auth-input-wrap">
               <i class="fas fa-user auth-ico"></i>
-              <input class="auth-input" type="text" formControlName="nome" placeholder="Mario">
+              <input class="auth-input" type="text" formControlName="nome" [placeholder]="'auth.placeholder.nome-esempio' | translate:'it'">
             </div>
             @if (registerForm.get('nome')?.touched && registerForm.get('nome')?.invalid) {
-              <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</small>
+              <small class="auth-err"><i class="fas fa-exclamation-circle"></i> {{ 'auth.campo-obbligatorio' | translate:'it' }}</small>
             }
           </div>
           <div class="auth-field">
-            <label class="auth-label">Cognome</label>
+            <label class="auth-label">{{ 'common.cognome' | translate:'it' }}</label>
             <div class="auth-input-wrap">
               <i class="fas fa-user auth-ico"></i>
-              <input class="auth-input" type="text" formControlName="cognome" placeholder="Rossi">
+              <input class="auth-input" type="text" formControlName="cognome" [placeholder]="'auth.placeholder.cognome-esempio' | translate:'it'">
             </div>
             @if (registerForm.get('cognome')?.touched && registerForm.get('cognome')?.invalid) {
-              <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</small>
+              <small class="auth-err"><i class="fas fa-exclamation-circle"></i> {{ 'auth.campo-obbligatorio' | translate:'it' }}</small>
             }
           </div>
         </div>
 
         <div class="auth-field">
-          <label class="auth-label">Email</label>
+          <label class="auth-label">{{ 'common.email' | translate:'it' }}</label>
           <div class="auth-input-wrap">
             <i class="fas fa-envelope auth-ico"></i>
-            <input class="auth-input" type="email" formControlName="email" placeholder="mario.rossi@email.com">
+            <input class="auth-input" type="email" formControlName="email" [placeholder]="'auth.placeholder.email-esempio' | translate:'it'">
           </div>
           @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
-            <small class="auth-err"><i class="fas fa-exclamation-circle"></i> Inserisci un'email valida</small>
+            <small class="auth-err"><i class="fas fa-exclamation-circle"></i> {{ 'auth.email-valida' | translate:'it' }}</small>
           }
         </div>
 
         <div class="auth-field">
-          <label class="auth-label">Password</label>
+          <label class="auth-label">{{ 'common.password' | translate:'it' }}</label>
           <div class="auth-input-wrap">
             <i class="fas fa-lock auth-ico"></i>
-            <input class="auth-input" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Min. 8 caratteri, 1 maiuscola, 1 numero">
+            <input class="auth-input" [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'auth.placeholder.password-regole' | translate:'it'">
             <button type="button" class="auth-eye-btn" (click)="showPassword = !showPassword" tabindex="-1">
               <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
           </div>
           @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
-            <small class="auth-err"><i class="fas fa-lock"></i> Min. 8 caratteri, una maiuscola e un numero</small>
+            <small class="auth-err"><i class="fas fa-lock"></i> {{ 'auth.password-regole-errore' | translate:'it' }}</small>
           }
         </div>
 
         <div class="auth-field">
-          <label class="auth-label">Telefono <span class="auth-label-optional">(opzionale)</span></label>
+          <label class="auth-label">{{ 'common.telefono' | translate:'it' }} <span class="auth-label-optional">{{ 'auth.opzionale' | translate:'it' }}</span></label>
           <div class="auth-input-wrap">
             <i class="fas fa-phone auth-ico"></i>
-            <input class="auth-input" type="tel" formControlName="telefono" placeholder="+39 333 123 4567">
+            <input class="auth-input" type="tel" formControlName="telefono" [placeholder]="'auth.placeholder.telefono-esempio' | translate:'it'">
           </div>
         </div>
 
         <div class="auth-field">
-          <label class="auth-label">Tipo di account</label>
+          <label class="auth-label">{{ 'auth.tipo-account' | translate:'it' }}</label>
           <div class="auth-ruolo-grid">
             <label class="auth-ruolo-opt" [class.auth-ruolo-opt--active]="registerForm.get('ruolo')?.value === 'GUEST'">
               <input type="radio" formControlName="ruolo" value="GUEST">
               <i class="fas fa-suitcase-rolling"></i>
-              <span class="auth-ruolo-name">Ospite</span>
-              <span class="auth-ruolo-desc">Cerca e prenota hotel</span>
+              <span class="auth-ruolo-name">{{ 'auth.ruolo-guest' | translate:'it' }}</span>
+              <span class="auth-ruolo-desc">{{ 'auth.ruolo-guest-desc' | translate:'it' }}</span>
             </label>
             <label class="auth-ruolo-opt" [class.auth-ruolo-opt--active]="registerForm.get('ruolo')?.value === 'HOST'">
               <input type="radio" formControlName="ruolo" value="HOST">
               <i class="fas fa-building"></i>
-              <span class="auth-ruolo-name">Struttura</span>
-              <span class="auth-ruolo-desc">Pubblica e gestisci hotel</span>
+              <span class="auth-ruolo-name">{{ 'auth.ruolo-host' | translate:'it' }}</span>
+              <span class="auth-ruolo-desc">{{ 'auth.ruolo-host-desc' | translate:'it' }}</span>
             </label>
           </div>
         </div>
 
         <button type="submit" class="auth-btn-primary" [disabled]="registerForm.invalid">
-          Crea account
+          {{ 'auth.crea-account' | translate:'it' }}
         </button>
 
       </form>
 
       <p class="auth-switch">
-        Hai già un account? <a routerLink="/login">Accedi</a>
+        {{ 'auth.hai-account' | translate:'it' }} <a routerLink="/login">{{ 'auth.accedi' | translate:'it' }}</a>
       </p>
 
     </div>

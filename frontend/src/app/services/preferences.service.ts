@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 export interface UserPrefs {
   lingua: string;
   valuta: string;
-  tema:   string;
 }
 
 const RATES: Record<string, number> = { EUR: 1, USD: 1.08, GBP: 0.86, CHF: 0.96 };
@@ -26,7 +25,11 @@ const CURRENCY_CODES: Record<string, string> = {
 @Injectable({ providedIn: 'root' })
 export class PreferencesService {
 
-  private _prefs: UserPrefs = { lingua: 'Italiano', valuta: 'EUR (€)', tema: 'Chiaro' };
+  private _prefs: UserPrefs = { lingua: 'Italiano', valuta: 'EUR (€)' };
+
+  constructor() {
+    this.load();
+  }
 
   private get userKey(): string {
     try {
@@ -62,7 +65,6 @@ export class PreferencesService {
 
   get lingua(): string { return this._prefs.lingua; }
   get valuta(): string { return this._prefs.valuta; }
-  get tema():   string { return this._prefs.tema; }
 
   get langCode(): string {
     return LANG_CODES[this._prefs.lingua] ?? 'it';

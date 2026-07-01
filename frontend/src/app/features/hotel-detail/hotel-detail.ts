@@ -6,6 +6,7 @@ import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { RecensioneService } from '../../services/recensione.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -47,7 +48,8 @@ export class HotelDetail implements OnInit, AfterViewInit {
     private hotelService: HotelService,
     private prenotazioneService: PrenotazioneService,
     private recensioneService: RecensioneService,
-    private authService: AuthService
+    private authService: AuthService,
+    private i18n: TranslationService
   ) {}
 
   ngOnInit() {
@@ -148,9 +150,24 @@ export class HotelDetail implements OnInit, AfterViewInit {
     return new Date().toISOString().split('T')[0];
   }
 
+  private readonly tipoCameraKeys: Record<string, string> = {
+    SINGOLA: 'booking.camera.singola',
+    DOPPIA: 'booking.camera.doppia',
+    TRIPLA: 'booking.camera.tripla',
+    SUITE: 'booking.camera.suite',
+    FAMILIARE: 'booking.camera.familiare',
+    DELUXE: 'booking.camera.deluxe',
+  };
+
+  formatTipoCamera(tipo: string | null | undefined): string {
+    if (!tipo) return '';
+    const key = this.tipoCameraKeys[tipo.toUpperCase()];
+    return key ? this.i18n.translate(key) : tipo;
+  }
+
   confermaPrenotazione() {
     if (!this.selectedCamera) {
-      this.showAlertMessage('Seleziona una camera per continuare.', 'warning');
+      this.showAlertMessage(this.i18n.translate('hoteldetail.msg.seleziona-camera'), 'warning');
       return;
     }
     if (this.bookingForm.invalid) { this.bookingForm.markAllAsTouched(); return; }
@@ -159,10 +176,10 @@ export class HotelDetail implements OnInit, AfterViewInit {
     const checkout = new Date(v.dataCheckout);
     const today    = new Date(); today.setHours(0, 0, 0, 0);
     if (checkin < today) {
-      this.showAlertMessage('La data di check-in non può essere nel passato.', 'error'); return;
+      this.showAlertMessage(this.i18n.translate('hoteldetail.msg.checkin-passato'), 'error'); return;
     }
     if (checkout <= checkin) {
-      this.showAlertMessage('La data di check-out deve essere successiva al check-in.', 'error'); return;
+      this.showAlertMessage(this.i18n.translate('hoteldetail.msg.checkout-prima'), 'error'); return;
     }
     this.prenotazioneService.crea({
       idCamera:     this.selectedCamera.id,
@@ -171,14 +188,14 @@ export class HotelDetail implements OnInit, AfterViewInit {
       numOspiti:    parseInt(v.numOspiti, 10)
     }).subscribe({
       next: () => {
-        this.showAlertMessage('Prenotazione creata con successo!', 'success');
+        this.showAlertMessage(this.i18n.translate('hoteldetail.msg.prenotazione-ok'), 'success');
         this.selectedCamera = null;
         this.bookingForm.reset({ numOspiti: 1 });
       },
       error: (e) => {
         const msg = (typeof e.error === 'string' && e.error)
           ? e.error
-          : (e.error?.message ?? 'Errore nella prenotazione. Riprova.');
+          : (e.error?.message ?? this.i18n.translate('hoteldetail.msg.prenotazione-err'));
         this.showAlertMessage(msg, 'error');
       }
     });
@@ -190,15 +207,15 @@ export class HotelDetail implements OnInit, AfterViewInit {
     this.recensioneService.aggiungi({ idHotel: this.hotel.id, titolo: v.titolo, testo: v.testo, voto: v.voto }).subscribe({
       next: () => {
         this.showReviewForm = false;
-        this.showAlertMessage('Recensione aggiunta!', 'success');
+        this.showAlertMessage(this.i18n.translate('hoteldetail.msg.recensione-ok'), 'success');
         this.caricaRecensioni(this.hotel.id);
       },
-      error: (e) => this.showAlertMessage(e.error?.message ?? 'Errore.', 'error')
+      error: (e) => this.showAlertMessage(e.error?.message ?? this.i18n.translate('hoteldetail.msg.errore'), 'error')
     });
   }
 
   chiediEliminaRecensione(rec: any) {
-    this.confirmMessage = 'Eliminare questa recensione?';
+    this.confirmMessage = this.i18n.translate('hoteldetail.msg.elimina-recensione');
     this.itemToDelete = rec;
     this.showConfirm = true;
   }
@@ -207,8 +224,8 @@ export class HotelDetail implements OnInit, AfterViewInit {
     this.showConfirm = false;
     if (risposta && this.itemToDelete) {
       this.recensioneService.elimina(this.itemToDelete.id).subscribe({
-        next: () => { this.showAlertMessage('Recensione eliminata.', 'success'); this.caricaRecensioni(this.hotel.id); },
-        error: () => this.showAlertMessage('Errore.', 'error')
+        next: () => { this.showAlertMessage(this.i18n.translate('hoteldetail.msg.recensione-eliminata'), 'success'); this.caricaRecensioni(this.hotel.id); },
+        error: () => this.showAlertMessage(this.i18n.translate('hoteldetail.msg.errore'), 'error')
       });
     }
     this.itemToDelete = null;

@@ -3,18 +3,18 @@
   <app-alert *ngIf="showAlert" [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
 
   <!-- BREADCRUMB -->
-  <nav class="host-breadcrumb" aria-label="Percorso">
+  <nav class="host-breadcrumb" [attr.aria-label]="'addhotel.breadcrumb.aria' | translate">
     <a routerLink="/dashboard/home" class="breadcrumb-link">
-      <i class="fas fa-home"></i> Home
+      <i class="fas fa-home"></i> {{ 'addhotel.breadcrumb.home' | translate }}
     </a>
     <span class="breadcrumb-sep">/</span>
-    <span class="breadcrumb-current">Aggiungi hotel</span>
+    <span class="breadcrumb-current">{{ 'addhotel.breadcrumb.current' | translate }}</span>
   </nav>
 
   <!-- PAGE HEADER -->
   <div class="add-hotel-page-header">
-    <h1 class="add-hotel-page-title">Aggiungi un nuovo hotel</h1>
-    <p class="add-hotel-page-subtitle">Crea una nuova struttura, inserisci i dettagli e pubblicala sulla piattaforma Ndovado.</p>
+    <h1 class="add-hotel-page-title">{{ 'addhotel.page-title' | translate }}</h1>
+    <p class="add-hotel-page-subtitle">{{ 'addhotel.page-subtitle' | translate }}</p>
   </div>
 
   <!-- STEPPER -->
@@ -31,7 +31,7 @@
             {{ step.number }}
           }
         </div>
-        <span class="step-label">{{ step.label }}</span>
+        <span class="step-label">{{ step.label | translate }}</span>
       </div>
       @if (!$last) {
         <div class="step-connector" [class.connector-done]="currentStep > step.number"></div>
@@ -56,45 +56,45 @@
                 <i class="fas fa-building"></i>
               </div>
               <div class="section-body">
-                <h3 class="section-title">A. Informazioni struttura</h3>
+                <h3 class="section-title">{{ 'addhotel.sezione-a.titolo' | translate }}</h3>
 
                 <!-- Row 1: Nome, Stelle, Tipologia -->
                 <div class="add-hotel-form-grid grid-3">
                   <div class="form-field">
-                    <label class="field-label">Nome hotel <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.nome-hotel' | translate }} <span class="field-required">*</span></label>
                     <input type="text" formControlName="nome" class="add-hotel-input"
-                      placeholder="Es. Hotel Riviera Paradise"
+                      [placeholder]="'addhotel.nome-hotel.placeholder' | translate"
                       [class.input-error]="hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid">
                     @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Categoria / stelle <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.categoria-stelle' | translate }} <span class="field-required">*</span></label>
                     <select formControlName="stelle" class="add-hotel-select"
                       [class.input-error]="hotelForm.get('stelle')?.touched && hotelForm.get('stelle')?.invalid">
-                      <option [ngValue]="null" disabled selected>Seleziona categoria</option>
-                      <option [ngValue]="1">★ 1 stella</option>
-                      <option [ngValue]="2">★★ 2 stelle</option>
-                      <option [ngValue]="3">★★★ 3 stelle</option>
-                      <option [ngValue]="4">★★★★ 4 stelle</option>
-                      <option [ngValue]="5">★★★★★ 5 stelle</option>
+                      <option [ngValue]="null" disabled selected>{{ 'addhotel.seleziona-categoria' | translate }}</option>
+                      <option [ngValue]="1">{{ 'addhotel.stella-1' | translate }}</option>
+                      <option [ngValue]="2">{{ 'addhotel.stelle-2' | translate }}</option>
+                      <option [ngValue]="3">{{ 'addhotel.stelle-3' | translate }}</option>
+                      <option [ngValue]="4">{{ 'addhotel.stelle-4' | translate }}</option>
+                      <option [ngValue]="5">{{ 'addhotel.stelle-5' | translate }}</option>
                     </select>
                     @if (hotelForm.get('stelle')?.touched && hotelForm.get('stelle')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Tipologia struttura <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.tipologia-struttura' | translate }} <span class="field-required">*</span></label>
                     <select formControlName="tipologia" class="add-hotel-select"
                       [class.input-error]="hotelForm.get('tipologia')?.touched && hotelForm.get('tipologia')?.invalid">
-                      <option value="" disabled selected>Seleziona tipologia</option>
+                      <option value="" disabled selected>{{ 'addhotel.seleziona-tipologia' | translate }}</option>
                       @for (t of tipologie; track t) {
-                        <option [value]="t">{{ t }}</option>
+                        <option [value]="t">{{ tipologiaLabel(t) }}</option>
                       }
                     </select>
                     @if (hotelForm.get('tipologia')?.touched && hotelForm.get('tipologia')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     }
                   </div>
                 </div>
@@ -102,36 +102,36 @@
                 <!-- Row 2: Città, Indirizzo -->
                 <div class="add-hotel-form-grid grid-2">
                   <div class="form-field">
-                    <label class="field-label">Città / Regione <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.citta-regione' | translate }} <span class="field-required">*</span></label>
                     <input type="text" formControlName="citta" class="add-hotel-input"
-                      placeholder="Es. Taormina, Sicilia"
+                      [placeholder]="'addhotel.citta-regione.placeholder' | translate"
                       [class.input-error]="hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid">
                     @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Indirizzo completo <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.indirizzo-completo' | translate }} <span class="field-required">*</span></label>
                     <input type="text" formControlName="indirizzo" class="add-hotel-input"
-                      placeholder="Via, numero civico, CAP, ecc."
+                      [placeholder]="'addhotel.indirizzo-completo.placeholder' | translate"
                       [class.input-error]="hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid">
                     @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     }
                   </div>
                 </div>
 
                 <!-- Row 3: Descrizione -->
                 <div class="form-field">
-                  <label class="field-label">Descrizione breve <span class="field-required">*</span></label>
+                  <label class="field-label">{{ 'addhotel.descrizione-breve' | translate }} <span class="field-required">*</span></label>
                   <textarea formControlName="descrizione" class="add-hotel-textarea" rows="4"
-                    placeholder="Descrivi brevemente la tua struttura, la posizione e ciò che la rende unica..."
+                    [placeholder]="'addhotel.descrizione-breve.placeholder' | translate"
                     [class.input-error]="hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid"
                     maxlength="500">
                   </textarea>
                   <div class="textarea-footer">
                     @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     } @else {
                       <span></span>
                     }
@@ -149,67 +149,67 @@
                 <i class="fas fa-calendar-alt"></i>
               </div>
               <div class="section-body">
-                <h3 class="section-title">B. Dettagli operativi</h3>
+                <h3 class="section-title">{{ 'addhotel.sezione-b.titolo' | translate }}</h3>
 
                 <div class="add-hotel-form-grid grid-4">
                   <div class="form-field">
-                    <label class="field-label">Check-in dalle <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.checkin-dalle' | translate }} <span class="field-required">*</span></label>
                     <input type="time" formControlName="checkIn" class="add-hotel-input"
                       [class.input-error]="hotelForm.get('checkIn')?.touched && hotelForm.get('checkIn')?.invalid">
                     @if (hotelForm.get('checkIn')?.touched && hotelForm.get('checkIn')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Check-out entro <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.checkout-entro' | translate }} <span class="field-required">*</span></label>
                     <input type="time" formControlName="checkOut" class="add-hotel-input"
                       [class.input-error]="hotelForm.get('checkOut')?.touched && hotelForm.get('checkOut')?.invalid">
                     @if (hotelForm.get('checkOut')?.touched && hotelForm.get('checkOut')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Numero camere <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.numero-camere' | translate }} <span class="field-required">*</span></label>
                     <input type="number" formControlName="numCamere" class="add-hotel-input"
-                      placeholder="Es. 25" min="1"
+                      [placeholder]="'addhotel.numero-camere.placeholder' | translate" min="1"
                       [class.input-error]="hotelForm.get('numCamere')?.touched && hotelForm.get('numCamere')?.invalid">
                     @if (hotelForm.get('numCamere')?.touched && hotelForm.get('numCamere')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Minimo 1</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.minimo-1' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Prezzo medio per notte <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.prezzo-medio-notte' | translate }} <span class="field-required">*</span></label>
                     <div class="input-prefix-wrap">
                       <span class="input-prefix">€</span>
                       <input type="number" formControlName="prezzoMedio" class="add-hotel-input input-with-prefix"
-                        placeholder="Es. 120" min="0"
+                        [placeholder]="'addhotel.prezzo-medio-notte.placeholder' | translate" min="0"
                         [class.input-error]="hotelForm.get('prezzoMedio')?.touched && hotelForm.get('prezzoMedio')?.invalid">
                     </div>
                     @if (hotelForm.get('prezzoMedio')?.touched && hotelForm.get('prezzoMedio')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
                     }
                   </div>
                 </div>
 
                 <div class="add-hotel-form-grid grid-2">
                   <div class="form-field">
-                    <label class="field-label">Telefono struttura <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.telefono-struttura' | translate }} <span class="field-required">*</span></label>
                     <input type="tel" formControlName="telefono" class="add-hotel-input"
-                      placeholder="Es. +39 333 123 4567"
+                      [placeholder]="'addhotel.telefono-struttura.placeholder' | translate"
                       [class.input-error]="hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.invalid">
                     @if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
-                    <label class="field-label">Email struttura <span class="field-required">*</span></label>
+                    <label class="field-label">{{ 'addhotel.email-struttura' | translate }} <span class="field-required">*</span></label>
                     <input type="email" formControlName="email" class="add-hotel-input"
-                      placeholder="Es. info@hotelrivieraparadise.com"
+                      [placeholder]="'addhotel.email-struttura.placeholder' | translate"
                       [class.input-error]="hotelForm.get('email')?.touched && hotelForm.get('email')?.invalid">
                     @if (hotelForm.get('email')?.touched && hotelForm.get('email')?.errors?.['required']) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Campo obbligatorio</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     } @else if (hotelForm.get('email')?.touched && hotelForm.get('email')?.errors?.['email']) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> Email non valida</span>
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.email-non-valida' | translate }}</span>
                     }
                   </div>
                 </div>
@@ -224,13 +224,13 @@
                 <i class="fas fa-tag"></i>
               </div>
               <div class="section-body">
-                <h3 class="section-title">C. Servizi principali</h3>
+                <h3 class="section-title">{{ 'addhotel.sezione-c.titolo' | translate }}</h3>
                 <div class="services-grid">
                   @for (s of serviziToShow; track s.id) {
                     <label class="service-option-card" [class.service-selected]="isServizioSelezionato(s.id)">
                       <input type="checkbox" [checked]="isServizioSelezionato(s.id)" (change)="toggleServizio(s.id)">
                       <i class="fas {{ s.icona ?? getServizioIcon(s.nome) }}"></i>
-                      <span>{{ s.nome }}</span>
+                      <span>{{ servizioLabel(s) }}</span>
                     </label>
                   }
                 </div>
@@ -245,7 +245,7 @@
                 <i class="fas fa-images"></i>
               </div>
               <div class="section-body">
-                <h3 class="section-title">D. Carica foto</h3>
+                <h3 class="section-title">{{ 'addhotel.sezione-d.titolo' | translate }}</h3>
                 <div class="photo-upload-section">
 
                   <!-- Drop zone -->
@@ -256,10 +256,10 @@
                     (drop)="onDrop($event)"
                     (click)="fileInput.click()">
                     <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
-                    <p class="dropzone-text">Trascina le immagini qui</p>
-                    <p class="dropzone-or">oppure</p>
-                    <button type="button" class="btn-select-file" (click)="$event.stopPropagation(); fileInput.click()">Seleziona file</button>
-                    <p class="dropzone-hint">JPG, PNG o WEBP – Max 10MB per file</p>
+                    <p class="dropzone-text">{{ 'addhotel.trascina-immagini' | translate }}</p>
+                    <p class="dropzone-or">{{ 'addhotel.oppure' | translate }}</p>
+                    <button type="button" class="btn-select-file" (click)="$event.stopPropagation(); fileInput.click()">{{ 'addhotel.seleziona-file' | translate }}</button>
+                    <p class="dropzone-hint">{{ 'addhotel.formati-foto' | translate }}</p>
                     <input #fileInput type="file" accept="image/jpeg,image/png,image/webp"
                       multiple hidden (change)="onFileSelect($event)">
                   </div>
@@ -269,8 +269,8 @@
                     @for (preview of fotoPreview; track $index) {
                       <div class="photo-slot" [class.slot-filled]="preview !== null">
                         @if (preview) {
-                          <img [src]="preview" [alt]="'Foto ' + ($index + 1)" class="slot-img">
-                          <button type="button" class="slot-remove" (click)="rimuoviFoto($index)" aria-label="Rimuovi foto">
+                          <img [src]="preview" [alt]="($index === 0 ? ('addhotel.immagine-principale' | translate) : (('addhotel.foto-n' | translate) + ' ' + ($index + 1)))" class="slot-img">
+                          <button type="button" class="slot-remove" (click)="rimuoviFoto($index)" [attr.aria-label]="'addhotel.rimuovi-foto' | translate">
                             <i class="fas fa-times"></i>
                           </button>
                         } @else {
@@ -278,7 +278,7 @@
                             <i class="fas fa-image"></i>
                           </div>
                         }
-                        <span class="slot-label">{{ $index === 0 ? 'Immagine principale' : 'Foto ' + ($index + 1) }}</span>
+                        <span class="slot-label">{{ $index === 0 ? ('addhotel.immagine-principale' | translate) : (('addhotel.foto-n' | translate) + ' ' + ($index + 1)) }}</span>
                       </div>
                     }
                   </div>
@@ -294,14 +294,14 @@
 
         <div class="add-hotel-form-card step-placeholder">
           <div class="placeholder-icon"><i class="fas fa-bed"></i></div>
-          <h3>Camere e prezzi</h3>
-          <p>Completa le informazioni base e salva la struttura, poi potrai gestire le camere dalla pagina <strong>I miei hotel</strong>.</p>
+          <h3>{{ 'addhotel.step2.titolo' | translate }}</h3>
+          <p>{{ 'addhotel.step2.testo' | translate }} <strong>{{ 'addhotel.step2.link' | translate }}</strong>.</p>
           @if (savedHotelId) {
             <a [routerLink]="['/dashboard/gestione-hotel']" class="btn-go-manage">
-              <i class="fas fa-hotel"></i> Gestisci camere
+              <i class="fas fa-hotel"></i> {{ 'addhotel.step2.gestisci-camere' | translate }}
             </a>
           } @else {
-            <p class="step-hint">Salva prima la bozza nello step 1 per sbloccare la gestione camere.</p>
+            <p class="step-hint">{{ 'addhotel.step2.hint' | translate }}</p>
           }
         </div>
 
@@ -309,40 +309,40 @@
 
         <div class="add-hotel-form-card step-placeholder">
           <div class="placeholder-icon"><i class="fas fa-concierge-bell"></i></div>
-          <h3>Servizi e policy</h3>
-          <p>Hai già selezionato i servizi principali nello step 1. I dettagli aggiuntivi potranno essere completati in seguito.</p>
+          <h3>{{ 'addhotel.step3.titolo' | translate }}</h3>
+          <p>{{ 'addhotel.step3.testo' | translate }}</p>
         </div>
 
       } @else if (currentStep === 4) {
 
         <div class="add-hotel-form-card step-placeholder">
           <div class="placeholder-icon"><i class="fas fa-camera"></i></div>
-          <h3>Gestione foto</h3>
-          <p>Hai già caricato le foto nello step 1. Dopo aver salvato la struttura potrai aggiungerne altre dalla pagina <strong>I miei hotel</strong>.</p>
+          <h3>{{ 'addhotel.step4.titolo' | translate }}</h3>
+          <p>{{ 'addhotel.step4.testo' | translate }} <strong>{{ 'addhotel.step4.link' | translate }}</strong>.</p>
         </div>
 
       } @else if (currentStep === 5) {
 
         <div class="add-hotel-form-card step-placeholder">
           <div class="placeholder-icon step-icon-gold"><i class="fas fa-rocket"></i></div>
-          <h3>Pubblica la struttura</h3>
-          <p>Controlla che la checklist sia completa, poi pubblica la tua struttura su Ndovado.</p>
+          <h3>{{ 'addhotel.step5.titolo' | translate }}</h3>
+          <p>{{ 'addhotel.step5.testo' | translate }}</p>
           <div class="publish-checklist-inline">
             @for (item of checklistItems; track item.label) {
               <div class="checklist-item-inline">
                 <span class="check-icon-inline" [class.check-done]="item.done">
                   <i class="fas" [ngClass]="item.done ? 'fa-check-circle' : 'fa-circle'"></i>
                 </span>
-                <span>{{ item.label }}</span>
+                <span>{{ item.label | translate }}</span>
               </div>
             }
           </div>
           @if (savedHotelId) {
-            <button class="btn-publish" (click)="showAlertMessage('La struttura è stata inviata per revisione!', 'success')">
-              <i class="fas fa-check"></i> Pubblica struttura
+            <button class="btn-publish" (click)="showAlertMessage(i18n.translate('addhotel.msg.pubblicata'), 'success')">
+              <i class="fas fa-check"></i> {{ 'addhotel.step5.pubblica' | translate }}
             </button>
           } @else {
-            <p class="step-hint">Salva prima la bozza (step 1) prima di pubblicare.</p>
+            <p class="step-hint">{{ 'addhotel.step5.hint' | translate }}</p>
           }
         </div>
 
@@ -352,18 +352,18 @@
       <div class="add-hotel-actions">
         <button class="save-draft-button" (click)="salvaBozza()" [disabled]="saving">
           @if (saving) {
-            <span class="btn-spinner"></span> Salvataggio...
+            <span class="btn-spinner"></span> {{ 'addhotel.salvataggio' | translate }}
           } @else {
-            <i class="fas fa-save"></i> Salva bozza
+            <i class="fas fa-save"></i> {{ 'addhotel.salva-bozza' | translate }}
           }
         </button>
         @if (currentStep < totalSteps) {
           <button class="continue-button" (click)="continua()" [disabled]="saving">
-            Continua <i class="fas fa-arrow-right"></i>
+            {{ 'addhotel.continua' | translate }} <i class="fas fa-arrow-right"></i>
           </button>
         } @else {
           <a routerLink="/dashboard/miei-hotel" class="continue-button">
-            I miei hotel <i class="fas fa-hotel"></i>
+            {{ 'addhotel.miei-hotel' | translate }} <i class="fas fa-hotel"></i>
           </a>
         }
       </div>
@@ -375,13 +375,13 @@
       <!-- Anteprima struttura -->
       <div class="structure-preview-card sidebar-card">
         <div class="preview-header">
-          <h3 class="sidebar-card-title">Anteprima struttura</h3>
-          <span class="preview-badge badge-bozza">Bozza</span>
+          <h3 class="sidebar-card-title">{{ 'addhotel.anteprima-struttura' | translate }}</h3>
+          <span class="preview-badge badge-bozza">{{ 'addhotel.bozza' | translate }}</span>
         </div>
 
         <div class="preview-image-wrap">
           @if (previewImg) {
-            <img [src]="previewImg" alt="Anteprima" class="preview-img">
+            <img [src]="previewImg" [alt]="'addhotel.anteprima-alt' | translate" class="preview-img">
           } @else {
             <div class="preview-img-placeholder">
               <i class="fas fa-hotel"></i>
@@ -399,30 +399,30 @@
               @for (s of stelleRange(previewStelle); track $index) {
                 <i class="fas fa-star"></i>
               }
-              <span class="stelle-label">Categoria {{ previewStelle }} stelle</span>
+              <span class="stelle-label">{{ 'addhotel.categoria-stelle-label' | translate }} {{ previewStelle }} {{ 'addhotel.stelle-label' | translate }}</span>
             </p>
           }
           @if (previewServizi.length > 0) {
             <div class="preview-servizi">
-              @for (s of previewServizi; track s) {
-                <span class="preview-servizio-tag"><i class="fas {{ getServizioIcon(s) }}"></i> {{ s }}</span>
+              @for (s of previewServizi; track s.nome) {
+                <span class="preview-servizio-tag"><i class="fas {{ s.icona }}"></i> {{ s.nome }}</span>
               }
             </div>
           }
-          <p class="preview-note">Questa è un'anteprima. I dettagli saranno visibili dopo la pubblicazione.</p>
+          <p class="preview-note">{{ 'addhotel.anteprima-nota' | translate }}</p>
         </div>
       </div>
 
       <!-- Prima della pubblicazione -->
       <div class="publish-checklist-card sidebar-card">
-        <h3 class="sidebar-card-title">Prima della pubblicazione</h3>
+        <h3 class="sidebar-card-title">{{ 'addhotel.prima-pubblicazione' | translate }}</h3>
         <div class="checklist-list">
           @for (item of checklistItems; track item.label) {
             <div class="checklist-item">
               <span class="check-icon" [class.check-done]="item.done">
                 <i class="fas" [ngClass]="item.done ? 'fa-check-circle' : 'fa-circle'"></i>
               </span>
-              <span class="check-label">{{ item.label }}</span>
+              <span class="check-label">{{ item.label | translate }}</span>
             </div>
           }
         </div>
@@ -432,11 +432,11 @@
       <div class="host-tips-card sidebar-card">
         <div class="tips-header">
           <span class="tips-icon"><i class="fas fa-lightbulb"></i></span>
-          <h3 class="sidebar-card-title">Consigli per host</h3>
+          <h3 class="sidebar-card-title">{{ 'addhotel.consigli-host' | translate }}</h3>
         </div>
-        <p class="tips-text">Inserisci descrizioni chiare, foto di qualità e prezzi aggiornati per aumentare le prenotazioni e la visibilità.</p>
+        <p class="tips-text">{{ 'addhotel.consigli-testo' | translate }}</p>
         <button class="btn-support" (click)="openSupporto()">
-          <i class="fas fa-headset"></i> Centro assistenza
+          <i class="fas fa-headset"></i> {{ 'addhotel.centro-assistenza' | translate }}
         </button>
       </div>
 
@@ -444,7 +444,7 @@
   </div>
 
   <!-- FLOATING SUPPORT BUTTON -->
-  <button class="floating-support-button" (click)="openSupporto()" title="Centro assistenza" aria-label="Centro assistenza">
+  <button class="floating-support-button" (click)="openSupporto()" [title]="'addhotel.centro-assistenza' | translate" [attr.aria-label]="'addhotel.centro-assistenza' | translate">
     <i class="fas fa-headset"></i>
   </button>
 

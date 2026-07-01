@@ -33,17 +33,17 @@
 
       <!-- Right: user pill + logout + hamburger -->
       <div class="ndv-nav-right">
-        <div class="ndv-user-pill">
+        <div class="ndv-user-pill ndv-user-pill-clickable" (click)="goToSettings()" [title]="'nav.impostazioni' | translate">
           <div class="ndv-user-av">{{ userInitials }}</div>
           <div class="ndv-user-info">
             <span class="ndv-user-name">{{ currentUser?.nome }} {{ currentUser?.cognome }}</span>
             <span class="ndv-role-tag">{{ roleBadge }}</span>
           </div>
         </div>
-        <button class="ndv-logout-btn" (click)="logout()" title="Logout">
+        <button class="ndv-logout-btn" (click)="requestLogout()" [title]="'common.logout' | translate">
           <i class="fas fa-sign-out-alt"></i>
         </button>
-        <button class="ndv-hamburger-btn" (click)="toggleSidebar()" aria-label="Menu">
+        <button class="ndv-hamburger-btn" (click)="toggleSidebar()" [attr.aria-label]="'dashboard.menu' | translate">
           <i class="fas fa-bars"></i>
         </button>
       </div>
@@ -57,7 +57,7 @@
 
           <a routerLink="/dashboard/home" routerLinkActive="ndv-mob-active"
              class="ndv-mob-link" (click)="closeSidebar()">
-            <i class="fas fa-search"></i> Hotel
+            <i class="fas fa-search"></i> {{ 'nav.hotel' | translate }}
           </a>
 
           @if (isGuest) {
@@ -108,12 +108,14 @@
           </a>
 
           <div class="ndv-mob-user">
-            <div class="ndv-user-av">{{ userInitials }}</div>
-            <div class="ndv-user-info">
-              <span class="ndv-user-name">{{ currentUser?.nome }} {{ currentUser?.cognome }}</span>
-              <span class="ndv-role-tag">{{ roleBadge }}</span>
+            <div class="ndv-user-pill-clickable ndv-mob-user-info" (click)="goToSettings(); closeSidebar()">
+              <div class="ndv-user-av">{{ userInitials }}</div>
+              <div class="ndv-user-info">
+                <span class="ndv-user-name">{{ currentUser?.nome }} {{ currentUser?.cognome }}</span>
+                <span class="ndv-role-tag">{{ roleBadge }}</span>
+              </div>
             </div>
-            <button class="ndv-logout-btn" (click)="logout()">
+            <button class="ndv-logout-btn" (click)="requestLogout()">
               <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>
@@ -129,9 +131,18 @@
   </main>
 
   <!-- ── AI CHAT BUTTON ── -->
-  <div class="div-ai" (click)="toggleChat()" title="Assistente AI Ndovado">
-    <i class="fas fa-robot"></i>
-  </div>
+  @if (!isPrenotazioniRoute) {
+    <div class="div-ai" (click)="toggleChat()" [title]="'dashboard.ai-assistant' | translate">
+      <i class="fas fa-robot"></i>
+    </div>
+  }
 
   <app-chat-window></app-chat-window>
+
+  @if (showLogoutConfirm) {
+    <app-conferma-box
+      [messaggio]="'common.logout-conferma' | translate"
+      (risposta)="onLogoutConfirm($event)">
+    </app-conferma-box>
+  }
 </div>

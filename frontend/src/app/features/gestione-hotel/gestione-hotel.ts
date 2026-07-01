@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { HotelService } from '../../services/hotel.service';
 import { CameraService } from '../../services/camera.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -45,7 +46,8 @@ export class GestioneHotel implements OnInit {
     private fb: FormBuilder,
     private hotelService: HotelService,
     private cameraService: CameraService,
-    private authService: AuthService
+    private authService: AuthService,
+    private i18n: TranslationService
   ) {}
 
   get isAdmin() { return this.authService.isAdmin(); }
@@ -115,10 +117,10 @@ export class GestioneHotel implements OnInit {
             this.hotelService.aggiornaServizi(this.editingHotel.id, this.selectedServizi).subscribe();
           }
           this.showHotelForm = false;
-          this.showAlertMessage('Hotel aggiornato!', 'success');
+          this.showAlertMessage(this.i18n.translate('gestionehotel.msg.hotel-aggiornato'), 'success');
           this.caricaHotel();
         },
-        error: (e) => this.showAlertMessage(e.error?.message ?? 'Errore.', 'error')
+        error: (e) => this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error')
       });
     } else {
       this.hotelService.crea(dati).subscribe({
@@ -127,20 +129,20 @@ export class GestioneHotel implements OnInit {
             this.hotelService.aggiornaServizi(newHotel.id, this.selectedServizi).subscribe();
           }
           this.showHotelForm = false;
-          this.showAlertMessage('Hotel creato con successo!', 'success');
+          this.showAlertMessage(this.i18n.translate('gestionehotel.msg.hotel-creato'), 'success');
           this.caricaHotel();
         },
-        error: (e) => this.showAlertMessage(e.error?.message ?? 'Errore.', 'error')
+        error: (e) => this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error')
       });
     }
   }
 
   chiediEliminaHotel(h: any) {
-    this.confirmMessage = `Eliminare l'hotel "${h.nome}"? L'azione è irreversibile.`;
+    this.confirmMessage = `${this.i18n.translate('gestionehotel.msg.conferma-elimina-hotel-pre')}${h.nome}${this.i18n.translate('gestionehotel.msg.conferma-elimina-hotel-post')}`;
     this.actionPending = () => {
       this.hotelService.elimina(h.id).subscribe({
-        next: () => { this.showAlertMessage('Hotel eliminato.', 'success'); this.caricaHotel(); },
-        error: () => this.showAlertMessage('Errore eliminazione.', 'error')
+        next: () => { this.showAlertMessage(this.i18n.translate('gestionehotel.msg.hotel-eliminato'), 'success'); this.caricaHotel(); },
+        error: () => this.showAlertMessage(this.i18n.translate('gestionehotel.msg.errore-eliminazione'), 'error')
       });
     };
     this.showConfirm = true;
@@ -186,32 +188,32 @@ export class GestioneHotel implements OnInit {
       this.cameraService.aggiorna(this.editingCamera.id, dati).subscribe({
         next: () => {
           this.showCameraForm = false;
-          this.showAlertMessage('Camera aggiornata!', 'success');
+          this.showAlertMessage(this.i18n.translate('gestionehotel.msg.camera-aggiornata'), 'success');
           this.cameraService.getPerHotel(this.hotelAperto.id).subscribe(c => this.camere = c);
         },
-        error: (e) => this.showAlertMessage(e.error?.message ?? 'Errore.', 'error')
+        error: (e) => this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error')
       });
     } else {
       this.cameraService.crea(dati).subscribe({
         next: () => {
           this.showCameraForm = false;
-          this.showAlertMessage('Camera aggiunta!', 'success');
+          this.showAlertMessage(this.i18n.translate('gestionehotel.msg.camera-aggiunta'), 'success');
           this.cameraService.getPerHotel(this.hotelAperto.id).subscribe(c => this.camere = c);
         },
-        error: (e) => this.showAlertMessage(e.error?.message ?? 'Errore.', 'error')
+        error: (e) => this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error')
       });
     }
   }
 
   chiediEliminaCamera(c: any) {
-    this.confirmMessage = `Eliminare la camera "${c.tipo}"?`;
+    this.confirmMessage = `${this.i18n.translate('gestionehotel.msg.conferma-elimina-camera-pre')}${c.tipo}${this.i18n.translate('gestionehotel.msg.conferma-elimina-camera-post')}`;
     this.actionPending = () => {
       this.cameraService.elimina(c.id).subscribe({
         next: () => {
-          this.showAlertMessage('Camera eliminata.', 'success');
+          this.showAlertMessage(this.i18n.translate('gestionehotel.msg.camera-eliminata'), 'success');
           this.cameraService.getPerHotel(this.hotelAperto.id).subscribe(data => this.camere = data);
         },
-        error: () => this.showAlertMessage('Errore.', 'error')
+        error: () => this.showAlertMessage(this.i18n.translate('gestionehotel.msg.errore'), 'error')
       });
     };
     this.showConfirm = true;

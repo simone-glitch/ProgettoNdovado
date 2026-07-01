@@ -4,14 +4,14 @@
       <span class="chat-avatar">✦</span>
       <div>
         <span class="chat-name">NdovAI</span>
-        <span class="chat-status">● Online</span>
+        <span class="chat-status">● {{ 'chat.online' | translate }}</span>
       </div>
     </div>
     <button (click)="chatService.toggleChat()">✕</button>
   </div>
 
   <div class="chat-body">
-    <div class="bot-msg">Ciao! Sono NdovAI, il tuo assistente virtuale. Come posso aiutarti oggi?</div>
+    <div class="bot-msg">{{ 'chat.welcome' | translate }}</div>
 
     <div *ngFor="let msg of chatService.messaggi"
          [ngClass]="msg.daUtente ? 'user-msg' : 'bot-msg'">{{ msg.testo }}</div>
@@ -21,7 +21,7 @@
     <input type="text"
            [(ngModel)]="nuovoMessaggio"
            (keyup.enter)="spedisci()"
-           placeholder="Scrivi un messaggio...">
+           [placeholder]="'chat.placeholder' | translate">
 
     <button (click)="spedisci()"><i class="fas fa-paper-plane"></i></button>
   </div>

@@ -6,6 +6,7 @@ import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
+import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -46,6 +47,7 @@ export class MieiHotel implements OnInit {
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
     private prefsService: PreferencesService,
+    private i18n: TranslationService,
     private router: Router
   ) {}
 
@@ -134,7 +136,7 @@ export class MieiHotel implements OnInit {
       }
       this.chiudiModal();
       this.showAlertMessage(
-        this.editingHotel ? 'Hotel aggiornato con successo!' : 'Hotel creato con successo!',
+        this.editingHotel ? this.i18n.translate('myhotel.msg.hotel-aggiornato') : this.i18n.translate('myhotel.msg.hotel-creato'),
         'success'
       );
       this.caricaDati();
@@ -143,12 +145,12 @@ export class MieiHotel implements OnInit {
     if (this.editingHotel) {
       this.hotelService.aggiorna(this.editingHotel.id, dati).subscribe({
         next: () => afterSave(this.editingHotel.id),
-        error: (e) => { this.savingHotel = false; this.showAlertMessage(e.error?.message ?? 'Errore durante il salvataggio.', 'error'); }
+        error: (e) => { this.savingHotel = false; this.showAlertMessage(e.error?.message ?? this.i18n.translate('myhotel.msg.errore-salvataggio'), 'error'); }
       });
     } else {
       this.hotelService.crea(dati).subscribe({
         next: (h) => afterSave(h.id),
-        error: (e) => { this.savingHotel = false; this.showAlertMessage(e.error?.message ?? 'Errore durante la creazione.', 'error'); }
+        error: (e) => { this.savingHotel = false; this.showAlertMessage(e.error?.message ?? this.i18n.translate('myhotel.msg.errore-creazione'), 'error'); }
       });
     }
   }
@@ -260,13 +262,13 @@ export class MieiHotel implements OnInit {
   getStatoLabel(hotel: any): string {
     const s = (hotel?.stato ?? 'PUBBLICATO').toUpperCase();
     const map: Record<string, string> = {
-      PUBBLICATO: 'Pubblicato', ATTIVO: 'Pubblicato', APPROVED: 'Pubblicato',
-      IN_REVISIONE: 'In revisione', REVISIONE: 'In revisione', PENDING: 'In revisione',
-      BOZZA: 'Bozza', DRAFT: 'Bozza',
-      NON_ATTIVO: 'Non attivo', INATTIVO: 'Non attivo',
-      SOSPESO: 'Sospeso', RIFIUTATO: 'Rifiutato', REJECTED: 'Rifiutato',
+      PUBBLICATO: this.i18n.translate('myhotel.stato.label.pubblicato'), ATTIVO: this.i18n.translate('myhotel.stato.label.pubblicato'), APPROVED: this.i18n.translate('myhotel.stato.label.pubblicato'),
+      IN_REVISIONE: this.i18n.translate('myhotel.stato.label.in-revisione'), REVISIONE: this.i18n.translate('myhotel.stato.label.in-revisione'), PENDING: this.i18n.translate('myhotel.stato.label.in-revisione'),
+      BOZZA: this.i18n.translate('myhotel.stato.label.bozza'), DRAFT: this.i18n.translate('myhotel.stato.label.bozza'),
+      NON_ATTIVO: this.i18n.translate('myhotel.stato.label.non-attivo'), INATTIVO: this.i18n.translate('myhotel.stato.label.non-attivo'),
+      SOSPESO: this.i18n.translate('myhotel.stato.label.sospeso'), RIFIUTATO: this.i18n.translate('myhotel.stato.label.rifiutato'), REJECTED: this.i18n.translate('myhotel.stato.label.rifiutato'),
     };
-    return map[s] ?? hotel?.stato ?? 'Pubblicato';
+    return map[s] ?? hotel?.stato ?? this.i18n.translate('myhotel.stato.label.pubblicato');
   }
 
   getStatoBadgeClass(hotel: any): string {
@@ -320,13 +322,13 @@ export class MieiHotel implements OnInit {
   get promemoria(): any[] {
     const items: any[] = [];
     const inAttesa = this.prenotazioni.filter(p => p.stato === 'IN_ATTESA').length;
-    if (inAttesa > 0) items.push({ icon: 'fa-calendar-check', iconClass: 'reminder-orange', title: `${inAttesa} prenotazion${inAttesa === 1 ? 'e' : 'i'} in attesa`, subtitle: 'Rispondi per non perdere gli ospiti', route: '/dashboard/prenotazioni' });
+    if (inAttesa > 0) items.push({ icon: 'fa-calendar-check', iconClass: 'reminder-orange', title: `${inAttesa} ${this.i18n.translate(inAttesa === 1 ? 'myhotel.promemoria.prenotazioni-attesa' : 'myhotel.promemoria.prenotazioni-attesa-plurale')}`, subtitle: this.i18n.translate('myhotel.promemoria.rispondi'), route: '/dashboard/prenotazioni' });
     const inRevisione = this.hotels.filter(h => ['IN_REVISIONE', 'REVISIONE', 'PENDING'].includes((h.stato ?? '').toUpperCase())).length;
-    if (inRevisione > 0) items.push({ icon: 'fa-file-alt', iconClass: 'reminder-blue', title: `${inRevisione} struttur${inRevisione === 1 ? 'a' : 'e'} in revisione`, subtitle: 'In attesa di approvazione', route: '/dashboard/miei-hotel' });
+    if (inRevisione > 0) items.push({ icon: 'fa-file-alt', iconClass: 'reminder-blue', title: `${inRevisione} ${this.i18n.translate(inRevisione === 1 ? 'myhotel.promemoria.struttura-revisione' : 'myhotel.promemoria.strutture-revisione')}`, subtitle: this.i18n.translate('myhotel.promemoria.attesa-approvazione'), route: '/dashboard/miei-hotel' });
     const senzaFoto = this.hotels.filter(h => !h.foto?.length);
-    if (senzaFoto.length > 0) items.push({ icon: 'fa-camera', iconClass: 'reminder-green', title: 'Aggiorna le foto', subtitle: senzaFoto.slice(0, 2).map((h: any) => h.nome || 'Struttura').join(', '), route: '/dashboard/miei-hotel' });
+    if (senzaFoto.length > 0) items.push({ icon: 'fa-camera', iconClass: 'reminder-green', title: this.i18n.translate('myhotel.aggiorna-foto'), subtitle: senzaFoto.slice(0, 2).map((h: any) => h.nome || this.i18n.translate('myhotel.struttura-fallback')).join(', '), route: '/dashboard/miei-hotel' });
     const bozze = this.hotels.filter(h => ['BOZZA', 'DRAFT'].includes((h.stato ?? '').toUpperCase())).length;
-    if (bozze > 0) items.push({ icon: 'fa-edit', iconClass: 'reminder-yellow', title: `${bozze} bozz${bozze === 1 ? 'a' : 'e'} da completare`, subtitle: 'Completa e pubblica le strutture', route: '/dashboard/miei-hotel' });
+    if (bozze > 0) items.push({ icon: 'fa-edit', iconClass: 'reminder-yellow', title: `${bozze} ${this.i18n.translate(bozze === 1 ? 'myhotel.promemoria.bozza-completare' : 'myhotel.promemoria.bozze-completare')}`, subtitle: this.i18n.translate('myhotel.promemoria.completa-pubblica'), route: '/dashboard/miei-hotel' });
     return items;
   }
 
@@ -344,7 +346,7 @@ export class MieiHotel implements OnInit {
   vaiGestisciCamere(hotel: any) { this.router.navigate(['/dashboard/gestione-hotel']); }
   vaiStatistiche()  { this.router.navigate(['/dashboard/statistiche']); }
   vaiPrenotazioni() { this.router.navigate(['/dashboard/prenotazioni']); }
-  vaiSupporto()     { this.showAlertMessage('Per assistenza usa il pulsante chat in basso a destra.', 'info'); }
+  vaiSupporto()     { this.showAlertMessage(this.i18n.translate('myhotel.supporto.msg'), 'info'); }
   navigateTo(route: string) { if (route) this.router.navigateByUrl(route); }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {

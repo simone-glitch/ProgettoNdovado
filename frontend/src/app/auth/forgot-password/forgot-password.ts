@@ -2,13 +2,15 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { Alert } from '../../components/alert/alert';
 import { NgIf } from '@angular/common';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, Alert, NgIf],
+  imports: [RouterLink, ReactiveFormsModule, Alert, NgIf, SharedModule],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css',
 })
@@ -23,7 +25,7 @@ export class ForgotPassword {
     email: new FormControl('', [Validators.required, Validators.email]),
   });
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private i18n: TranslationService) {}
 
   onSubmit() {
     if (this.emailForm.valid) {
@@ -37,7 +39,7 @@ export class ForgotPassword {
         },
         error: () => {
           this.loading = false;
-          this.showAlertMessage('Errore durante l\'invio. Controlla l\'email inserita e riprova.', 'error');
+          this.showAlertMessage(this.i18n.translate('auth.fp.msg.errore-invio', 'it'), 'error');
         }
       });
     }

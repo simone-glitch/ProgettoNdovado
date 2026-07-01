@@ -11,16 +11,16 @@
   <!-- ── Breadcrumb ── -->
   <nav class="settings-breadcrumb">
     <button class="bc-home" (click)="vaiAHome()">
-      <i class="fas fa-home"></i> Home
+      <i class="fas fa-home"></i> {{ 'settings.bc-home' | translate }}
     </button>
     <span class="bc-sep">/</span>
-    <span class="bc-current">Impostazioni</span>
+    <span class="bc-current">{{ 'settings.title' | translate }}</span>
   </nav>
 
   <!-- ── Page Header ── -->
   <header class="settings-page-header">
-    <h1>Impostazioni</h1>
-    <p>Gestisci il tuo profilo, la sicurezza e le preferenze del tuo account.</p>
+    <h1>{{ 'settings.title' | translate }}</h1>
+    <p>{{ 'settings.subtitle' | translate }}</p>
   </header>
 
   <!-- ── Three-column layout ── -->
@@ -33,25 +33,25 @@
         <button class="settings-menu-item" [class.active]="activeSection === 'profilo'"
           (click)="setActiveSection('profilo')">
           <i class="fas fa-user"></i>
-          <span>Profilo</span>
+          <span>{{ 'settings.profilo' | translate }}</span>
         </button>
 
         <button class="settings-menu-item" [class.active]="activeSection === 'sicurezza'"
           (click)="setActiveSection('sicurezza')">
           <i class="fas fa-lock"></i>
-          <span>Sicurezza</span>
+          <span>{{ 'settings.sicurezza' | translate }}</span>
         </button>
 
         <button class="settings-menu-item" [class.active]="activeSection === 'preferenze'"
           (click)="setActiveSection('preferenze')">
           <i class="fas fa-sliders-h"></i>
-          <span>Preferenze</span>
+          <span>{{ 'settings.preferenze' | translate }}</span>
         </button>
 
         <button class="settings-menu-item" [class.active]="activeSection === 'privacy'"
           (click)="setActiveSection('privacy')">
           <i class="fas fa-shield-alt"></i>
-          <span>Privacy</span>
+          <span>{{ 'settings.privacy' | translate }}</span>
         </button>
 
       </nav>
@@ -63,7 +63,7 @@
       <!-- ── PROFILO ── -->
       <section id="section-profilo" class="settings-card profile-settings-card">
         <div class="settings-card-header">
-          <h2>Informazioni profilo</h2>
+          <h2>{{ 'settings.profile-info' | translate }}</h2>
         </div>
 
         <div class="profile-body">
@@ -74,7 +74,7 @@
             <div class="profile-user-name">{{ nomeCompleto }}</div>
             <div class="profile-user-role">{{ roleBadge }}</div>
             <button type="button" class="btn-modifica-foto">
-              <i class="fas fa-camera"></i> Modifica foto
+              <i class="fas fa-camera"></i> {{ 'settings.modifica-foto' | translate }}
             </button>
           </div>
 
@@ -83,32 +83,32 @@
             <div class="profile-form-grid">
 
               <div class="form-field">
-                <label>Nome</label>
-                <input type="text" formControlName="nome" placeholder="Il tuo nome">
+                <label>{{ 'common.nome' | translate }}</label>
+                <input type="text" formControlName="nome" [placeholder]="'settings.placeholder.nome' | translate">
                 @if (profileForm.get('nome')?.invalid && profileForm.get('nome')?.touched) {
-                  <small class="field-error">Il nome è obbligatorio.</small>
+                  <small class="field-error">{{ 'settings.err.nome' | translate }}</small>
                 }
               </div>
 
               <div class="form-field">
-                <label>Cognome</label>
-                <input type="text" formControlName="cognome" placeholder="Il tuo cognome">
+                <label>{{ 'common.cognome' | translate }}</label>
+                <input type="text" formControlName="cognome" [placeholder]="'settings.placeholder.cognome' | translate">
                 @if (profileForm.get('cognome')?.invalid && profileForm.get('cognome')?.touched) {
-                  <small class="field-error">Il cognome è obbligatorio.</small>
+                  <small class="field-error">{{ 'settings.err.cognome' | translate }}</small>
                 }
               </div>
 
               <div class="form-field">
-                <label>Email</label>
-                <input type="email" formControlName="email" placeholder="La tua email">
+                <label>{{ 'common.email' | translate }}</label>
+                <input type="email" formControlName="email" [placeholder]="'settings.placeholder.email' | translate">
                 @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
-                  <small class="field-error">Inserisci un indirizzo email valido.</small>
+                  <small class="field-error">{{ 'settings.err.email' | translate }}</small>
                 }
               </div>
 
               <div class="form-field">
-                <label>Telefono</label>
-                <input type="tel" formControlName="telefono" placeholder="Non impostato">
+                <label>{{ 'common.telefono' | translate }}</label>
+                <input type="tel" formControlName="telefono" [placeholder]="'settings.placeholder.telefono-non-impostato' | translate">
               </div>
 
             </div>
@@ -116,9 +116,9 @@
             <div class="profile-form-actions">
               <button type="submit" class="btn-save-main"
                 [disabled]="profileForm.invalid || isSavingProfile">
-                {{ isSavingProfile ? 'Salvataggio...' : 'Salva modifiche' }}
+                {{ isSavingProfile ? ('settings.salvataggio' | translate) : ('common.salva' | translate) }}
               </button>
-              <button type="button" class="btn-cancel" (click)="annullaProfilo()">Annulla</button>
+              <button type="button" class="btn-cancel" (click)="annullaProfilo()">{{ 'common.annulla' | translate }}</button>
             </div>
           </form>
 
@@ -128,18 +128,18 @@
       <!-- ── SICUREZZA ── -->
       <section id="section-sicurezza" class="settings-card security-settings-card">
         <div class="settings-card-header">
-          <h2>Sicurezza account</h2>
+          <h2>{{ 'settings.sicurezza-account' | translate }}</h2>
         </div>
 
         <!-- Password row -->
         <div class="security-row">
           <div class="security-row-icon"><i class="fas fa-lock"></i></div>
           <div class="security-row-info">
-            <span class="security-row-label">Password</span>
-            <span class="security-row-sub">Mantieni il tuo account protetto con una password sicura.</span>
+            <span class="security-row-label">{{ 'common.password' | translate }}</span>
+            <span class="security-row-sub">{{ 'settings.password-desc' | translate }}</span>
           </div>
           <button class="btn-outline-action" (click)="showPasswordForm = !showPasswordForm">
-            Cambia password
+            {{ 'settings.cambia-password' | translate }}
           </button>
         </div>
 
@@ -147,32 +147,32 @@
           <form [formGroup]="passwordForm" (ngSubmit)="cambiaPassword()" class="password-form">
 
             <div class="form-field">
-              <label>Vecchia Password</label>
+              <label>{{ 'settings.vecchia-password' | translate }}</label>
               <input type="password" formControlName="vecchiaPassword"
-                placeholder="Inserisci la vecchia password">
+                [placeholder]="'settings.placeholder.vecchia-password' | translate">
               @if (passwordForm.get('vecchiaPassword')?.invalid && passwordForm.get('vecchiaPassword')?.touched) {
-                <small class="field-error">Inserisci la vecchia password.</small>
+                <small class="field-error">{{ 'settings.err.vecchia-password' | translate }}</small>
               }
             </div>
 
             <div class="form-field">
-              <label>Nuova Password</label>
+              <label>{{ 'settings.nuova-password' | translate }}</label>
               <input type="password" formControlName="nuovaPassword"
-                placeholder="Minimo 8 caratteri, 1 maiuscola, 1 numero">
-              <small class="field-hint">{{ passwordRulesMessage }}</small>
+                [placeholder]="'settings.placeholder.nuova-password' | translate">
+              <small class="field-hint">{{ 'settings.password-rules' | translate }}</small>
               @if (nuovaPasswordNonValida) {
-                <small class="field-error">La nuova password non rispetta i requisiti di sicurezza.</small>
+                <small class="field-error">{{ 'settings.err.nuova-password' | translate }}</small>
               }
             </div>
 
             <div class="password-form-actions">
               <button type="submit" class="btn-save-main"
                 [disabled]="passwordForm.invalid || isChangingPassword">
-                {{ isChangingPassword ? 'Cambio in corso...' : 'Conferma nuova password' }}
+                {{ isChangingPassword ? ('settings.cambio-in-corso' | translate) : ('settings.conferma-nuova-password' | translate) }}
               </button>
               <button type="button" class="btn-cancel"
                 (click)="showPasswordForm = false; passwordForm.reset()">
-                Annulla
+                {{ 'common.annulla' | translate }}
               </button>
             </div>
 
@@ -184,7 +184,7 @@
       <!-- ── PREFERENZE ── -->
       <section id="section-preferenze" class="settings-card preferences-settings-card">
         <div class="settings-card-header">
-          <h2>Preferenze di viaggio</h2>
+          <h2>{{ 'settings.preferenze-viaggio' | translate }}</h2>
         </div>
 
         <div class="pref-grid">
@@ -192,7 +192,7 @@
           <div class="pref-item">
             <div class="pref-item-icon"><i class="fas fa-globe"></i></div>
             <div class="pref-item-body">
-              <label>Lingua</label>
+              <label>{{ 'settings.lingua' | translate }}</label>
               <select [(ngModel)]="preferenze.lingua">
                 <option>Italiano</option>
                 <option>English</option>
@@ -206,7 +206,7 @@
           <div class="pref-item">
             <div class="pref-item-icon"><i class="fas fa-coins"></i></div>
             <div class="pref-item-body">
-              <label>Valuta</label>
+              <label>{{ 'settings.valuta' | translate }}</label>
               <select [(ngModel)]="preferenze.valuta">
                 <option>EUR (€)</option>
                 <option>USD ($)</option>
@@ -216,37 +216,25 @@
             </div>
           </div>
 
-          <div class="pref-item">
-            <div class="pref-item-icon"><i class="fas fa-sun"></i></div>
-            <div class="pref-item-body">
-              <label>Tema</label>
-              <select [(ngModel)]="preferenze.tema" (change)="onTemaChange()">
-                <option>Chiaro</option>
-                <option>Scuro</option>
-                <option>Sistema</option>
-              </select>
-            </div>
-          </div>
-
         </div>
 
         <div class="settings-card-footer">
-          <button class="btn-save-main" (click)="salvaPreferenze()">Salva preferenze</button>
+          <button class="btn-save-main" (click)="salvaPreferenze()">{{ 'settings.salva-preferenze' | translate }}</button>
         </div>
       </section>
 
       <!-- ── PRIVACY ── -->
       <section id="section-privacy" class="settings-card privacy-settings-card">
         <div class="settings-card-header">
-          <h2>Privacy</h2>
+          <h2>{{ 'settings.privacy' | translate }}</h2>
         </div>
 
         <div class="privacy-row">
           <div class="privacy-row-info">
-            <span class="privacy-label danger-label">Disattiva account</span>
-            <span class="privacy-sub">Disattiva temporaneamente il tuo account Ndovado.</span>
+            <span class="privacy-label danger-label">{{ 'settings.disattiva-account' | translate }}</span>
+            <span class="privacy-sub">{{ 'settings.disattiva-desc' | translate }}</span>
           </div>
-          <button class="btn-danger-outline">Disattiva</button>
+          <button class="btn-danger-outline">{{ 'settings.disattiva-btn' | translate }}</button>
         </div>
 
       </section>
@@ -258,7 +246,7 @@
 
       <!-- Stato account -->
       <div class="settings-card account-status-card">
-        <h3 class="rightbar-card-title">Stato account</h3>
+        <h3 class="rightbar-card-title">{{ 'settings.stato-account' | translate }}</h3>
 
         <div class="account-status-list">
 
@@ -268,7 +256,7 @@
             } @else {
               <i class="fas fa-times-circle status-icon warn"></i>
             }
-            <span>Email verificata</span>
+            <span>{{ 'settings.email-verificata' | translate }}</span>
           </div>
 
           <div class="account-status-item">
@@ -277,13 +265,13 @@
             } @else {
               <i class="fas fa-exclamation-circle status-icon warn"></i>
             }
-            <span>{{ telefonoImpostato ? 'Telefono verificato' : 'Telefono non impostato' }}</span>
+            <span>{{ telefonoImpostato ? ('settings.telefono-verificato' | translate) : ('settings.telefono-non-impostato-status' | translate) }}</span>
           </div>
 
           <div class="account-status-item column">
             <div class="status-row-header">
               <i class="fas fa-check-circle status-icon ok"></i>
-              <span>Profilo completato</span>
+              <span>{{ 'settings.profilo-completato' | translate }}</span>
               <span class="completion-pct">{{ profileCompletion }}%</span>
             </div>
             <div class="completion-bar-bg">

@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HotelService } from '../../services/hotel.service';
 import { CameraService } from '../../services/camera.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -37,16 +38,27 @@ export class AggiungiHotel implements OnInit {
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
   readonly steps = [
-    { number: 1, label: 'Informazioni base' },
-    { number: 2, label: 'Camere e prezzi' },
-    { number: 3, label: 'Servizi' },
-    { number: 4, label: 'Foto' },
-    { number: 5, label: 'Pubblicazione' },
+    { number: 1, label: 'addhotel.step.info-base' },
+    { number: 2, label: 'addhotel.step.camere-prezzi' },
+    { number: 3, label: 'addhotel.step.servizi' },
+    { number: 4, label: 'addhotel.step.foto' },
+    { number: 5, label: 'addhotel.step.pubblicazione' },
   ];
 
   readonly tipologie = [
     'Hotel', 'Resort', 'B&B', 'Appartamento', 'Villa', 'Agriturismo', 'Residence', 'Ostello'
   ];
+
+  private readonly tipologieKeys: Record<string, string> = {
+    'Hotel':        'addhotel.tipologia.hotel',
+    'Resort':       'addhotel.tipologia.resort',
+    'B&B':          'addhotel.tipologia.bb',
+    'Appartamento': 'addhotel.tipologia.appartamento',
+    'Villa':        'addhotel.tipologia.villa',
+    'Agriturismo':  'addhotel.tipologia.agriturismo',
+    'Residence':    'addhotel.tipologia.residence',
+    'Ostello':      'addhotel.tipologia.ostello',
+  };
 
   readonly tipiCamera = ['SINGOLA', 'DOPPIA', 'TRIPLA', 'SUITE', 'FAMILIARE', 'DELUXE'];
 
@@ -61,12 +73,24 @@ export class AggiungiHotel implements OnInit {
     { id: -8, nome: 'Vista mare',          icona: 'fa-water' },
   ];
 
+  private readonly serviziDefaultKeys: Record<string, string> = {
+    'Wi-Fi gratuito':       'addhotel.servizio.wifi',
+    'Colazione inclusa':    'addhotel.servizio.colazione',
+    'Piscina':              'addhotel.servizio.piscina',
+    'Spa':                  'addhotel.servizio.spa',
+    'Parcheggio':           'addhotel.servizio.parcheggio',
+    'Navetta aeroportuale': 'addhotel.servizio.navetta',
+    'Animali ammessi':      'addhotel.servizio.animali',
+    'Vista mare':           'addhotel.servizio.vista-mare',
+  };
+
   constructor(
     private fb: FormBuilder,
     private hotelService: HotelService,
     private cameraService: CameraService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public i18n: TranslationService
   ) {}
 
   get currentUser() { return this.authService.getLoggedUser() ?? {}; }
@@ -115,6 +139,16 @@ export class AggiungiHotel implements OnInit {
     return this.serviziDisponibili.length ? this.serviziDisponibili : this.serviziDefault;
   }
 
+  tipologiaLabel(t: string): string {
+    const key = this.tipologieKeys[t];
+    return key ? this.i18n.translate(key) : t;
+  }
+
+  servizioLabel(s: any): string {
+    const key = this.serviziDefaultKeys[s?.nome];
+    return key ? this.i18n.translate(key) : s?.nome;
+  }
+
   getServizioIcon(nome: string): string {
     const n = (nome ?? '').toLowerCase();
     if (n.includes('wifi') || n.includes('wi-fi'))         return 'fa-wifi';
@@ -138,16 +172,16 @@ export class AggiungiHotel implements OnInit {
 
   // ── Preview ──
 
-  get previewNome(): string  { return this.hotelForm.get('nome')?.value?.trim() || 'Nome struttura'; }
-  get previewCitta(): string { return this.hotelForm.get('citta')?.value?.trim() || 'Località non impostata'; }
+  get previewNome(): string  { return this.hotelForm.get('nome')?.value?.trim() || this.i18n.translate('addhotel.nome-struttura-fallback'); }
+  get previewCitta(): string { return this.hotelForm.get('citta')?.value?.trim() || this.i18n.translate('addhotel.localita-non-impostata'); }
   get previewStelle(): number { return Number(this.hotelForm.get('stelle')?.value) || 0; }
   get previewImg(): string | null { return this.fotoPreview.find(f => f !== null) ?? null; }
 
-  get previewServizi(): string[] {
+  get previewServizi(): { nome: string; icona: string }[] {
     return this.serviziToShow
       .filter(s => this.selectedServizi.includes(s.id))
       .slice(0, 5)
-      .map(s => s.nome);
+      .map(s => ({ nome: this.servizioLabel(s), icona: s.icona ?? this.getServizioIcon(s.nome) }));
   }
 
   stelleRange(n: number): number[] { return Array.from({ length: n }); }
@@ -156,10 +190,10 @@ export class AggiungiHotel implements OnInit {
 
   get checklistItems(): { label: string; done: boolean }[] {
     return [
-      { label: "Completa l'indirizzo della struttura", done: !!(this.hotelForm.get('indirizzo')?.value?.trim()) },
-      { label: 'Aggiungi almeno 5 foto',               done: this.fotoFiles.filter(Boolean).length >= 5 },
-      { label: 'Definisci almeno 1 camera con prezzo', done: this.camereCreate.length > 0 || (this.hotelForm.get('numCamere')?.value > 0 && this.hotelForm.get('prezzoMedio')?.value > 0) },
-      { label: 'Conferma le policy della struttura',   done: false },
+      { label: 'addhotel.checklist.indirizzo', done: !!(this.hotelForm.get('indirizzo')?.value?.trim()) },
+      { label: 'addhotel.checklist.foto',      done: this.fotoFiles.filter(Boolean).length >= 5 },
+      { label: 'addhotel.checklist.camera',    done: this.camereCreate.length > 0 || (this.hotelForm.get('numCamere')?.value > 0 && this.hotelForm.get('prezzoMedio')?.value > 0) },
+      { label: 'addhotel.checklist.policy',    done: false },
     ];
   }
 
@@ -185,11 +219,11 @@ export class AggiungiHotel implements OnInit {
     for (const file of files) {
       if (!file.type.startsWith('image/')) continue;
       if (file.size > 10 * 1024 * 1024) {
-        this.showAlertMessage(`"${file.name}" supera il limite di 10MB.`, 'warning');
+        this.showAlertMessage(`"${file.name}" ${this.i18n.translate('addhotel.msg.limite-10mb')}`, 'warning');
         continue;
       }
       const slot = this.fotoFiles.findIndex(f => f === null);
-      if (slot === -1) { this.showAlertMessage('Puoi caricare al massimo 5 foto.', 'info'); break; }
+      if (slot === -1) { this.showAlertMessage(this.i18n.translate('addhotel.msg.max-5-foto'), 'info'); break; }
       this.fotoFiles[slot] = file;
       const reader = new FileReader();
       reader.onload = ev => { this.fotoPreview[slot] = ev.target?.result as string; };
@@ -222,7 +256,7 @@ export class AggiungiHotel implements OnInit {
 
   salvaBozza() {
     const nome = this.hotelForm.get('nome')?.value?.trim();
-    if (!nome) { this.showAlertMessage("Inserisci almeno il nome della struttura per salvare la bozza.", 'warning'); return; }
+    if (!nome) { this.showAlertMessage(this.i18n.translate('addhotel.msg.nome-obbligatorio'), 'warning'); return; }
     this.saving = true;
     this.hotelService.crea(this.buildPayload()).subscribe({
       next: h => {
@@ -230,9 +264,9 @@ export class AggiungiHotel implements OnInit {
         this.saving = false;
         const realServizi = this.selectedServizi.filter(id => id > 0);
         if (realServizi.length) this.hotelService.aggiornaServizi(h.id, realServizi).subscribe({ error: () => {} });
-        this.showAlertMessage('Bozza salvata con successo!', 'success');
+        this.showAlertMessage(this.i18n.translate('addhotel.msg.bozza-salvata'), 'success');
       },
-      error: e => { this.saving = false; this.showAlertMessage(e.error?.message ?? 'Errore durante il salvataggio.', 'error'); }
+      error: e => { this.saving = false; this.showAlertMessage(e.error?.message ?? this.i18n.translate('addhotel.msg.errore-salvataggio'), 'error'); }
     });
   }
 
@@ -254,7 +288,7 @@ export class AggiungiHotel implements OnInit {
     };
   }
 
-  openSupporto() { this.showAlertMessage('Per assistenza usa il pulsante chat in basso a destra.', 'info'); }
+  openSupporto() { this.showAlertMessage(this.i18n.translate('addhotel.msg.assistenza'), 'info'); }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {
     this.alertMessage = msg; this.alertType = type; this.showAlert = true;

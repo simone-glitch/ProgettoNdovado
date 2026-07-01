@@ -1,7 +1,7 @@
 <div class="utenti-container">
   <header class="header-main">
-    <h1>Gestione Utenti</h1>
-    <p>Visualizza e gestisci gli utenti registrati nel sistema.</p>
+    <h1>{{ 'utenti.titolo' | translate }}</h1>
+    <p>{{ 'utenti.sottotitolo' | translate }}</p>
   </header>
 
   <app-alert
@@ -19,10 +19,10 @@
     <table class="modern-table">
       <thead>
       <tr>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Ruolo</th>
-        <th *ngIf="isAdmin">Azioni</th>
+        <th>{{ 'common.nome' | translate }}</th>
+        <th>{{ 'common.email' | translate }}</th>
+        <th>{{ 'utenti.ruolo' | translate }}</th>
+        <th *ngIf="isAdmin">{{ 'common.azioni' | translate }}</th>
       </tr>
       </thead>
       <tbody>
@@ -41,10 +41,10 @@
         </td>
         <td class="actions" *ngIf="isAdmin">
           <button class="btn-promote" *ngIf="utente.ruolo === 'USER'" (click)="promuoviAdAdmin(utente)">
-            Promuovi ad Admin
+            {{ 'utenti.promuovi-admin' | translate }}
           </button>
           <button class="btn-delete" (click)="eliminaUtente(utente)">
-            Elimina
+            {{ 'common.elimina' | translate }}
           </button>
         </td>
       </tr>

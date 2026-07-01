@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UtenteService } from '../../services/utente.service';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-utenti',
@@ -28,7 +29,8 @@ export class Utenti implements OnInit {
 
   constructor(
     private utenteService: UtenteService,
-    private authService: AuthService
+    private authService: AuthService,
+    private i18n: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -44,20 +46,22 @@ export class Utenti implements OnInit {
         this.utenti = data;
       },
       error: (err) => {
-        this.showAlertMessage('Impossibile caricare la lista degli utenti.', 'error');
+        this.showAlertMessage(this.i18n.translate('utenti.msg.errore-caricamento'), 'error');
       }
     });
   }
 
   promuoviAdAdmin(user: any): void {
-    this.confirmMessage = `Sei sicuro di voler promuovere ${user.nome} ${user.cognome} ad ADMIN?`;
+    this.confirmMessage = this.i18n.translate('utenti.msg.conferma-promuovi')
+      .replace('{nome}', user.nome).replace('{cognome}', user.cognome);
     this.actionToConfirm = 'promuovi';
     this.itemToProcess = user;
     this.showConfirm = true;
   }
 
   eliminaUtente(user: any): void {
-    this.confirmMessage = `Sei sicuro di voler eliminare l'utente ${user.nome} ${user.cognome}? L'azione è irreversibile.`;
+    this.confirmMessage = this.i18n.translate('utenti.msg.conferma-elimina')
+      .replace('{nome}', user.nome).replace('{cognome}', user.cognome);
     this.actionToConfirm = 'elimina';
     this.itemToProcess = user;
     this.showConfirm = true;
@@ -78,14 +82,14 @@ export class Utenti implements OnInit {
   private eseguiPromozione(id: number) {
     this.utenteService.promoteUser(id).subscribe({
       next: (res) => { this.showAlertMessage(res, 'success'); this.caricaUtenti(); },
-      error: (err) => this.showAlertMessage(err.error || 'Errore.', 'error')
+      error: (err) => this.showAlertMessage(err.error || this.i18n.translate('utenti.msg.errore-generico'), 'error')
     });
   }
 
   private eseguiEliminazione(id: number) {
     this.utenteService.deleteUser(id).subscribe({
       next: (res) => { this.showAlertMessage(res, 'success'); this.caricaUtenti(); },
-      error: (err) => this.showAlertMessage(err.error || 'Errore.', 'error')
+      error: (err) => this.showAlertMessage(err.error || this.i18n.translate('utenti.msg.errore-generico'), 'error')
     });
   }
 

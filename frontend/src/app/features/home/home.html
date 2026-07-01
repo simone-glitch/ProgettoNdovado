@@ -3,8 +3,8 @@
   <!-- ── HERO ── -->
   <div class="ndv-hero">
     <div class="ndv-hero-text">
-      <h1 class="ndv-hero-title">Trova il tuo soggiorno perfetto</h1>
-      <p class="ndv-hero-sub">Hotel eccellenti. Prezzi onesti. Esperienze indimenticabili.</p>
+      <h1 class="ndv-hero-title">{{ 'home.hero.title' | translate }}</h1>
+      <p class="ndv-hero-sub">{{ 'home.hero.sub' | translate }}</p>
     </div>
 
     <!-- SEARCH CARD -->
@@ -13,47 +13,47 @@
         <div class="ndv-search-row">
 
           <div class="ndv-sf">
-            <label class="ndv-sf-label">DESTINAZIONE</label>
+            <label class="ndv-sf-label">{{ 'home.label.destinazione' | translate }}</label>
             <div class="ndv-sf-inner">
               <i class="fas fa-map-marker-alt ndv-sf-ico"></i>
-              <input type="text" formControlName="citta" placeholder="Dove vuoi andare?">
+              <input type="text" formControlName="citta" [placeholder]="'home.placeholder.destinazione' | translate">
             </div>
           </div>
 
           <div class="ndv-sf ndv-sf-sep">
-            <label class="ndv-sf-label">CATEGORIA</label>
+            <label class="ndv-sf-label">{{ 'home.label.categoria' | translate }}</label>
             <div class="ndv-sf-inner">
               <i class="fas fa-star ndv-sf-ico"></i>
               <select formControlName="stelle">
-                <option [value]="null">Tutte le categorie</option>
-                <option value="1">★ 1 stella</option>
-                <option value="2">★★ 2 stelle</option>
-                <option value="3">★★★ 3 stelle</option>
-                <option value="4">★★★★ 4 stelle</option>
-                <option value="5">★★★★★ 5 stelle</option>
+                <option [value]="null">{{ 'home.opt.tutte-categorie' | translate }}</option>
+                <option value="1">{{ 'home.opt.stelle.1' | translate }}</option>
+                <option value="2">{{ 'home.opt.stelle.2' | translate }}</option>
+                <option value="3">{{ 'home.opt.stelle.3' | translate }}</option>
+                <option value="4">{{ 'home.opt.stelle.4' | translate }}</option>
+                <option value="5">{{ 'home.opt.stelle.5' | translate }}</option>
               </select>
             </div>
           </div>
 
           <div class="ndv-sf ndv-sf-sep">
-            <label class="ndv-sf-label">PREZZO MAX/NOTTE (€)</label>
+            <label class="ndv-sf-label">{{ 'home.label.prezzo-max' | translate }}</label>
             <div class="ndv-sf-inner">
               <i class="fas fa-tag ndv-sf-ico"></i>
-              <input type="number" formControlName="prezzoMax" placeholder="es. 200" min="0">
+              <input type="number" formControlName="prezzoMax" [placeholder]="'home.placeholder.prezzo' | translate" min="0">
             </div>
           </div>
 
           <div class="ndv-sf ndv-sf-sep">
-            <label class="ndv-sf-label">OSPITI</label>
+            <label class="ndv-sf-label">{{ 'home.label.ospiti' | translate }}</label>
             <div class="ndv-sf-inner">
               <i class="fas fa-user-friends ndv-sf-ico"></i>
-              <input type="number" formControlName="numOspiti" placeholder="es. 2" min="1">
+              <input type="number" formControlName="numOspiti" [placeholder]="'home.placeholder.ospiti' | translate" min="1">
             </div>
           </div>
 
           <div class="ndv-sf-action">
             <button type="submit" class="ndv-primary-btn">
-              <i class="fas fa-search"></i> Cerca Hotel
+              <i class="fas fa-search"></i> {{ 'home.btn.cerca' | translate }}
             </button>
           </div>
 
@@ -61,13 +61,13 @@
 
         <div class="ndv-search-foot">
           <span class="ndv-trust">
-            <i class="fas fa-shield-alt"></i> Miglior Prezzo Garantito
+            <i class="fas fa-shield-alt"></i> {{ 'home.trust.miglior-prezzo' | translate }}
             <span class="ndv-dot">·</span>
-            Cancellazione gratuita sulla maggior parte degli hotel
+            {{ 'home.trust.cancellazione' | translate }}
           </span>
           @if (cercato) {
             <button type="button" class="ndv-ghost-btn" (click)="reset()">
-              <i class="fas fa-times"></i> Mostra tutti gli hotel
+              <i class="fas fa-times"></i> {{ 'home.btn.mostra-tutti' | translate }}
             </button>
           }
         </div>
@@ -78,22 +78,22 @@
     <div class="ndv-hero-benefit">
       <div class="ndv-hb-ico"><i class="fas fa-tag"></i></div>
       <div class="ndv-hb-text">
-        <strong>Migliori prezzi garantiti</strong>
-        <span>Il miglior prezzo o lo rimborsiamo</span>
+        <strong>{{ 'home.hb1.title' | translate }}</strong>
+        <span>{{ 'home.hb1.sub' | translate }}</span>
       </div>
     </div>
     <div class="ndv-hero-benefit">
       <div class="ndv-hb-ico"><i class="fas fa-times-circle"></i></div>
       <div class="ndv-hb-text">
-        <strong>Cancellazione gratuita</strong>
-        <span>Flessibilità su migliaia di strutture</span>
+        <strong>{{ 'home.hb2.title' | translate }}</strong>
+        <span>{{ 'home.hb2.sub' | translate }}</span>
       </div>
     </div>
     <div class="ndv-hero-benefit">
       <div class="ndv-hb-ico"><i class="fas fa-shield-alt"></i></div>
       <div class="ndv-hb-text">
-        <strong>Prenotazione sicura</strong>
-        <span>I tuoi dati sono protetti al 100%</span>
+        <strong>{{ 'home.hb3.title' | translate }}</strong>
+        <span>{{ 'home.hb3.sub' | translate }}</span>
       </div>
     </div>
   </div>
@@ -105,16 +105,17 @@
     <div class="ndv-sec-hdr">
       <div>
         <h2 class="ndv-sec-title">
-          @if (cercato) { Risultati Ricerca } @else { Hotel in Evidenza }
+          @if (cercato) { {{ 'home.sec.risultati-ricerca' | translate }} } @else { {{ 'home.sec.hotel-evidenza' | translate }} }
         </h2>
         <p class="ndv-sec-sub">
-          @if (cercato) { Corrispondenti ai tuoi filtri } @else { Soggiorni selezionati per la tua prossima vacanza }
+          @if (cercato) { {{ 'home.sec.corrispondenti' | translate }} } @else { {{ 'home.sec.soggiorni-selezionati' | translate }} }
         </p>
       </div>
-
-
+      @if (!cercato) {
+        <span class="ndv-view-all">{{ 'home.vedi-tutti-hotel' | translate }} <i class="fas fa-chevron-right"></i></span>
+      }
       @if (cercato) {
-        <span class="ndv-results-count">({{ hotels.length }} risultati)</span>
+        <span class="ndv-results-count">({{ hotels.length }} {{ 'home.risultati' | translate }})</span>
       }
     </div>
 
@@ -127,10 +128,10 @@
     } @else if (hotels.length === 0) {
       <div class="ndv-empty">
         <div class="ndv-empty-ico"><i class="fas fa-search"></i></div>
-        <h3>Nessun hotel trovato</h3>
-        <p>Prova a cambiare i filtri o sfoglia tutte le strutture.</p>
+        <h3>{{ 'home.empty.title' | translate }}</h3>
+        <p>{{ 'home.empty.sub' | translate }}</p>
         <button class="ndv-ghost-btn" (click)="reset()">
-          <i class="fas fa-arrow-left"></i> Mostra tutti gli hotel
+          <i class="fas fa-arrow-left"></i> {{ 'home.btn.mostra-tutti' | translate }}
         </button>
       </div>
     } @else {
@@ -138,10 +139,14 @@
         @for (hotel of hotels; track hotel.id) {
           <div class="ndv-hotel-card" (click)="vaiDettaglio(hotel.id)">
             <div class="ndv-card-img-wrap">
-              <img
-                [src]="getHotelImage(hotel)"
-                [alt]="hotel.nome"
-                class="ndv-card-photo">
+              @if (hotel.fotoUrls && hotel.fotoUrls.length > 0) {
+                <img [src]="hotel.fotoUrls[0]" [alt]="hotel.nome" class="ndv-card-photo">
+              } @else {
+                <div class="ndv-no-photo">
+                  <i class="fas fa-hotel"></i>
+                  <span>{{ hotel.nome }}</span>
+                </div>
+              }
               <div class="ndv-star-badge">{{ stelle(hotel.stelle) }}</div>
               @if (hotel.stelle >= 4) {
                 <div class="ndv-premium-tag">Premium</div>
@@ -162,14 +167,14 @@
               <div class="ndv-card-foot">
                 <div class="ndv-price-block">
                   @if (hotel.camere && hotel.camere.length > 0) {
-                    <span class="ndv-price-from">Da </span>
+                    <span class="ndv-price-from">{{ 'home.da' | translate }} </span>
                     <strong class="ndv-price-val">€{{ hotel.camere[0].prezzoNotte | number:'1.0-0' }}</strong>
-                    <span class="ndv-price-per">/notte</span>
+                    <span class="ndv-price-per">{{ 'common.per-notte' | translate }}</span>
                   } @else {
-                    <span class="ndv-price-from">Verifica disponibilità</span>
+                    <span class="ndv-price-from">{{ 'home.verifica-disponibilita' | translate }}</span>
                   }
                 </div>
-                <button class="ndv-detail-btn">Vedi Hotel</button>
+                <button class="ndv-detail-btn">{{ 'home.vedi-hotel' | translate }}</button>
               </div>
             </div>
           </div>
@@ -183,47 +188,46 @@
     <section class="ndv-section">
       <div class="ndv-sec-hdr">
         <div>
-          <h2 class="ndv-sec-title">Destinazioni Popolari</h2>
-          <p class="ndv-sec-sub">Esplora i migliori posti nel mondo</p>
+          <h2 class="ndv-sec-title">{{ 'home.destinazioni-popolari' | translate }}</h2>
+          <p class="ndv-sec-sub">{{ 'home.destinazioni-sub' | translate }}</p>
         </div>
-
-
+        <span class="ndv-view-all">{{ 'home.vedi-destinazioni' | translate }} <i class="fas fa-chevron-right"></i></span>
       </div>
       <div class="ndv-dest-grid">
         <div class="ndv-dest-card ndv-dest-bali">
           <div class="ndv-dest-info">
             <span class="ndv-dest-city">Bali</span>
-            <span class="ndv-dest-ctry">Indonesia</span>
+            <span class="ndv-dest-ctry">{{ 'home.dest.indonesia' | translate }}</span>
           </div>
         </div>
         <div class="ndv-dest-card ndv-dest-paris">
           <div class="ndv-dest-info">
             <span class="ndv-dest-city">Paris</span>
-            <span class="ndv-dest-ctry">France</span>
+            <span class="ndv-dest-ctry">{{ 'home.dest.francia' | translate }}</span>
           </div>
         </div>
         <div class="ndv-dest-card ndv-dest-dubai">
           <div class="ndv-dest-info">
             <span class="ndv-dest-city">Dubai</span>
-            <span class="ndv-dest-ctry">UAE</span>
+            <span class="ndv-dest-ctry">{{ 'home.dest.uae' | translate }}</span>
           </div>
         </div>
         <div class="ndv-dest-card ndv-dest-london">
           <div class="ndv-dest-info">
             <span class="ndv-dest-city">London</span>
-            <span class="ndv-dest-ctry">United Kingdom</span>
+            <span class="ndv-dest-ctry">{{ 'home.dest.regno-unito' | translate }}</span>
           </div>
         </div>
         <div class="ndv-dest-card ndv-dest-tokyo">
           <div class="ndv-dest-info">
             <span class="ndv-dest-city">Tokyo</span>
-            <span class="ndv-dest-ctry">Japan</span>
+            <span class="ndv-dest-ctry">{{ 'home.dest.giappone' | translate }}</span>
           </div>
         </div>
         <div class="ndv-dest-card ndv-dest-santorini">
           <div class="ndv-dest-info">
             <span class="ndv-dest-city">Santorini</span>
-            <span class="ndv-dest-ctry">Greece</span>
+            <span class="ndv-dest-ctry">{{ 'home.dest.grecia' | translate }}</span>
           </div>
         </div>
       </div>
@@ -235,29 +239,29 @@
     <div class="ndv-benefit-item">
       <div class="ndv-ben-ico"><i class="fas fa-tag"></i></div>
       <div class="ndv-ben-text">
-        <strong>Miglior Prezzo Garantito</strong>
-        <span>Trovi un prezzo più basso? Lo pareggiamo.</span>
+        <strong>{{ 'home.bb1.title' | translate }}</strong>
+        <span>{{ 'home.bb1.sub' | translate }}</span>
       </div>
     </div>
     <div class="ndv-benefit-item">
       <div class="ndv-ben-ico"><i class="fas fa-times-circle"></i></div>
       <div class="ndv-ben-text">
-        <strong>Cancellazione Gratuita</strong>
-        <span>I piani cambiano. Cancella gratis sulla maggior parte degli hotel.</span>
+        <strong>{{ 'home.bb2.title' | translate }}</strong>
+        <span>{{ 'home.bb2.sub' | translate }}</span>
       </div>
     </div>
     <div class="ndv-benefit-item">
       <div class="ndv-ben-ico"><i class="fas fa-headset"></i></div>
       <div class="ndv-ben-text">
-        <strong>Supporto 24/7</strong>
-        <span>Siamo qui per aiutarti in qualsiasi momento.</span>
+        <strong>{{ 'home.bb3.title' | translate }}</strong>
+        <span>{{ 'home.bb3.sub' | translate }}</span>
       </div>
     </div>
     <div class="ndv-benefit-item">
       <div class="ndv-ben-ico"><i class="fas fa-lock"></i></div>
       <div class="ndv-ben-text">
-        <strong>Prenotazione Sicura</strong>
-        <span>I tuoi dati sono al sicuro con noi.</span>
+        <strong>{{ 'home.bb4.title' | translate }}</strong>
+        <span>{{ 'home.bb4.sub' | translate }}</span>
       </div>
     </div>
   </section>
