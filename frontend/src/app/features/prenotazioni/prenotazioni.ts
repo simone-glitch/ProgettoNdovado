@@ -109,17 +109,19 @@ export class Prenotazioni implements OnInit {
   }
 
   // ── Stats (computed from real data) ──
+  // Basate sulle prenotazioni dopo i filtri applicati col pulsante,
+  // così le card si aggiornano insieme alla lista (i tab invece non le toccano).
 
   get prenotazioniAttive(): number {
-    return this.prenotazioni.filter(p => this.isArrivoBooking(p)).length;
+    return this.prenotazioniFiltroApplicato.filter(p => this.isArrivoBooking(p)).length;
   }
 
   get soggiorniCompletati(): number {
-    return this.prenotazioni.filter(p => this.isCompletataBooking(p)).length;
+    return this.prenotazioniFiltroApplicato.filter(p => this.isCompletataBooking(p)).length;
   }
 
   get totaleSpeso(): string {
-    const tot = this.prenotazioni
+    const tot = this.prenotazioniFiltroApplicato
       .filter(p => p.stato !== 'CANCELLATA' && p.prezzoTotale != null)
       .reduce((acc, p) => acc + Number(p.prezzoTotale || 0), 0);
     return this.formatPrezzo(tot);
@@ -127,7 +129,7 @@ export class Prenotazioni implements OnInit {
 
   get prossimoCheckin(): string {
     const oggi = this.todayMidnight();
-    const dates = this.prenotazioni
+    const dates = this.prenotazioniFiltroApplicato
       .filter(p => p.stato !== 'CANCELLATA')
       .map(p => this.toLocalDate(p.dataCheckin))
       .filter((d): d is Date => d != null && d >= oggi)
@@ -146,19 +148,11 @@ export class Prenotazioni implements OnInit {
     return Array.from(anni).sort((a, b) => b - a);
   }
 
-  get prenotazioniFiltrate(): any[] {
+  // Base per le card statistiche: solo i filtri di portata (anno, ricerca).
+  // Il filtro stato non si applica qui: ogni card ha già il suo stato incorporato
+  // (attive, completate, ...) e filtrare per un altro stato la azzererebbe.
+  private get prenotazioniFiltroApplicato(): any[] {
     let lista = [...this.prenotazioni];
-
-    if (this.activeTab === 'arrivo')      lista = lista.filter(p => this.isArrivoBooking(p));
-    else if (this.activeTab === 'prenotate')  lista = lista.filter(p => this.isArrivoBooking(p));
-    else if (this.activeTab === 'completate') lista = lista.filter(p => this.isCompletataBooking(p));
-    else if (this.activeTab === 'cancellate') lista = lista.filter(p => p.stato === 'CANCELLATA');
-
-    if (this.appliedStatus === '_COMPLETATA') {
-      lista = lista.filter(p => this.isCompletataBooking(p));
-    } else if (this.appliedStatus) {
-      lista = lista.filter(p => p.stato === this.appliedStatus);
-    }
 
     if (this.appliedAnno) {
       const anno = Number(this.appliedAnno);
@@ -176,6 +170,23 @@ export class Prenotazioni implements OnInit {
         this.bookingCode(p).toLowerCase().includes(q)
       );
     }
+
+    return lista;
+  }
+
+  get prenotazioniFiltrate(): any[] {
+    let lista = this.prenotazioniFiltroApplicato;
+
+    if (this.appliedStatus === '_COMPLETATA') {
+      lista = lista.filter(p => this.isCompletataBooking(p));
+    } else if (this.appliedStatus) {
+      lista = lista.filter(p => p.stato === this.appliedStatus);
+    }
+
+    if (this.activeTab === 'arrivo')      lista = lista.filter(p => this.isArrivoBooking(p));
+    else if (this.activeTab === 'prenotate')  lista = lista.filter(p => this.isArrivoBooking(p));
+    else if (this.activeTab === 'completate') lista = lista.filter(p => this.isCompletataBooking(p));
+    else if (this.activeTab === 'cancellate') lista = lista.filter(p => p.stato === 'CANCELLATA');
 
     return lista;
   }

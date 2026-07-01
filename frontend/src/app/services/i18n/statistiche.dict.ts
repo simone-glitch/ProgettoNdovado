@@ -2,9 +2,6 @@ import { LangDict } from './types';
 
 export const statisticheDict: LangDict = {
   it: {
-    'stat.breadcrumb.home':       'Home',
-    'stat.breadcrumb.corrente':   'Statistiche',
-
     'stat.caricamento':           'Caricamento statistiche…',
     'stat.errore-titolo':         'Impossibile caricare le statistiche',
     'stat.errore-sub':            'Controlla la connessione e riprova.',
@@ -26,19 +23,17 @@ export const statisticheDict: LangDict = {
     'stat.vedi-dettagli-struttura':      'Vedi dettagli struttura',
     'stat.dati-insufficienti':           'Dati insufficienti per determinare la migliore struttura',
 
-    'stat.origine-prenotazioni':         'Origine prenotazioni',
-    'stat.origine-non-disponibile':      "Dati sull'origine delle prenotazioni non disponibili al momento",
-
     'stat.ultime-attivita':              'Ultime attività',
     'stat.nessuna-attivita':             'Nessuna attività recente',
     'stat.vedi-tutte-attivita':          'Vedi tutte le attività',
 
     'stat.obiettivi-mese':               'Obiettivi del mese',
-    'stat.vedi-tutti-obiettivi':         'Vedi tutti gli obiettivi',
+    'stat.modifica-obiettivi':           'Modifica obiettivi',
+    'stat.salva':                        'Salva',
+    'stat.annulla':                      'Annulla',
 
     'stat.suggerimenti-migliorare':      'Suggerimenti per migliorare',
     'stat.nessun-suggerimento':          'Nessun suggerimento disponibile al momento.',
-    'stat.vedi-tutti-suggerimenti':      'Vedi tutti i suggerimenti',
 
     'stat.periodo.7d':   'Ultimi 7 giorni',
     'stat.periodo.30d':  'Ultimi 30 giorni',
@@ -50,12 +45,7 @@ export const statisticheDict: LangDict = {
     'stat.nessuna':                      'Nessuna',
     'stat.hotel-fallback':               'Hotel',
 
-    'stat.tempo.min-fa':     '10 min fa',
-    'stat.tempo.ora-fa':     '1 ora fa',
-    'stat.tempo.ore-fa':     '3 ore fa',
-    'stat.tempo.ieri':       'Ieri',
-    'stat.tempo.giorni-fa':  '2 giorni fa',
-    'stat.tempo.recentemente': 'Recentemente',
+    'stat.checkin':          'Check-in',
 
     'stat.notte-singolare':  'notte',
     'stat.notte-plurale':    'notti',
@@ -77,21 +67,8 @@ export const statisticheDict: LangDict = {
     'stat.sug.rispondi.desc':   "Rispondere entro 1 ora aumenta le prenotazioni del 20%.",
     'stat.sug.completa.titolo': 'Completa le informazioni',
     'stat.sug.completa.desc':   'Una descrizione dettagliata aumenta la fiducia dei potenziali ospiti.',
-
-    'stat.csv.id':         'ID',
-    'stat.csv.hotel':      'Hotel',
-    'stat.csv.camera':     'Camera',
-    'stat.csv.ospite':     'Ospite',
-    'stat.csv.checkin':    'Check-in',
-    'stat.csv.checkout':   'Check-out',
-    'stat.csv.ospiti':     'Ospiti',
-    'stat.csv.totale':     'Totale (€)',
-    'stat.csv.stato':      'Stato',
   },
   en: {
-    'stat.breadcrumb.home':       'Home',
-    'stat.breadcrumb.corrente':   'Statistics',
-
     'stat.caricamento':           'Loading statistics…',
     'stat.errore-titolo':         'Unable to load statistics',
     'stat.errore-sub':            'Check your connection and try again.',
@@ -113,19 +90,17 @@ export const statisticheDict: LangDict = {
     'stat.vedi-dettagli-struttura':      'View property details',
     'stat.dati-insufficienti':           'Insufficient data to determine the best property',
 
-    'stat.origine-prenotazioni':         'Booking origin',
-    'stat.origine-non-disponibile':      'Booking origin data is not available at the moment',
-
     'stat.ultime-attivita':              'Recent activity',
     'stat.nessuna-attivita':             'No recent activity',
     'stat.vedi-tutte-attivita':          'View all activity',
 
     'stat.obiettivi-mese':               'Monthly goals',
-    'stat.vedi-tutti-obiettivi':         'View all goals',
+    'stat.modifica-obiettivi':           'Edit goals',
+    'stat.salva':                        'Save',
+    'stat.annulla':                      'Cancel',
 
     'stat.suggerimenti-migliorare':      'Suggestions to improve',
     'stat.nessun-suggerimento':          'No suggestions available at the moment.',
-    'stat.vedi-tutti-suggerimenti':      'View all suggestions',
 
     'stat.periodo.7d':   'Last 7 days',
     'stat.periodo.30d':  'Last 30 days',
@@ -137,12 +112,7 @@ export const statisticheDict: LangDict = {
     'stat.nessuna':                      'None',
     'stat.hotel-fallback':               'Hotel',
 
-    'stat.tempo.min-fa':     '10 min ago',
-    'stat.tempo.ora-fa':     '1 hour ago',
-    'stat.tempo.ore-fa':     '3 hours ago',
-    'stat.tempo.ieri':       'Yesterday',
-    'stat.tempo.giorni-fa':  '2 days ago',
-    'stat.tempo.recentemente': 'Recently',
+    'stat.checkin':          'Check-in',
 
     'stat.notte-singolare':  'night',
     'stat.notte-plurale':    'nights',
@@ -164,21 +134,8 @@ export const statisticheDict: LangDict = {
     'stat.sug.rispondi.desc':   'Replying within 1 hour increases bookings by 20%.',
     'stat.sug.completa.titolo': 'Complete your information',
     'stat.sug.completa.desc':   'A detailed description increases potential guests’ trust.',
-
-    'stat.csv.id':         'ID',
-    'stat.csv.hotel':      'Hotel',
-    'stat.csv.camera':     'Room',
-    'stat.csv.ospite':     'Guest',
-    'stat.csv.checkin':    'Check-in',
-    'stat.csv.checkout':   'Check-out',
-    'stat.csv.ospiti':     'Guests',
-    'stat.csv.totale':     'Total (€)',
-    'stat.csv.stato':      'Status',
   },
   es: {
-    'stat.breadcrumb.home':       'Inicio',
-    'stat.breadcrumb.corrente':   'Estadísticas',
-
     'stat.caricamento':           'Cargando estadísticas…',
     'stat.errore-titolo':         'No se pudieron cargar las estadísticas',
     'stat.errore-sub':            'Comprueba tu conexión e inténtalo de nuevo.',
@@ -200,19 +157,17 @@ export const statisticheDict: LangDict = {
     'stat.vedi-dettagli-struttura':      'Ver detalles de la propiedad',
     'stat.dati-insufficienti':           'Datos insuficientes para determinar la mejor propiedad',
 
-    'stat.origine-prenotazioni':         'Origen de las reservas',
-    'stat.origine-non-disponibile':      'Los datos sobre el origen de las reservas no están disponibles por el momento',
-
     'stat.ultime-attivita':              'Actividad reciente',
     'stat.nessuna-attivita':             'Sin actividad reciente',
     'stat.vedi-tutte-attivita':          'Ver toda la actividad',
 
     'stat.obiettivi-mese':               'Objetivos del mes',
-    'stat.vedi-tutti-obiettivi':         'Ver todos los objetivos',
+    'stat.modifica-obiettivi':           'Editar objetivos',
+    'stat.salva':                        'Guardar',
+    'stat.annulla':                      'Cancelar',
 
     'stat.suggerimenti-migliorare':      'Sugerencias para mejorar',
     'stat.nessun-suggerimento':          'No hay sugerencias disponibles por el momento.',
-    'stat.vedi-tutti-suggerimenti':      'Ver todas las sugerencias',
 
     'stat.periodo.7d':   'Últimos 7 días',
     'stat.periodo.30d':  'Últimos 30 días',
@@ -224,12 +179,7 @@ export const statisticheDict: LangDict = {
     'stat.nessuna':                      'Ninguna',
     'stat.hotel-fallback':               'Hotel',
 
-    'stat.tempo.min-fa':     'Hace 10 min',
-    'stat.tempo.ora-fa':     'Hace 1 hora',
-    'stat.tempo.ore-fa':     'Hace 3 horas',
-    'stat.tempo.ieri':       'Ayer',
-    'stat.tempo.giorni-fa':  'Hace 2 días',
-    'stat.tempo.recentemente': 'Recientemente',
+    'stat.checkin':          'Check-in',
 
     'stat.notte-singolare':  'noche',
     'stat.notte-plurale':    'noches',
@@ -251,21 +201,8 @@ export const statisticheDict: LangDict = {
     'stat.sug.rispondi.desc':   'Responder en menos de 1 hora aumenta las reservas en un 20%.',
     'stat.sug.completa.titolo': 'Completa la información',
     'stat.sug.completa.desc':   'Una descripción detallada aumenta la confianza de los posibles huéspedes.',
-
-    'stat.csv.id':         'ID',
-    'stat.csv.hotel':      'Hotel',
-    'stat.csv.camera':     'Habitación',
-    'stat.csv.ospite':     'Huésped',
-    'stat.csv.checkin':    'Check-in',
-    'stat.csv.checkout':   'Check-out',
-    'stat.csv.ospiti':     'Huéspedes',
-    'stat.csv.totale':     'Total (€)',
-    'stat.csv.stato':      'Estado',
   },
   fr: {
-    'stat.breadcrumb.home':       'Accueil',
-    'stat.breadcrumb.corrente':   'Statistiques',
-
     'stat.caricamento':           'Chargement des statistiques…',
     'stat.errore-titolo':         'Impossible de charger les statistiques',
     'stat.errore-sub':            'Vérifiez votre connexion et réessayez.',
@@ -287,19 +224,17 @@ export const statisticheDict: LangDict = {
     'stat.vedi-dettagli-struttura':      'Voir les détails de la propriété',
     'stat.dati-insufficienti':           'Données insuffisantes pour déterminer la meilleure propriété',
 
-    'stat.origine-prenotazioni':         'Origine des réservations',
-    'stat.origine-non-disponibile':      "Les données sur l'origine des réservations ne sont pas disponibles pour le moment",
-
     'stat.ultime-attivita':              'Activité récente',
     'stat.nessuna-attivita':             'Aucune activité récente',
     'stat.vedi-tutte-attivita':          "Voir toute l'activité",
 
     'stat.obiettivi-mese':               'Objectifs du mois',
-    'stat.vedi-tutti-obiettivi':         'Voir tous les objectifs',
+    'stat.modifica-obiettivi':           'Modifier les objectifs',
+    'stat.salva':                        'Enregistrer',
+    'stat.annulla':                      'Annuler',
 
     'stat.suggerimenti-migliorare':      'Suggestions pour s’améliorer',
     'stat.nessun-suggerimento':          'Aucune suggestion disponible pour le moment.',
-    'stat.vedi-tutti-suggerimenti':      'Voir toutes les suggestions',
 
     'stat.periodo.7d':   'Les 7 derniers jours',
     'stat.periodo.30d':  'Les 30 derniers jours',
@@ -311,12 +246,7 @@ export const statisticheDict: LangDict = {
     'stat.nessuna':                      'Aucune',
     'stat.hotel-fallback':               'Hôtel',
 
-    'stat.tempo.min-fa':     'il y a 10 min',
-    'stat.tempo.ora-fa':     'il y a 1 heure',
-    'stat.tempo.ore-fa':     'il y a 3 heures',
-    'stat.tempo.ieri':       'Hier',
-    'stat.tempo.giorni-fa':  'il y a 2 jours',
-    'stat.tempo.recentemente': 'Récemment',
+    'stat.checkin':          'Arrivée',
 
     'stat.notte-singolare':  'nuit',
     'stat.notte-plurale':    'nuits',
@@ -338,21 +268,8 @@ export const statisticheDict: LangDict = {
     'stat.sug.rispondi.desc':   "Répondre dans l'heure augmente les réservations de 20%.",
     'stat.sug.completa.titolo': 'Complétez les informations',
     'stat.sug.completa.desc':   'Une description détaillée augmente la confiance des clients potentiels.',
-
-    'stat.csv.id':         'ID',
-    'stat.csv.hotel':      'Hôtel',
-    'stat.csv.camera':     'Chambre',
-    'stat.csv.ospite':     'Client',
-    'stat.csv.checkin':    'Arrivée',
-    'stat.csv.checkout':   'Départ',
-    'stat.csv.ospiti':     'Voyageurs',
-    'stat.csv.totale':     'Total (€)',
-    'stat.csv.stato':      'Statut',
   },
   de: {
-    'stat.breadcrumb.home':       'Startseite',
-    'stat.breadcrumb.corrente':   'Statistiken',
-
     'stat.caricamento':           'Statistiken werden geladen…',
     'stat.errore-titolo':         'Statistiken konnten nicht geladen werden',
     'stat.errore-sub':            'Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
@@ -374,19 +291,17 @@ export const statisticheDict: LangDict = {
     'stat.vedi-dettagli-struttura':      'Unterkunftsdetails anzeigen',
     'stat.dati-insufficienti':           'Unzureichende Daten, um die beste Unterkunft zu bestimmen',
 
-    'stat.origine-prenotazioni':         'Herkunft der Buchungen',
-    'stat.origine-non-disponibile':      'Daten zur Herkunft der Buchungen sind derzeit nicht verfügbar',
-
     'stat.ultime-attivita':              'Letzte Aktivitäten',
     'stat.nessuna-attivita':             'Keine kürzlichen Aktivitäten',
     'stat.vedi-tutte-attivita':          'Alle Aktivitäten anzeigen',
 
     'stat.obiettivi-mese':               'Monatsziele',
-    'stat.vedi-tutti-obiettivi':         'Alle Ziele anzeigen',
+    'stat.modifica-obiettivi':           'Ziele bearbeiten',
+    'stat.salva':                        'Speichern',
+    'stat.annulla':                      'Abbrechen',
 
     'stat.suggerimenti-migliorare':      'Verbesserungsvorschläge',
     'stat.nessun-suggerimento':          'Derzeit keine Vorschläge verfügbar.',
-    'stat.vedi-tutti-suggerimenti':      'Alle Vorschläge anzeigen',
 
     'stat.periodo.7d':   'Letzte 7 Tage',
     'stat.periodo.30d':  'Letzte 30 Tage',
@@ -398,12 +313,7 @@ export const statisticheDict: LangDict = {
     'stat.nessuna':                      'Keine',
     'stat.hotel-fallback':               'Hotel',
 
-    'stat.tempo.min-fa':     'vor 10 Min.',
-    'stat.tempo.ora-fa':     'vor 1 Stunde',
-    'stat.tempo.ore-fa':     'vor 3 Stunden',
-    'stat.tempo.ieri':       'Gestern',
-    'stat.tempo.giorni-fa':  'vor 2 Tagen',
-    'stat.tempo.recentemente': 'Kürzlich',
+    'stat.checkin':          'Check-in',
 
     'stat.notte-singolare':  'Nacht',
     'stat.notte-plurale':    'Nächte',
@@ -425,15 +335,5 @@ export const statisticheDict: LangDict = {
     'stat.sug.rispondi.desc':   'Eine Antwort innerhalb von 1 Stunde erhöht die Buchungen um 20%.',
     'stat.sug.completa.titolo': 'Vervollständigen Sie die Informationen',
     'stat.sug.completa.desc':   'Eine detaillierte Beschreibung erhöht das Vertrauen potenzieller Gäste.',
-
-    'stat.csv.id':         'ID',
-    'stat.csv.hotel':      'Hotel',
-    'stat.csv.camera':     'Zimmer',
-    'stat.csv.ospite':     'Gast',
-    'stat.csv.checkin':    'Check-in',
-    'stat.csv.checkout':   'Check-out',
-    'stat.csv.ospiti':     'Gäste',
-    'stat.csv.totale':     'Gesamt (€)',
-    'stat.csv.stato':      'Status',
   },
 };

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { SharedModule }        from '../../shared/shared.module';
 import { DashboardService }    from '../../services/dashboard.service';
 import { HotelService }        from '../../services/hotel.service';
@@ -18,7 +18,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-statistiche',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, SharedModule],
+  imports: [CommonModule, FormsModule, SharedModule],
   templateUrl: './statistiche.html',
   styleUrl: './statistiche.css',
 })
@@ -29,15 +29,19 @@ export class Statistiche implements OnInit, OnDestroy {
   @ViewChild('chartStato')     chartStatoRef!:     ElementRef;
 
   serverStats:  any    = null;
-  serverCharts: any    = null;
   hotels:       any[]  = [];
   prenotazioni: any[]  = [];
 
   loading      = true;
   loadingError = false;
 
+  // Valori dei select: diventano effettivi solo al click del pulsante filtro,
+  // come nella pagina prenotazioni lato guest.
   periodoSelezionato   = '12m';
   strutturaSelezionata = 'tutte';
+
+  private periodoApplicato   = '12m';
+  private strutturaApplicata = 'tutte';
 
   get periodi() {
     return [
@@ -67,7 +71,10 @@ export class Statistiche implements OnInit, OnDestroy {
   get isHost()       { return this.authService.isHost();  }
   get currentUser()  { return this.authService.getLoggedUser() ?? {}; }
 
-  ngOnInit() { this.caricaDati(); }
+  ngOnInit() {
+    this.caricaObiettiviTargets();
+    this.caricaDati();
+  }
 
   ngOnDestroy() { this.chartInstances.forEach(c => c.destroy()); }
 
@@ -79,13 +86,11 @@ export class Statistiche implements OnInit, OnDestroy {
 
     forkJoin({
       stats:  this.dashboardService.getStats().pipe(catchError(() => of(null))),
-      charts: this.dashboardService.getChartData().pipe(catchError(() => of(null))),
       hotels: this.hotelService.getMiei().pipe(catchError(() => of([]))),
       prens:  this.prenotazioneService.getMie().pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ stats, charts, hotels, prens }) => {
+      next: ({ stats, hotels, prens }) => {
         this.serverStats  = stats;
-        this.serverCharts = charts;
         this.hotels       = hotels ?? [];
         this.prenotazioni = prens  ?? [];
         this.loading      = false;
@@ -95,7 +100,9 @@ export class Statistiche implements OnInit, OnDestroy {
     });
   }
 
-  onFiltroChange() {
+  applicaFiltri() {
+    this.periodoApplicato   = this.periodoSelezionato;
+    this.strutturaApplicata = this.strutturaSelezionata;
     if (!this.loading) setTimeout(() => this.renderCharts(), 80);
   }
 
@@ -120,7 +127,7 @@ export class Statistiche implements OnInit, OnDestroy {
 
   private periodoInizio(): Date {
     const now = new Date();
-    switch (this.periodoSelezionato) {
+    switch (this.periodoApplicato) {
       case '7d':  return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
       case '30d': return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
       case '3m':  return new Date(now.getFullYear(), now.getMonth() - 3, 1);
@@ -131,19 +138,20 @@ export class Statistiche implements OnInit, OnDestroy {
 
   // ─── Filtered prenotazioni ────────────────────────────────────────────────────
 
+  private filtraPerStruttura(lista: any[]): any[] {
+    if (this.strutturaApplicata === 'tutte') return lista;
+    return lista.filter(p =>
+      (p.nomeHotel ?? '') === this.strutturaApplicata ||
+      String(p.idHotel ?? '') === this.strutturaApplicata
+    );
+  }
+
   get prenotazioniFiltrate(): any[] {
     const from = this.periodoInizio();
-    let lista  = this.prenotazioni.filter(p => {
+    return this.filtraPerStruttura(this.prenotazioni.filter(p => {
       const d = this.toDate(p.dataCheckin);
       return !!d && d >= from;
-    });
-    if (this.strutturaSelezionata !== 'tutte') {
-      lista = lista.filter(p =>
-        (p.nomeHotel ?? '') === this.strutturaSelezionata ||
-        String(p.idHotel ?? '') === this.strutturaSelezionata
-      );
-    }
-    return lista;
+    }));
   }
 
   // ─── KPI getters ─────────────────────────────────────────────────────────────
@@ -156,15 +164,21 @@ export class Statistiche implements OnInit, OnDestroy {
     return this.prenotazioniFiltrate.filter(p => p.stato === 'IN_ATTESA').length;
   }
 
-  get entrateMeseCorrente(): number {
+  private entrateMese(lista: any[]): number {
     const now = new Date();
-    return this.prenotazioni
+    return lista
       .filter(p => p.stato !== 'CANCELLATA' && p.prezzoTotale != null)
       .filter(p => {
         const d = this.toDate(p.dataCheckin);
         return d && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       })
       .reduce((s, p) => s + Number(p.prezzoTotale || 0), 0);
+  }
+
+  // Sempre riferite al mese corrente (il filtro periodo non c'entra),
+  // ma rispettano la struttura selezionata.
+  get entrateMeseCorrente(): number {
+    return this.entrateMese(this.filtraPerStruttura(this.prenotazioni));
   }
 
   get tassoOccupazione(): string {
@@ -176,44 +190,40 @@ export class Statistiche implements OnInit, OnDestroy {
 
   // ─── Chart dataset builders ───────────────────────────────────────────────────
 
-  private buildMensile(): { labels: string[]; data: number[] } {
-    if (this.serverCharts?.prenotazioniPerMese &&
-        this.periodoSelezionato === '12m' &&
-        this.strutturaSelezionata === 'tutte') {
-      return {
-        labels: this.serverCharts.prenotazioniPerMese.labels ?? [],
-        data:   this.serverCharts.prenotazioniPerMese.data   ?? [],
-      };
-    }
-    const bucket = new Map<number, { label: string; count: number }>();
-    this.prenotazioniFiltrate.forEach(p => {
+  // Serie mensile continua dall'inizio del periodo all'ultimo mese rilevante:
+  // i mesi senza prenotazioni valgono 0 invece di sparire dall'asse.
+  private serieMensile(lista: any[], valore: (p: any) => number): { labels: string[]; data: number[] } {
+    const buckets = new Map<number, number>();
+    lista.forEach(p => {
       const d = this.toDate(p.dataCheckin);
       if (!d) return;
-      const sk = d.getFullYear() * 100 + d.getMonth();
-      const lbl = d.toLocaleDateString(this.locale, { month: 'short', year: '2-digit' });
-      const e = bucket.get(sk) ?? { label: lbl, count: 0 };
-      e.count++;
-      bucket.set(sk, e);
+      const k = d.getFullYear() * 12 + d.getMonth();
+      buckets.set(k, (buckets.get(k) ?? 0) + valore(p));
     });
-    const sorted = Array.from(bucket.entries()).sort((a, b) => a[0] - b[0]);
-    return { labels: sorted.map(([, e]) => e.label), data: sorted.map(([, e]) => e.count) };
+    const start = this.periodoInizio();
+    const now   = new Date();
+    const from  = start.getFullYear() * 12 + start.getMonth();
+    let   to    = now.getFullYear()   * 12 + now.getMonth();
+    for (const k of buckets.keys()) if (k > to) to = k; // check-in futuri già prenotati
+    const labels: string[] = [];
+    const data:   number[] = [];
+    for (let k = from; k <= to; k++) {
+      const d = new Date(Math.floor(k / 12), k % 12, 1);
+      labels.push(d.toLocaleDateString(this.locale, { month: 'short', year: '2-digit' }));
+      data.push(buckets.get(k) ?? 0);
+    }
+    return { labels, data };
+  }
+
+  private buildMensile(): { labels: string[]; data: number[] } {
+    return this.serieMensile(this.prenotazioniFiltrate, () => 1);
   }
 
   private buildEntrate(): { labels: string[]; data: number[] } {
-    const bucket = new Map<number, { label: string; rev: number }>();
-    this.prenotazioniFiltrate
-      .filter(p => p.stato !== 'CANCELLATA')
-      .forEach(p => {
-        const d = this.toDate(p.dataCheckin);
-        if (!d) return;
-        const sk = d.getFullYear() * 100 + d.getMonth();
-        const lbl = d.toLocaleDateString(this.locale, { month: 'short', year: '2-digit' });
-        const e = bucket.get(sk) ?? { label: lbl, rev: 0 };
-        e.rev += Number(p.prezzoTotale || 0);
-        bucket.set(sk, e);
-      });
-    const sorted = Array.from(bucket.entries()).sort((a, b) => a[0] - b[0]);
-    return { labels: sorted.map(([, e]) => e.label), data: sorted.map(([, e]) => e.rev) };
+    return this.serieMensile(
+      this.prenotazioniFiltrate.filter(p => p.stato !== 'CANCELLATA'),
+      p => Number(p.prezzoTotale || 0)
+    );
   }
 
   private buildStruttura(): { labels: string[]; data: number[] } {
@@ -393,24 +403,30 @@ export class Statistiche implements OnInit, OnDestroy {
 
   // ─── Recent activity ──────────────────────────────────────────────────────────
 
+  // Le prenotazioni non hanno un timestamp di creazione: l'id crescente è
+  // l'unico ordine di inserimento reale, e come riferimento temporale
+  // mostriamo la data di check-in effettiva.
   get ultimaAttivita(): any[] {
-    const tempi = [
-      this.i18n.translate('stat.tempo.min-fa'),
-      this.i18n.translate('stat.tempo.ora-fa'),
-      this.i18n.translate('stat.tempo.ore-fa'),
-      this.i18n.translate('stat.tempo.ieri'),
-      this.i18n.translate('stat.tempo.giorni-fa'),
-    ];
     return [...this.prenotazioni]
       .sort((a, b) => (b.id || 0) - (a.id || 0))
       .slice(0, 5)
-      .map((p, i) => ({
+      .map(p => ({
         icon:      this.actIcon(p.stato),
         iconClass: this.actClass(p.stato),
         title:     this.actTitle(p.stato),
         detail:    `${p.nomeHotel || this.i18n.translate('stat.hotel-fallback')} — ${this.notti(p)}`,
-        tempo:     tempi[i] ?? this.i18n.translate('stat.tempo.recentemente'),
+        tempo:     this.fmtCheckin(p.dataCheckin),
       }));
+  }
+
+  private fmtCheckin(val: any): string {
+    const d = this.toDate(val);
+    if (!d) return '';
+    const opts: Intl.DateTimeFormatOptions =
+      d.getFullYear() === new Date().getFullYear()
+        ? { day: 'numeric', month: 'short' }
+        : { day: 'numeric', month: 'short', year: '2-digit' };
+    return `${this.i18n.translate('stat.checkin')} ${d.toLocaleDateString(this.locale, opts)}`;
   }
 
   private actIcon(s: string)  { const m: any = { IN_ATTESA: 'fa-clock', CONFERMATA: 'fa-calendar-check', CANCELLATA: 'fa-times-circle' }; return m[s] || 'fa-bell'; }
@@ -435,16 +451,66 @@ export class Statistiche implements OnInit, OnDestroy {
 
   // ─── Goals ────────────────────────────────────────────────────────────────────
 
+  private static readonly OBIETTIVI_DEFAULT = { entrate: 15000, occupazione: 75, prenotazioni: 150 };
+
+  obiettiviTargets = { ...Statistiche.OBIETTIVI_DEFAULT };
+  editTargets      = { ...Statistiche.OBIETTIVI_DEFAULT };
+  editObiettivi    = false;
+
+  private get obiettiviStorageKey(): string {
+    return this.authService.userKey('ndovado-obiettivi');
+  }
+
+  private caricaObiettiviTargets() {
+    try {
+      const raw = localStorage.getItem(this.obiettiviStorageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      this.obiettiviTargets = {
+        entrate:      this.sanitizeTarget(saved.entrate,      Statistiche.OBIETTIVI_DEFAULT.entrate),
+        occupazione:  Math.min(100, this.sanitizeTarget(saved.occupazione, Statistiche.OBIETTIVI_DEFAULT.occupazione)),
+        prenotazioni: this.sanitizeTarget(saved.prenotazioni, Statistiche.OBIETTIVI_DEFAULT.prenotazioni),
+      };
+    } catch { /* dati corrotti in localStorage: si resta sui default */ }
+  }
+
+  private sanitizeTarget(val: any, fallback: number): number {
+    const n = Math.round(Number(val));
+    return Number.isFinite(n) && n >= 1 ? n : fallback;
+  }
+
+  apriModificaObiettivi() {
+    this.editTargets   = { ...this.obiettiviTargets };
+    this.editObiettivi = true;
+  }
+
+  salvaObiettivi() {
+    this.obiettiviTargets = {
+      entrate:      this.sanitizeTarget(this.editTargets.entrate,      this.obiettiviTargets.entrate),
+      occupazione:  Math.min(100, this.sanitizeTarget(this.editTargets.occupazione, this.obiettiviTargets.occupazione)),
+      prenotazioni: this.sanitizeTarget(this.editTargets.prenotazioni, this.obiettiviTargets.prenotazioni),
+    };
+    try {
+      localStorage.setItem(this.obiettiviStorageKey, JSON.stringify(this.obiettiviTargets));
+    } catch { /* storage pieno o non disponibile: gli obiettivi valgono per la sessione */ }
+    this.editObiettivi = false;
+  }
+
+  annullaObiettivi() { this.editObiettivi = false; }
+
+  // Gli obiettivi sono personali e riguardano tutto il portafoglio:
+  // non seguono i filtri della pagina.
   get obiettivi(): any[] {
-    const entAtt  = this.entrateMeseCorrente;
-    const entTgt  = 15000;
+    const entAtt  = this.entrateMese(this.prenotazioni);
+    const entTgt  = this.obiettiviTargets.entrate;
+    const occTgt  = this.obiettiviTargets.occupazione;
+    const preTgt  = this.obiettiviTargets.prenotazioni;
     const conf    = this.prenotazioni.filter(p => p.stato !== 'CANCELLATA').length;
     const tot     = this.prenotazioni.length;
     const occAtt  = tot > 0 ? Math.round((conf / tot) * 100) : 0;
-    const preTgt  = 150;
     return [
       { label: this.i18n.translate('stat.obiettivo.entrate'),     val: this.fmtEuro(entAtt), target: this.fmtEuro(entTgt), perc: Math.min(100, entTgt > 0 ? Math.round((entAtt / entTgt) * 100) : 0) },
-      { label: this.i18n.translate('stat.obiettivo.occupazione'), val: occAtt + '%',         target: '75%',                perc: Math.min(100, Math.round((occAtt / 75) * 100)) },
+      { label: this.i18n.translate('stat.obiettivo.occupazione'), val: occAtt + '%',         target: occTgt + '%',         perc: Math.min(100, occTgt > 0 ? Math.round((occAtt / occTgt) * 100) : 0) },
       { label: this.i18n.translate('stat.obiettivo.nuove-prenotazioni'), val: String(tot),   target: String(preTgt),       perc: Math.min(100, preTgt > 0 ? Math.round((tot / preTgt) * 100) : 0) },
     ];
   }
@@ -489,35 +555,4 @@ export class Statistiche implements OnInit, OnDestroy {
 
   vaiGestioneHotel() { this.router.navigate(['/dashboard/gestione-hotel']); }
   vaiPrenotazioni()  { this.router.navigate(['/dashboard/prenotazioni']);   }
-
-  // ─── Export CSV ───────────────────────────────────────────────────────────────
-
-  esportaReport() {
-    const pf = this.prenotazioniFiltrate;
-    if (!pf.length) return;
-    const head = [
-      this.i18n.translate('stat.csv.id'),
-      this.i18n.translate('stat.csv.hotel'),
-      this.i18n.translate('stat.csv.camera'),
-      this.i18n.translate('stat.csv.ospite'),
-      this.i18n.translate('stat.csv.checkin'),
-      this.i18n.translate('stat.csv.checkout'),
-      this.i18n.translate('stat.csv.ospiti'),
-      this.i18n.translate('stat.csv.totale'),
-      this.i18n.translate('stat.csv.stato'),
-    ];
-    const fmtD = (v: any) => {
-      const d = this.toDate(v);
-      if (!d) return '';
-      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-    };
-    const rows = pf.map(p => [p.id, p.nomeHotel || '', p.tipoCamera || '', p.nomeUtente || '', fmtD(p.dataCheckin), fmtD(p.dataCheckout), p.numOspiti ?? 1, p.prezzoTotale ?? '', p.stato || '']);
-    const csv  = [head, ...rows].map(r => r.map(c => `"${c}"`).join(';')).join('\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `ndovado-statistiche-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
 }

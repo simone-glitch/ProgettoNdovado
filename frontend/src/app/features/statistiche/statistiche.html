@@ -1,12 +1,5 @@
 <div class="host-statistics-page">
 
-  <!-- ── BREADCRUMB ── -->
-  <nav class="host-stats-breadcrumb">
-    <a routerLink="/dashboard/home" class="bc-home"><i class="fas fa-home"></i> {{ 'stat.breadcrumb.home' | translate }}</a>
-    <span class="bc-sep">/</span>
-    <span class="bc-current">{{ 'stat.breadcrumb.corrente' | translate }}</span>
-  </nav>
-
   <!-- ── PAGE HEADER ── -->
   <div class="host-statistics-header">
     <h1>{{ 'stat.page-title' | translate }}</h1>
@@ -106,7 +99,7 @@
 
         <div class="filter-group">
           <label class="filter-label"><i class="fas fa-calendar-week"></i> {{ 'stat.periodo' | translate }}</label>
-          <select class="filter-select" [(ngModel)]="periodoSelezionato" (ngModelChange)="onFiltroChange()">
+          <select class="filter-select" [(ngModel)]="periodoSelezionato">
             @for (p of periodi; track p.value) {
               <option [value]="p.value">{{ p.label }}</option>
             }
@@ -115,7 +108,7 @@
 
         <div class="filter-group">
           <label class="filter-label"><i class="fas fa-hotel"></i> {{ 'stat.struttura' | translate }}</label>
-          <select class="filter-select" [(ngModel)]="strutturaSelezionata" (ngModelChange)="onFiltroChange()">
+          <select class="filter-select" [(ngModel)]="strutturaSelezionata">
             <option value="tutte">{{ 'stat.tutte-strutture' | translate }}</option>
             @for (h of hotels; track h.id) {
               <option [value]="h.nome">{{ h.nome }}</option>
@@ -124,8 +117,8 @@
         </div>
 
       </div>
-      <button class="btn-export" (click)="esportaReport()">
-        <i class="fas fa-download"></i> {{ 'stat.esporta' | translate }}
+      <button class="btn-filtra" (click)="applicaFiltri()" [title]="'booking.filtra' | translate">
+        <i class="fas fa-filter"></i>
       </button>
     </div>
 
@@ -229,7 +222,7 @@
 
         </div><!-- /charts-row 2 -->
 
-        <!-- Row 3: Best property + Booking origin + Recent activity -->
+        <!-- Row 3: Best property + Recent activity -->
         <div class="cards-row-three">
 
           <!-- Best property -->
@@ -269,15 +262,6 @@
                 <span>{{ 'stat.dati-insufficienti' | translate }}</span>
               </div>
             }
-          </div>
-
-          <!-- Booking origin -->
-          <div class="booking-source-card">
-            <h3 class="card-section-title"><i class="fas fa-share-alt"></i> {{ 'stat.origine-prenotazioni' | translate }}</h3>
-            <div class="source-empty">
-              <i class="fas fa-info-circle"></i>
-              <span>{{ 'stat.origine-non-disponibile' | translate }}</span>
-            </div>
           </div>
 
           <!-- Recent activity -->
@@ -322,28 +306,51 @@
             <span class="sidebar-card-icon"><i class="fas fa-bullseye"></i></span>
             <h3>{{ 'stat.obiettivi-mese' | translate }}</h3>
           </div>
-          <div class="goals-list">
-            @for (ob of obiettivi; track ob.label) {
-              <div class="goal-item">
-                <div class="goal-header">
-                  <span class="goal-label">{{ ob.label }}</span>
-                  <span class="goal-pct" [class.goal-pct-high]="ob.perc >= 80">{{ ob.perc }}%</span>
-                </div>
-                <div class="goal-vals">
-                  <span>{{ ob.val }}</span>
-                  <span class="goal-sep">/</span>
-                  <span class="goal-target">{{ ob.target }}</span>
-                </div>
-                <div class="goal-bar-bg">
-                  <div class="goal-bar-fill" [style.width.%]="ob.perc"
-                       [class.goal-bar-high]="ob.perc >= 80"
-                       [class.goal-bar-med]="ob.perc >= 50 && ob.perc < 80"
-                       [class.goal-bar-low]="ob.perc < 50"></div>
-                </div>
+          @if (editObiettivi) {
+            <div class="goals-edit">
+              <div class="goal-edit-item">
+                <label class="goal-edit-label">{{ 'stat.obiettivo.entrate' | translate }} (€)</label>
+                <input type="number" class="goal-edit-input" min="1" [(ngModel)]="editTargets.entrate">
               </div>
-            }
-          </div>
-          <button class="btn-sidebar-more" (click)="vaiPrenotazioni()">{{ 'stat.vedi-tutti-obiettivi' | translate }}</button>
+              <div class="goal-edit-item">
+                <label class="goal-edit-label">{{ 'stat.obiettivo.occupazione' | translate }} (%)</label>
+                <input type="number" class="goal-edit-input" min="1" max="100" [(ngModel)]="editTargets.occupazione">
+              </div>
+              <div class="goal-edit-item">
+                <label class="goal-edit-label">{{ 'stat.obiettivo.nuove-prenotazioni' | translate }}</label>
+                <input type="number" class="goal-edit-input" min="1" [(ngModel)]="editTargets.prenotazioni">
+              </div>
+              <div class="goal-edit-actions">
+                <button class="btn-goal-save" (click)="salvaObiettivi()">{{ 'stat.salva' | translate }}</button>
+                <button class="btn-goal-cancel" (click)="annullaObiettivi()">{{ 'stat.annulla' | translate }}</button>
+              </div>
+            </div>
+          } @else {
+            <div class="goals-list">
+              @for (ob of obiettivi; track ob.label) {
+                <div class="goal-item">
+                  <div class="goal-header">
+                    <span class="goal-label">{{ ob.label }}</span>
+                    <span class="goal-pct" [class.goal-pct-high]="ob.perc >= 80">{{ ob.perc }}%</span>
+                  </div>
+                  <div class="goal-vals">
+                    <span>{{ ob.val }}</span>
+                    <span class="goal-sep">/</span>
+                    <span class="goal-target">{{ ob.target }}</span>
+                  </div>
+                  <div class="goal-bar-bg">
+                    <div class="goal-bar-fill" [style.width.%]="ob.perc"
+                         [class.goal-bar-high]="ob.perc >= 80"
+                         [class.goal-bar-med]="ob.perc >= 50 && ob.perc < 80"
+                         [class.goal-bar-low]="ob.perc < 50"></div>
+                  </div>
+                </div>
+              }
+            </div>
+            <button class="btn-sidebar-more" (click)="apriModificaObiettivi()">
+              <i class="fas fa-pen"></i> {{ 'stat.modifica-obiettivi' | translate }}
+            </button>
+          }
         </div>
 
         <!-- Suggerimenti per migliorare -->
@@ -370,7 +377,6 @@
               }
             </div>
           }
-          <button class="btn-sidebar-more" (click)="vaiGestioneHotel()">{{ 'stat.vedi-tutti-suggerimenti' | translate }}</button>
         </div>
 
       </aside><!-- /sidebar -->

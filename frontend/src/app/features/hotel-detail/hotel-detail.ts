@@ -318,9 +318,9 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
 
   private caricaCarteLocali(): void {
     try {
-      const raw = localStorage.getItem('ndv_metodi_pagamento');
+      const raw = localStorage.getItem(this.authService.userKey('ndv_metodi_pagamento'));
       this.carteLocali = raw ? JSON.parse(raw) : [];
-      const sel = localStorage.getItem('ndv_carta_selezionata');
+      const sel = localStorage.getItem(this.authService.userKey('ndv_carta_selezionata'));
       if (sel !== null && sel !== 'null' && this.carteLocali.length > 0) {
         const idx = Number(sel);
         this.cartaSelezionataIdx = idx < this.carteLocali.length ? idx : 0;

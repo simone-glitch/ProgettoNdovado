@@ -57,6 +57,13 @@ export class AuthService {
     return this.getLoggedUser()?.ruolo ?? '';
   }
 
+  // Chiave localStorage legata all'utente loggato: i dati personali (carte,
+  // obiettivi, ecc.) non devono essere visibili ad altri account sullo stesso browser.
+  userKey(base: string): string {
+    const u = this.getLoggedUser();
+    return `${base}-${u?.id ?? u?.email ?? 'anon'}`;
+  }
+
   isAdmin(): boolean  { return this.getRuolo() === 'ADMIN'; }
   isHost(): boolean   { return this.getRuolo() === 'HOST';  }
   isGuest(): boolean  { return this.getRuolo() === 'GUEST'; }

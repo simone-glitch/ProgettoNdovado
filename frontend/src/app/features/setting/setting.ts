@@ -361,30 +361,34 @@ export class Setting implements OnInit {
     this.metodiPagamento.splice(index, 1);
     if (this.cartaSelezionataIndex === index) {
       this.cartaSelezionataIndex = null;
-      localStorage.removeItem('ndv_carta_selezionata');
+      localStorage.removeItem(this.authService.userKey('ndv_carta_selezionata'));
     } else if (this.cartaSelezionataIndex !== null && this.cartaSelezionataIndex > index) {
       this.cartaSelezionataIndex--;
-      localStorage.setItem('ndv_carta_selezionata', String(this.cartaSelezionataIndex));
+      localStorage.setItem(this.authService.userKey('ndv_carta_selezionata'), String(this.cartaSelezionataIndex));
     }
     this.salvaCarteLocali();
   }
 
   selezionaCarta(index: number): void {
     this.cartaSelezionataIndex = this.cartaSelezionataIndex === index ? null : index;
-    localStorage.setItem('ndv_carta_selezionata', String(this.cartaSelezionataIndex));
+    localStorage.setItem(this.authService.userKey('ndv_carta_selezionata'), String(this.cartaSelezionataIndex));
   }
 
   private caricaCarteLocali(): void {
+    // Le vecchie chiavi globali facevano vedere le carte di un account a tutti
+    // gli utenti dello stesso browser: vanno eliminate, non migrate (non si sa di chi erano).
+    localStorage.removeItem('ndv_metodi_pagamento');
+    localStorage.removeItem('ndv_carta_selezionata');
     try {
-      const raw = localStorage.getItem('ndv_metodi_pagamento');
+      const raw = localStorage.getItem(this.authService.userKey('ndv_metodi_pagamento'));
       if (raw) this.metodiPagamento = JSON.parse(raw);
-      const sel = localStorage.getItem('ndv_carta_selezionata');
+      const sel = localStorage.getItem(this.authService.userKey('ndv_carta_selezionata'));
       if (sel !== null && sel !== 'null') this.cartaSelezionataIndex = Number(sel);
     } catch {}
   }
 
   private salvaCarteLocali(): void {
-    localStorage.setItem('ndv_metodi_pagamento', JSON.stringify(this.metodiPagamento));
+    localStorage.setItem(this.authService.userKey('ndv_metodi_pagamento'), JSON.stringify(this.metodiPagamento));
   }
 
   mostraAlert(messaggio: string, tipo: 'success' | 'error' | 'info' | 'warning'): void {
