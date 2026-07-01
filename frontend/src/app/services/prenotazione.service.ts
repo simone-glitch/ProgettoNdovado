@@ -25,6 +25,10 @@ export class PrenotazioneService {
     return this.http.get<any[]>(this.api);
   }
 
+  getOccupazioniCamera(idCamera: number): Observable<{checkin: string; checkout: string}[]> {
+    return this.http.get<{checkin: string; checkout: string}[]>(`${this.api}/camera/${idCamera}/occupazioni`);
+  }
+
   crea(prenotazione: any): Observable<any> {
     return this.http.post<any>(this.api, prenotazione);
   }

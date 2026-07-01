@@ -41,9 +41,9 @@ CREATE SEQUENCE public.utenti_id_utente_seq
 ALTER SEQUENCE public.utenti_id_utente_seq OWNED BY public.utenti.id_utente;
 ALTER TABLE ONLY public.utenti ALTER COLUMN id_utente SET DEFAULT nextval('public.utenti_id_utente_seq'::regclass);
 
--- Utente amministratore di default (password: admin123 — da cambiare in produzione)
+-- Utente amministratore di default (password: Admin123 — da cambiare in produzione)
 INSERT INTO public.utenti (nome, cognome, email, password, ruolo) VALUES
-    ('Admin', 'Ndovado', 'admin@ndovado.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN');
+    ('Admin', 'Ndovado', 'admin@ndovado.com', '$2a$10$mgvrCT9PeEa8UrhvlK30DeWfFh1vEHJntr/H9qJrva31T6uLIJFgS', 'ADMIN');
 
 -- ==================================================
 -- TABELLA: hotel

@@ -110,7 +110,12 @@
             <option value="_COMPLETATA">{{ 'tab.filtro-completate' | translate }}</option>
             <option value="CANCELLATA">{{ 'tab.filtro-cancellate' | translate }}</option>
           </select>
-          <input type="date" [(ngModel)]="filterPeriodo" class="filter-date" [title]="'booking.filtra-periodo' | translate" />
+          <select [(ngModel)]="filterAnno" class="filter-select">
+            <option value="">Tutti gli anni</option>
+            @for (anno of anniDisponibili; track anno) {
+              <option [value]="anno">{{ anno }}</option>
+            }
+          </select>
           <button class="btn-filtra" (click)="applyFilters()" [title]="'booking.filtra' | translate">
             <i class="fas fa-filter"></i>
           </button>

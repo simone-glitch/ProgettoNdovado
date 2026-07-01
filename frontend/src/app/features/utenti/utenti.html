@@ -16,6 +16,34 @@
     (risposta)="gestisciRisposta($event)">
   </app-conferma-box>
   <div class="list-container">
+    <!-- Card layout (mobile) -->
+    <div class="user-cards">
+      <div class="user-card" *ngFor="let utente of utenti">
+        <div class="user-card-top">
+          <div class="user-card-info">
+            <div class="avatar">{{ utente.nome.charAt(0) }}{{ utente.cognome.charAt(0) }}</div>
+            <span>{{ utente.nome }} {{ utente.cognome }}</span>
+          </div>
+          <div class="badges">
+            <span class="badge" [ngClass]="{
+              'badge-admin': utente.ruolo === 'ADMIN',
+              'badge-host':  utente.ruolo === 'HOST',
+              'badge-user':  utente.ruolo === 'GUEST'
+            }">{{ utente.ruolo }}</span>
+            <span class="badge badge-banned" *ngIf="utente.banned">{{ 'utenti.bannato' | translate }}</span>
+          </div>
+        </div>
+        <div class="user-card-email">{{ utente.email }}</div>
+        <div class="user-card-actions" *ngIf="isAdmin">
+          <button class="btn-promote" *ngIf="utente.ruolo !== 'ADMIN'" (click)="promuoviAdAdmin(utente)">{{ 'utenti.promuovi-admin' | translate }}</button>
+          <button class="btn-ban"     *ngIf="utente.ruolo !== 'ADMIN' && !utente.banned" (click)="bannaUtente(utente)">{{ 'utenti.banna' | translate }}</button>
+          <button class="btn-unban"   *ngIf="utente.banned" (click)="sbannaUtente(utente)">{{ 'utenti.sbanna' | translate }}</button>
+          <button class="btn-delete"  *ngIf="utente.id !== currentUserId" (click)="eliminaUtente(utente)">{{ 'common.elimina' | translate }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabella (desktop) -->
     <table class="modern-table">
       <thead>
       <tr>
@@ -35,17 +63,32 @@
         </td>
         <td>{{ utente.email }}</td>
         <td>
-          <span class="badge" [ngClass]="{'badge-admin': utente.ruolo === 'ADMIN', 'badge-user': utente.ruolo === 'USER'}">
-            {{ utente.ruolo }}
-          </span>
+          <div class="badges">
+            <span class="badge" [ngClass]="{
+              'badge-admin': utente.ruolo === 'ADMIN',
+              'badge-host':  utente.ruolo === 'HOST',
+              'badge-user':  utente.ruolo === 'GUEST'
+            }">{{ utente.ruolo }}</span>
+            <span class="badge badge-banned" *ngIf="utente.banned">
+              {{ 'utenti.bannato' | translate }}
+            </span>
+          </div>
         </td>
-        <td class="actions" *ngIf="isAdmin">
-          <button class="btn-promote" *ngIf="utente.ruolo === 'USER'" (click)="promuoviAdAdmin(utente)">
-            {{ 'utenti.promuovi-admin' | translate }}
-          </button>
-          <button class="btn-delete" (click)="eliminaUtente(utente)">
-            {{ 'common.elimina' | translate }}
-          </button>
+        <td *ngIf="isAdmin">
+          <div class="actions">
+            <button class="btn-promote" *ngIf="utente.ruolo !== 'ADMIN'" (click)="promuoviAdAdmin(utente)">
+              {{ 'utenti.promuovi-admin' | translate }}
+            </button>
+            <button class="btn-ban" *ngIf="utente.ruolo !== 'ADMIN' && !utente.banned" (click)="bannaUtente(utente)">
+              {{ 'utenti.banna' | translate }}
+            </button>
+            <button class="btn-unban" *ngIf="utente.banned" (click)="sbannaUtente(utente)">
+              {{ 'utenti.sbanna' | translate }}
+            </button>
+            <button class="btn-delete" *ngIf="utente.id !== currentUserId" (click)="eliminaUtente(utente)">
+              {{ 'common.elimina' | translate }}
+            </button>
+          </div>
         </td>
       </tr>
       </tbody>

@@ -24,7 +24,7 @@ export class Utenti implements OnInit {
 
   showConfirm: boolean = false;
   confirmMessage: string = '';
-  actionToConfirm: 'promuovi' | 'elimina' | null = null;
+  actionToConfirm: 'promuovi' | 'elimina' | 'banna' | 'sbanna' | null = null;
   itemToProcess: any = null;
 
   constructor(
@@ -67,6 +67,22 @@ export class Utenti implements OnInit {
     this.showConfirm = true;
   }
 
+  bannaUtente(user: any): void {
+    this.confirmMessage = this.i18n.translate('utenti.msg.conferma-banna')
+      .replace('{nome}', user.nome).replace('{cognome}', user.cognome);
+    this.actionToConfirm = 'banna';
+    this.itemToProcess = user;
+    this.showConfirm = true;
+  }
+
+  sbannaUtente(user: any): void {
+    this.confirmMessage = this.i18n.translate('utenti.msg.conferma-sbanna')
+      .replace('{nome}', user.nome).replace('{cognome}', user.cognome);
+    this.actionToConfirm = 'sbanna';
+    this.itemToProcess = user;
+    this.showConfirm = true;
+  }
+
   gestisciRisposta(risposta: boolean) {
     this.showConfirm = false;
     if (risposta && this.itemToProcess) {
@@ -74,6 +90,10 @@ export class Utenti implements OnInit {
         this.eseguiPromozione(this.itemToProcess.id);
       } else if (this.actionToConfirm === 'elimina') {
         this.eseguiEliminazione(this.itemToProcess.id);
+      } else if (this.actionToConfirm === 'banna') {
+        this.eseguiBanna(this.itemToProcess.id);
+      } else if (this.actionToConfirm === 'sbanna') {
+        this.eseguiSbanna(this.itemToProcess.id);
       }
     }
     this.itemToProcess = null;
@@ -88,6 +108,20 @@ export class Utenti implements OnInit {
 
   private eseguiEliminazione(id: number) {
     this.utenteService.deleteUser(id).subscribe({
+      next: (res) => { this.showAlertMessage(res, 'success'); this.caricaUtenti(); },
+      error: (err) => this.showAlertMessage(err.error || this.i18n.translate('utenti.msg.errore-generico'), 'error')
+    });
+  }
+
+  private eseguiBanna(id: number) {
+    this.utenteService.bannaUser(id).subscribe({
+      next: (res) => { this.showAlertMessage(res, 'success'); this.caricaUtenti(); },
+      error: (err) => this.showAlertMessage(err.error || this.i18n.translate('utenti.msg.errore-generico'), 'error')
+    });
+  }
+
+  private eseguiSbanna(id: number) {
+    this.utenteService.sbannaUser(id).subscribe({
       next: (res) => { this.showAlertMessage(res, 'success'); this.caricaUtenti(); },
       error: (err) => this.showAlertMessage(err.error || this.i18n.translate('utenti.msg.errore-generico'), 'error')
     });

@@ -311,6 +311,7 @@
   position: relative;
   overflow: hidden;
   background: #E5E7EB;
+  transform: translateZ(0);
 }
 
 .ndv-card-photo {
@@ -354,6 +355,7 @@
   font-size: 0.7rem;
   backdrop-filter: blur(4px);
   letter-spacing: 0.5px;
+  z-index: 2;
 }
 
 .ndv-premium-tag {
@@ -386,6 +388,7 @@
   font-size: 0.88rem;
   transition: all 0.2s;
   backdrop-filter: blur(4px);
+  z-index: 2;
 }
 .ndv-heart-btn:hover {
   background: #fff;

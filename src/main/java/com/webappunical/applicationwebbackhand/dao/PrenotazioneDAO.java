@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class PrenotazioneDAO {
@@ -191,6 +193,22 @@ public class PrenotazioneDAO {
                   )
                 """;
         return jdbcTemplate.update(sql);
+    }
+
+    public List<Map<String, String>> getOccupazioniCamera(Integer idCamera) {
+        String sql = """
+                SELECT data_checkin, data_checkout FROM prenotazioni
+                WHERE id_camera = ?
+                  AND stato NOT IN ('CANCELLATA')
+                  AND data_checkout > CURRENT_DATE
+                ORDER BY data_checkin
+                """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Map<String, String> m = new LinkedHashMap<>();
+            m.put("checkin",  rs.getDate("data_checkin").toLocalDate().toString());
+            m.put("checkout", rs.getDate("data_checkout").toLocalDate().toString());
+            return m;
+        }, idCamera);
     }
 
     public boolean haAltrePrenotazioniAttive(Integer idCamera, Integer excludeId) {

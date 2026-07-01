@@ -34,6 +34,14 @@ export class UtenteService {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
   }
 
+  bannaUser(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/banna`, {}, { responseType: 'text' });
+  }
+
+  sbannaUser(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/sbanna`, {}, { responseType: 'text' });
+  }
+
   getMieiTeams(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/me/teams`);
   }

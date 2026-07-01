@@ -1,3 +1,80 @@
+/* ═══════════════════════════════════════════════
+   FLATPICKR — tema Ndovado
+   ═══════════════════════════════════════════════ */
+.flatpickr-calendar {
+  font-family: 'Inter', system-ui, sans-serif;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(10,35,66,0.18);
+  border: 1px solid #E8EDF4;
+}
+.flatpickr-months .flatpickr-month {
+  background: #0F3460;
+  border-radius: 14px 14px 0 0;
+}
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  color: #fff;
+  fill: #fff;
+}
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg { fill: #C9943A; }
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+  color: #fff;
+  font-weight: 600;
+}
+.flatpickr-weekday { color: #6B7280; font-weight: 700; font-size: 0.72rem; }
+
+.flatpickr-day {
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #1A2238;
+  position: relative;
+}
+.flatpickr-day:hover,
+.flatpickr-day.prevMonthDay:hover,
+.flatpickr-day.nextMonthDay:hover {
+  background: rgba(201,148,58,0.1);
+  border-color: transparent;
+}
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: #C9943A;
+  border-color: #C9943A;
+  color: #fff;
+}
+.flatpickr-day.today { border-color: #0F3460; color: #0F3460; font-weight: 700; }
+.flatpickr-day.today:hover { background: rgba(15,52,96,0.08); border-color: #0F3460; }
+
+/* ── Date OCCUPATE — colore rosso + "/" diagonale ── */
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+  background: rgba(220,38,38,0.07) !important;
+  color: #DC2626 !important;
+  border-color: transparent !important;
+  cursor: not-allowed;
+  overflow: hidden;
+}
+.flatpickr-day.flatpickr-disabled::after {
+  content: '';
+  position: absolute;
+  top: -4px; left: 50%;
+  width: 1.5px;
+  height: calc(100% + 8px);
+  background: rgba(220,38,38,0.45);
+  transform: rotate(-45deg);
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* ── Giorni mesi precedenti/successivi ── */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: #CBD5E1;
+}
+
+/* ════════════════════════════════════════════════ */
+
 /* ── Ndovado Wordmark — N in gold across all components ── */
 .ndv-n { color: #C9A45C; }
 

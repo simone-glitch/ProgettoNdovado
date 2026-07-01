@@ -419,6 +419,12 @@
   font-size: 0.75rem; color: #DC2626; font-weight: 500;
   margin: 6px 0 0; padding: 0;
 }
+.ndv-occ-err {
+  background: rgba(220,38,38,0.06);
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin-top: 8px;
+}
 .ndv-field-err i { font-size: 0.7rem; flex-shrink: 0; }
 .ndv-date-row-err { border-color: #FCA5A5; }
 .ndv-guests-row-err { border-color: #FCA5A5; }

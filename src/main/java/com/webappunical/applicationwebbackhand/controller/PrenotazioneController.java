@@ -25,6 +25,11 @@ public class PrenotazioneController {
         this.prenotazioneService = prenotazioneService;
     }
 
+    @GetMapping("/camera/{idCamera}/occupazioni")
+    public ResponseEntity<?> getOccupazioniCamera(@PathVariable Integer idCamera) {
+        return ResponseEntity.ok(prenotazioneService.getOccupazioniCamera(idCamera));
+    }
+
     @GetMapping("/puoi-recensire/{idHotel}")
     @PreAuthorize("hasRole('GUEST')")
     public ResponseEntity<?> puoiRecensire(@PathVariable Integer idHotel, Authentication auth) {

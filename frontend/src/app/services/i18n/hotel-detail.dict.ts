@@ -81,8 +81,9 @@ export const hotelDetailDict: LangDict = {
     'hoteldetail.bambini-sub':    '0 – 17 anni',
     'hoteldetail.capienza-max':   'Capienza massima:',
     'hoteldetail.capienza-info':  'Numero massimo di ospiti (adulti + bambini) che questa stanza può ospitare.',
-    'hoteldetail.msg.ospiti-min': 'Inserisci almeno 1 ospite.',
-    'hoteldetail.msg.ospiti-max': 'La stanza ha una capienza massima di',
+    'hoteldetail.msg.ospiti-min':      'Inserisci almeno 1 ospite.',
+    'hoteldetail.msg.ospiti-max':      'La stanza ha una capienza massima di',
+    'hoteldetail.msg.stanza-occupata': 'Questa stanza è già occupata per questa data.',
   },
   en: {
     'hoteldetail.not-found':          'Hotel not found',
@@ -164,8 +165,9 @@ export const hotelDetailDict: LangDict = {
     'hoteldetail.bambini-sub':    '0 – 17 years',
     'hoteldetail.capienza-max':   'Maximum capacity:',
     'hoteldetail.capienza-info':  'Maximum number of guests (adults + children) this room can accommodate.',
-    'hoteldetail.msg.ospiti-min': 'Please enter at least 1 guest.',
-    'hoteldetail.msg.ospiti-max': 'This room has a maximum capacity of',
+    'hoteldetail.msg.ospiti-min':      'Please enter at least 1 guest.',
+    'hoteldetail.msg.ospiti-max':      'This room has a maximum capacity of',
+    'hoteldetail.msg.stanza-occupata': 'This room is already occupied on this date.',
   },
   es: {
     'hoteldetail.not-found':          'Hotel no encontrado',

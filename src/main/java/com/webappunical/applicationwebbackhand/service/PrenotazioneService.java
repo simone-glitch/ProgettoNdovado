@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PrenotazioneService {
@@ -44,6 +45,10 @@ public class PrenotazioneService {
         Utente utente = utenteJDBC.trovaPerEmail(emailUtente);
         if (utente == null) return false;
         return prenotazioneDAO.hasSoggiornato(utente.getId(), idHotel);
+    }
+
+    public List<Map<String, String>> getOccupazioniCamera(Integer idCamera) {
+        return prenotazioneDAO.getOccupazioniCamera(idCamera);
     }
 
     public List<Prenotazione> getTutte() {

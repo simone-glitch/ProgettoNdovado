@@ -267,14 +267,16 @@
               <div class="ndv-date-row" [class.ndv-date-row-err]="erroreCheckin || erroreCheckout">
                 <div class="ndv-date-col">
                   <label class="ndv-sidebar-label">{{ 'hoteldetail.checkin' | translate }}</label>
-                  <input type="date" formControlName="dataCheckin" class="ndv-date-input" [min]="todayStr">
+                  <input #checkinFp class="ndv-date-input" placeholder="gg/mm/aaaa">
                 </div>
                 <div class="ndv-date-col">
                   <label class="ndv-sidebar-label">{{ 'hoteldetail.checkout' | translate }}</label>
-                  <input type="date" formControlName="dataCheckout" class="ndv-date-input" [min]="minCheckout">
+                  <input #checkoutFp class="ndv-date-input" placeholder="gg/mm/aaaa">
                 </div>
               </div>
-              @if (erroreCheckin) {
+              @if (erroreOccupata) {
+                <p class="ndv-field-err ndv-occ-err"><i class="fas fa-ban"></i> {{ erroreOccupata }}</p>
+              } @else if (erroreCheckin) {
                 <p class="ndv-field-err"><i class="fas fa-exclamation-circle"></i> {{ erroreCheckin }}</p>
               } @else if (erroreCheckout) {
                 <p class="ndv-field-err"><i class="fas fa-exclamation-circle"></i> {{ erroreCheckout }}</p>

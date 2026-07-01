@@ -31,7 +31,13 @@ export class Prenotazioni implements OnInit {
 
   searchQuery = '';
   filterStatus = '';
-  filterPeriodo = '';
+  filterAnno = '';
+
+  // stato applicato — aggiornato solo al click del pulsante filtro
+  private appliedSearch = '';
+  private appliedStatus = '';
+  private appliedAnno = '';
+
   activeTab: 'tutte' | 'arrivo' | 'prenotate' | 'completate' | 'cancellate' = 'tutte';
 
   readonly skeletonItems = [1, 2, 3, 4];
@@ -131,6 +137,15 @@ export class Prenotazioni implements OnInit {
 
   // ── Filtered list (reactive) ──
 
+  get anniDisponibili(): number[] {
+    const anni = new Set<number>();
+    for (const p of this.prenotazioni) {
+      const d = this.toLocalDate(p.dataCheckin);
+      if (d) anni.add(d.getFullYear());
+    }
+    return Array.from(anni).sort((a, b) => b - a);
+  }
+
   get prenotazioniFiltrate(): any[] {
     let lista = [...this.prenotazioni];
 
@@ -139,22 +154,22 @@ export class Prenotazioni implements OnInit {
     else if (this.activeTab === 'completate') lista = lista.filter(p => this.isCompletataBooking(p));
     else if (this.activeTab === 'cancellate') lista = lista.filter(p => p.stato === 'CANCELLATA');
 
-    if (this.filterStatus === '_COMPLETATA') {
+    if (this.appliedStatus === '_COMPLETATA') {
       lista = lista.filter(p => this.isCompletataBooking(p));
-    } else if (this.filterStatus) {
-      lista = lista.filter(p => p.stato === this.filterStatus);
+    } else if (this.appliedStatus) {
+      lista = lista.filter(p => p.stato === this.appliedStatus);
     }
 
-    if (this.filterPeriodo) {
-      const dateFiltro = new Date(this.filterPeriodo);
+    if (this.appliedAnno) {
+      const anno = Number(this.appliedAnno);
       lista = lista.filter(p => {
         const checkin = this.toLocalDate(p.dataCheckin);
-        return checkin != null && checkin >= dateFiltro;
+        return checkin != null && checkin.getFullYear() === anno;
       });
     }
 
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase().trim();
+    if (this.appliedSearch.trim()) {
+      const q = this.appliedSearch.toLowerCase().trim();
       lista = lista.filter(p =>
         (p.nomeHotel || '').toLowerCase().includes(q) ||
         (p.tipoCamera || '').toLowerCase().includes(q) ||
@@ -249,7 +264,11 @@ export class Prenotazioni implements OnInit {
     this.activeTab = tab;
   }
 
-  applyFilters() { /* Filtering is reactive via prenotazioniFiltrate getter */ }
+  applyFilters() {
+    this.appliedSearch = this.searchQuery;
+    this.appliedStatus = this.filterStatus;
+    this.appliedAnno   = this.filterAnno;
+  }
 
   // ── Existing actions (unchanged logic) ──
 
