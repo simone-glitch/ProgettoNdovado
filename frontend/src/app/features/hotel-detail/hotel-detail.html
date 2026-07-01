@@ -336,11 +336,20 @@
 
                   @if (selectedCamera) {
                     <div class="ndv-stepper-cap">
-                      <i class="fas fa-info-circle"></i>
+                      <i class="fas fa-info-circle ndv-cap-info-btn"
+                         (click)="showCapienzaInfo = !showCapienzaInfo"></i>
                       {{ 'hoteldetail.capienza-max' | translate }} {{ selectedCamera.capienza }}
                     </div>
                   }
                 </div>
+                @if (selectedCamera && showCapienzaInfo) {
+                  <div class="ndv-cap-tooltip">
+                    <span>{{ 'hoteldetail.capienza-info' | translate }}</span>
+                    <button type="button" class="ndv-cap-tooltip-close" (click)="showCapienzaInfo = false">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                }
                 @if (erroreOspiti) {
                   <p class="ndv-field-err"><i class="fas fa-exclamation-circle"></i> {{ erroreOspiti }}</p>
                 }

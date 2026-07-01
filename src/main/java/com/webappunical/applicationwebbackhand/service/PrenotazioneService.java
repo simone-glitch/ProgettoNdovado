@@ -98,6 +98,12 @@ public class PrenotazioneService {
         }
 
         prenotazioneDAO.aggiornaStato(id, nuovoStato);
+
+        if ("CANCELLATA".equals(nuovoStato)) {
+            if (!prenotazioneDAO.haAltrePrenotazioniAttive(prenotazione.getIdCamera(), id)) {
+                cameraDAO.setDisponibile(prenotazione.getIdCamera(), true);
+            }
+        }
     }
 
     @Transactional

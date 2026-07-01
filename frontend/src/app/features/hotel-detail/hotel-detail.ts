@@ -44,6 +44,8 @@ export class HotelDetail implements OnInit, AfterViewInit {
   carteLocali: any[] = [];
   cartaSelezionataIdx: number | null = null;
 
+  showCapienzaInfo = false;
+
   puoRecensire = false;
 
   private mapInitialized = false;

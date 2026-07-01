@@ -193,6 +193,18 @@ public class PrenotazioneDAO {
         return jdbcTemplate.update(sql);
     }
 
+    public boolean haAltrePrenotazioniAttive(Integer idCamera, Integer excludeId) {
+        String sql = """
+                SELECT COUNT(*) FROM prenotazioni
+                WHERE id_camera = ?
+                  AND id_prenotazione != ?
+                  AND stato NOT IN ('CANCELLATA')
+                  AND data_checkout > CURRENT_DATE
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, idCamera, excludeId);
+        return count != null && count > 0;
+    }
+
     public boolean verificaDisponibilita(Integer idCamera, String dataCheckin, String dataCheckout) {
         String sql = """
                 SELECT COUNT(*) FROM prenotazioni
