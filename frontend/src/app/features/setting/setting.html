@@ -48,6 +48,12 @@
           <span>{{ 'settings.preferenze' | translate }}</span>
         </button>
 
+        <button class="settings-menu-item" [class.active]="activeSection === 'pagamenti'"
+          (click)="setActiveSection('pagamenti')">
+          <i class="fas fa-credit-card"></i>
+          <span>Metodi di pagamento</span>
+        </button>
+
         <button class="settings-menu-item" [class.active]="activeSection === 'privacy'"
           (click)="setActiveSection('privacy')">
           <i class="fas fa-shield-alt"></i>
@@ -70,12 +76,24 @@
 
           <!-- Avatar -->
           <div class="profile-avatar-section">
-            <div class="profile-avatar-circle">{{ userInitials }}</div>
+            <input type="file" #fileInput accept="image/*" style="display:none" (change)="onFotoSelezionata($event)">
+            <div class="profile-avatar-wrap">
+              @if (fotoProfilo) {
+                <img [src]="fotoProfilo" class="profile-avatar-img" [alt]="nomeCompleto">
+              } @else {
+                <div class="profile-avatar-circle">{{ userInitials }}</div>
+              }
+            </div>
             <div class="profile-user-name">{{ nomeCompleto }}</div>
             <div class="profile-user-role">{{ roleBadge }}</div>
-            <button type="button" class="btn-modifica-foto">
+            <button type="button" class="btn-modifica-foto" (click)="fileInput.click()">
               <i class="fas fa-camera"></i> {{ 'settings.modifica-foto' | translate }}
             </button>
+            @if (fotoProfilo) {
+              <button type="button" class="btn-rimuovi-foto" (click)="rimuoviFoto()">
+                <i class="fas fa-trash"></i> Rimuovi foto
+              </button>
+            }
           </div>
 
           <!-- Form -->
@@ -221,6 +239,125 @@
         <div class="settings-card-footer">
           <button class="btn-save-main" (click)="salvaPreferenze()">{{ 'settings.salva-preferenze' | translate }}</button>
         </div>
+      </section>
+
+      <!-- ── METODI DI PAGAMENTO ── -->
+      <section id="section-pagamenti" class="settings-card pagamenti-settings-card">
+        <div class="settings-card-header">
+          <h2>Metodi di pagamento</h2>
+        </div>
+
+        @if (metodiPagamento.length === 0 && !showAggiungiCarta) {
+          <div class="pagamenti-empty">
+            <i class="fas fa-credit-card pagamenti-empty-icon"></i>
+            <p>Nessun metodo di pagamento salvato.</p>
+          </div>
+        }
+
+        @if (metodiPagamento.length > 0) {
+          <div class="pagamenti-list">
+            @for (carta of metodiPagamento; track carta.numero + carta.scadenza) {
+              <div class="pagamenti-item"
+                   [class.pagamenti-item--selected]="cartaSelezionataIndex === $index"
+                   (click)="selezionaCarta($index)">
+                <div class="pagamenti-item-icon"><i [class]="carta.icona"></i></div>
+                <div class="pagamenti-item-info">
+                  <div class="pagamenti-item-tipo-row">
+                    <span class="pagamenti-item-tipo">{{ carta.tipo }}</span>
+                    @if (cartaSelezionataIndex === $index) {
+                      <span class="pagamenti-badge-default">
+                        <i class="fas fa-check-circle"></i> Predefinita
+                      </span>
+                    }
+                  </div>
+                  <span class="pagamenti-item-numero">•••• •••• •••• {{ carta.numero }}</span>
+                  <span class="pagamenti-item-intestatario">{{ carta.intestatario }}</span>
+                  <span class="pagamenti-item-scadenza">Scade {{ carta.scadenza }}</span>
+                </div>
+                <button class="btn-danger-outline btn-sm" (click)="eliminaCarta($index); $event.stopPropagation()" title="Rimuovi carta">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Form aggiungi carta -->
+        @if (showAggiungiCarta) {
+          <div class="carta-form">
+            <h4 class="carta-form-title"><i class="fas fa-credit-card"></i> Nuova carta</h4>
+
+            <div class="carta-form-grid">
+
+              <div class="form-field carta-field-full">
+                <label>Numero carta</label>
+                <input type="text" inputmode="numeric"
+                  [attr.maxlength]="nuovaCarta.numero.replace(/\s/g,'').startsWith('34') || nuovaCarta.numero.replace(/\s/g,'').startsWith('37') ? 17 : 19"
+                  placeholder="0000 0000 0000 0000"
+                  [value]="nuovaCarta.numero"
+                  (input)="formattaNumeroCarta($event)"
+                  (keyup.enter)="confermaCarta()">
+                @if (nuovaCartaErrors['numero']) {
+                  <small class="field-error">{{ nuovaCartaErrors['numero'] }}</small>
+                }
+              </div>
+
+              <div class="form-field carta-field-full">
+                <label>Intestatario</label>
+                <input type="text" placeholder="NOME COGNOME"
+                  [(ngModel)]="nuovaCarta.intestatario"
+                  style="text-transform:uppercase"
+                  (keyup.enter)="confermaCarta()">
+                @if (nuovaCartaErrors['intestatario']) {
+                  <small class="field-error">{{ nuovaCartaErrors['intestatario'] }}</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>Scadenza (MM/AA)</label>
+                <input type="text" inputmode="numeric" maxlength="5"
+                  placeholder="MM/AA"
+                  [value]="nuovaCarta.scadenza"
+                  (input)="formattaScadenza($event)"
+                  (keyup.enter)="confermaCarta()">
+                @if (nuovaCartaErrors['scadenza']) {
+                  <small class="field-error">{{ nuovaCartaErrors['scadenza'] }}</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label>CVV</label>
+                <input type="password" inputmode="numeric" maxlength="4"
+                  placeholder="•••"
+                  [(ngModel)]="nuovaCarta.cvv"
+                  (keyup.enter)="confermaCarta()">
+                @if (nuovaCartaErrors['cvv']) {
+                  <small class="field-error">{{ nuovaCartaErrors['cvv'] }}</small>
+                }
+              </div>
+
+            </div>
+
+            <div class="carta-form-note">
+              <i class="fas fa-lock"></i> I dati vengono salvati solo su questo dispositivo e non vengono inviati a server esterni.
+            </div>
+
+            <div class="carta-form-actions">
+              <button class="btn-save-main" (click)="confermaCarta()">
+                <i class="fas fa-save"></i> Salva carta
+              </button>
+              <button class="btn-cancel" (click)="chiudiFormCarta()">Annulla</button>
+            </div>
+          </div>
+        }
+
+        @if (!showAggiungiCarta) {
+          <div class="settings-card-footer">
+            <button class="btn-save-main" (click)="apriFormCarta()">
+              <i class="fas fa-plus"></i> Aggiungi carta
+            </button>
+          </div>
+        }
       </section>
 
       <!-- ── PRIVACY ── -->

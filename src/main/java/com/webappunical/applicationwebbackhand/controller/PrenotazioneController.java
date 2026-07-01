@@ -25,6 +25,12 @@ public class PrenotazioneController {
         this.prenotazioneService = prenotazioneService;
     }
 
+    @GetMapping("/puoi-recensire/{idHotel}")
+    @PreAuthorize("hasRole('GUEST')")
+    public ResponseEntity<?> puoiRecensire(@PathVariable Integer idHotel, Authentication auth) {
+        return ResponseEntity.ok(prenotazioneService.puoiRecensire(auth.getName(), idHotel));
+    }
+
     @GetMapping("/mie")
     @PreAuthorize("hasAnyRole('GUEST','HOST','ADMIN')")
     public ResponseEntity<?> getMie(Authentication auth) {

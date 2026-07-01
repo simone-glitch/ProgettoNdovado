@@ -13,6 +13,10 @@ export class PrenotazioneService {
     return this.http.get<any[]>(`${this.api}/mie`);
   }
 
+  puoiRecensire(idHotel: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.api}/puoi-recensire/${idHotel}`);
+  }
+
   getPerHotel(idHotel: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/hotel/${idHotel}`);
   }

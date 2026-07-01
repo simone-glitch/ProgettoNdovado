@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Credenziali — NON caricare su GitHub ###
+src/main/resources/application.properties

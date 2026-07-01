@@ -81,16 +81,16 @@
         </div>
 
         <div class="auth-field">
-          <div class="auth-label-row">
-            <label class="auth-label">{{ 'common.password' | translate:'it' }}</label>
-            <a routerLink="/forgot-password" class="auth-forgot">{{ 'auth.password-dimenticata' | translate:'it' }}</a>
-          </div>
+          <label class="auth-label">{{ 'common.password' | translate:'it' }}</label>
           <div class="auth-input-wrap">
             <i class="fas fa-lock auth-ico"></i>
             <input class="auth-input" [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'auth.placeholder.password' | translate:'it'">
             <button type="button" class="auth-eye-btn" (click)="showPassword = !showPassword" tabindex="-1">
               <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
+          </div>
+          <div class="auth-forgot-wrap">
+            <a routerLink="/forgot-password" class="auth-forgot">{{ 'auth.password-dimenticata' | translate:'it' }}</a>
           </div>
           @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
             <div class="auth-errors">

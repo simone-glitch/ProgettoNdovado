@@ -31,6 +31,13 @@ export class Setting implements OnInit {
 
   activeSection = 'profilo';
   showPasswordForm = false;
+  fotoProfilo: string | null = null;
+
+  metodiPagamento: { tipo: string; numero: string; scadenza: string; intestatario: string; icona: string }[] = [];
+  showAggiungiCarta = false;
+  nuovaCarta = { numero: '', scadenza: '', intestatario: '', cvv: '' };
+  nuovaCartaErrors: Record<string, string> = {};
+  cartaSelezionataIndex: number | null = null;
 
   preferenze = {
     lingua: 'Italiano',
@@ -68,6 +75,7 @@ export class Setting implements OnInit {
   ngOnInit(): void {
     this.caricaProfilo();
     this.caricaPreferenze();
+    this.caricaCarteLocali();
   }
 
   caricaProfilo(): void {
@@ -253,6 +261,130 @@ export class Setting implements OnInit {
   get nuovaPasswordNonValida(): boolean {
     const control = this.nuovaPasswordControl;
     return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  onFotoSelezionata(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { this.fotoProfilo = reader.result as string; };
+    reader.readAsDataURL(file);
+  }
+
+  rimuoviFoto(): void {
+    this.fotoProfilo = null;
+  }
+
+  private isCartaScaduta(mese: number, anno: number): boolean {
+    const ora = new Date();
+    const annoCorrente = ora.getFullYear() % 100;
+    const meseCorrente = ora.getMonth() + 1;
+    return anno < annoCorrente || (anno === annoCorrente && mese < meseCorrente);
+  }
+
+  apriFormCarta(): void {
+    this.nuovaCarta = { numero: '', scadenza: '', intestatario: '', cvv: '' };
+    this.nuovaCartaErrors = {};
+    this.showAggiungiCarta = true;
+  }
+
+  chiudiFormCarta(): void {
+    this.showAggiungiCarta = false;
+    this.nuovaCartaErrors = {};
+  }
+
+  formattaNumeroCarta(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const isAmex = input.value.replace(/\D/g, '').startsWith('34') || input.value.replace(/\D/g, '').startsWith('37');
+    let val = input.value.replace(/\D/g, '').slice(0, isAmex ? 15 : 16);
+    if (isAmex) {
+      // formato 4-6-5
+      const p1 = val.slice(0, 4);
+      const p2 = val.slice(4, 10);
+      const p3 = val.slice(10, 15);
+      this.nuovaCarta.numero = [p1, p2, p3].filter(p => p).join(' ');
+    } else {
+      this.nuovaCarta.numero = val.replace(/(.{4})/g, '$1 ').trim();
+    }
+    input.value = this.nuovaCarta.numero;
+  }
+
+  formattaScadenza(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let val = input.value.replace(/\D/g, '').slice(0, 4);
+    if (val.length >= 3) val = val.slice(0, 2) + '/' + val.slice(2);
+    this.nuovaCarta.scadenza = val;
+    input.value = val;
+  }
+
+  confermaCarta(): void {
+    this.nuovaCartaErrors = {};
+    const num = this.nuovaCarta.numero.replace(/\s/g, '');
+    const isAmex = num.startsWith('34') || num.startsWith('37');
+    const lunghezzaAttesa = isAmex ? 15 : 16;
+    if (num.length !== lunghezzaAttesa) this.nuovaCartaErrors['numero'] = `Inserisci un numero di carta valido (${lunghezzaAttesa} cifre)`;
+    if (!/^\d{2}\/\d{2}$/.test(this.nuovaCarta.scadenza)) this.nuovaCartaErrors['scadenza'] = 'Formato non valido (MM/AA)';
+    if (!this.nuovaCarta.intestatario.trim()) this.nuovaCartaErrors['intestatario'] = 'Inserisci il nome del titolare';
+    if (!/^\d{3,4}$/.test(this.nuovaCarta.cvv)) this.nuovaCartaErrors['cvv'] = 'CVV non valido';
+
+    const [mm, aa] = this.nuovaCarta.scadenza.split('/').map(Number);
+    if (!this.nuovaCartaErrors['scadenza'] && (mm < 1 || mm > 12)) {
+      this.nuovaCartaErrors['scadenza'] = 'Mese non valido';
+    }
+
+    if (!this.nuovaCartaErrors['scadenza'] && this.isCartaScaduta(mm, aa)) {
+      this.nuovaCartaErrors['scadenza'] = 'La carta risulta scaduta';
+    }
+
+    if (Object.keys(this.nuovaCartaErrors).length > 0) return;
+
+    const isVisa   = num.startsWith('4');
+    const isMaster = num.startsWith('5');
+    const prefix = isVisa ? 'Visa' : isMaster ? 'Mastercard' : isAmex ? 'American Express' : 'Carta';
+    const icona  = isVisa ? 'fab fa-cc-visa' : isMaster ? 'fab fa-cc-mastercard' : isAmex ? 'fab fa-cc-amex' : 'fas fa-credit-card';
+
+    this.metodiPagamento.push({
+      tipo: prefix,
+      numero: num.slice(-4),
+      scadenza: this.nuovaCarta.scadenza,
+      intestatario: this.nuovaCarta.intestatario.trim().toUpperCase(),
+      icona,
+    });
+
+    this.salvaCarteLocali();
+    this.showAggiungiCarta = false;
+    this.mostraAlert('Carta aggiunta con successo.', 'success');
+  }
+
+  eliminaCarta(index: number): void {
+    this.metodiPagamento.splice(index, 1);
+    if (this.cartaSelezionataIndex === index) {
+      this.cartaSelezionataIndex = null;
+      localStorage.removeItem('ndv_carta_selezionata');
+    } else if (this.cartaSelezionataIndex !== null && this.cartaSelezionataIndex > index) {
+      this.cartaSelezionataIndex--;
+      localStorage.setItem('ndv_carta_selezionata', String(this.cartaSelezionataIndex));
+    }
+    this.salvaCarteLocali();
+  }
+
+  selezionaCarta(index: number): void {
+    this.cartaSelezionataIndex = this.cartaSelezionataIndex === index ? null : index;
+    localStorage.setItem('ndv_carta_selezionata', String(this.cartaSelezionataIndex));
+  }
+
+  private caricaCarteLocali(): void {
+    try {
+      const raw = localStorage.getItem('ndv_metodi_pagamento');
+      if (raw) this.metodiPagamento = JSON.parse(raw);
+      const sel = localStorage.getItem('ndv_carta_selezionata');
+      if (sel !== null && sel !== 'null') this.cartaSelezionataIndex = Number(sel);
+    } catch {}
+  }
+
+  private salvaCarteLocali(): void {
+    localStorage.setItem('ndv_metodi_pagamento', JSON.stringify(this.metodiPagamento));
   }
 
   mostraAlert(messaggio: string, tipo: 'success' | 'error' | 'info' | 'warning'): void {

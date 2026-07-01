@@ -32,7 +32,7 @@ export class Prenotazioni implements OnInit {
   searchQuery = '';
   filterStatus = '';
   filterPeriodo = '';
-  activeTab: 'tutte' | 'arrivo' | 'completate' | 'cancellate' = 'tutte';
+  activeTab: 'tutte' | 'arrivo' | 'prenotate' | 'completate' | 'cancellate' = 'tutte';
 
   readonly skeletonItems = [1, 2, 3, 4];
   readonly skeletonBookings = [1, 2, 3];
@@ -134,11 +134,24 @@ export class Prenotazioni implements OnInit {
   get prenotazioniFiltrate(): any[] {
     let lista = [...this.prenotazioni];
 
-    if (this.activeTab === 'arrivo') lista = lista.filter(p => this.isArrivoBooking(p));
+    if (this.activeTab === 'arrivo')      lista = lista.filter(p => this.isArrivoBooking(p));
+    else if (this.activeTab === 'prenotate')  lista = lista.filter(p => this.isArrivoBooking(p));
     else if (this.activeTab === 'completate') lista = lista.filter(p => this.isCompletataBooking(p));
     else if (this.activeTab === 'cancellate') lista = lista.filter(p => p.stato === 'CANCELLATA');
 
-    if (this.filterStatus) lista = lista.filter(p => p.stato === this.filterStatus);
+    if (this.filterStatus === '_COMPLETATA') {
+      lista = lista.filter(p => this.isCompletataBooking(p));
+    } else if (this.filterStatus) {
+      lista = lista.filter(p => p.stato === this.filterStatus);
+    }
+
+    if (this.filterPeriodo) {
+      const dateFiltro = new Date(this.filterPeriodo);
+      lista = lista.filter(p => {
+        const checkin = this.toLocalDate(p.dataCheckin);
+        return checkin != null && checkin >= dateFiltro;
+      });
+    }
 
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
@@ -201,7 +214,15 @@ export class Prenotazioni implements OnInit {
     return p.id ? `NDV-${String(p.id).padStart(5, '0')}` : this.i18n.translate('booking.nd');
   }
 
-  getStatoLabel(stato: string): string {
+  isScaduta(p: any): boolean {
+    if (p.stato !== 'IN_ATTESA') return false;
+    const checkout = this.toLocalDate(p.dataCheckout);
+    return checkout != null && checkout <= this.todayMidnight();
+  }
+
+  getStatoLabel(stato: string, p?: any): string {
+    if (p && this.isScaduta(p))          return this.i18n.translate('booking.stato-cancellata');
+    if (p && this.isCompletataBooking(p)) return 'Completata';
     const m: Record<string, string> = {
       IN_ATTESA: this.i18n.translate('booking.stato-attesa'),
       CONFERMATA: this.i18n.translate('booking.stato-confermata'),
@@ -210,7 +231,9 @@ export class Prenotazioni implements OnInit {
     return m[stato] ?? stato;
   }
 
-  getStatoBadgeClass(stato: string): string {
+  getStatoBadgeClass(stato: string, p?: any): string {
+    if (p && this.isScaduta(p))           return 'badge-cancellata';
+    if (p && this.isCompletataBooking(p)) return 'badge-completata';
     const m: Record<string, string> = { IN_ATTESA: 'badge-attesa', CONFERMATA: 'badge-confermata', CANCELLATA: 'badge-cancellata' };
     return m[stato] ?? '';
   }
@@ -222,7 +245,7 @@ export class Prenotazioni implements OnInit {
 
   // ── Tab / filter ──
 
-  setTab(tab: 'tutte' | 'arrivo' | 'completate' | 'cancellate') {
+  setTab(tab: 'tutte' | 'arrivo' | 'prenotate' | 'completate' | 'cancellate') {
     this.activeTab = tab;
   }
 
@@ -278,15 +301,39 @@ export class Prenotazioni implements OnInit {
   }
 
   vaiDettagli(p: any) {
-    const codice = this.bookingCode(p);
-    const hotel  = p.nomeHotel || this.i18n.translate('booking.hotel-generico');
-    const checkin = this.formatDate(p.dataCheckin);
-    this.showAlertMessage(`${hotel} · ${codice} · ${this.i18n.translate('booking.checkin-label')}: ${checkin}`, 'info');
+    if (p.idHotel) {
+      this.router.navigate(['/dashboard/hotel-detail', p.idHotel]);
+    } else {
+      const codice  = this.bookingCode(p);
+      const hotel   = p.nomeHotel || this.i18n.translate('booking.hotel-generico');
+      const checkin = this.formatDate(p.dataCheckin);
+      this.showAlertMessage(`${hotel} · ${codice} · ${this.i18n.translate('booking.checkin-label')}: ${checkin}`, 'info');
+    }
+  }
+
+  lasciaRecensione(p: any) {
+    if (p.idHotel) {
+      this.router.navigate(['/dashboard/hotel-detail', p.idHotel], { queryParams: { review: 'true' } });
+    } else {
+      this.showAlertMessage(this.i18n.translate('booking.msg.hotel-non-trovato'), 'warning');
+    }
+  }
+
+  prenotaDiNuovo(p: any) {
+    if (p.idHotel) {
+      this.router.navigate(['/dashboard/hotel-detail', p.idHotel], { queryParams: { prenota: 'true' } });
+    } else {
+      this.router.navigate(['/dashboard/home']);
+    }
   }
 
   // ── Tab counts (for badges) ──
 
   get countArrivo(): number {
+    return this.prenotazioni.filter(p => this.isArrivoBooking(p)).length;
+  }
+
+  get countPrenotate(): number {
     return this.prenotazioni.filter(p => this.isArrivoBooking(p)).length;
   }
 

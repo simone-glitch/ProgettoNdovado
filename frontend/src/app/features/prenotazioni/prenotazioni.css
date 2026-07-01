@@ -139,16 +139,14 @@
   border-radius: 14px;
   box-shadow: 0 2px 8px rgba(10,35,66,0.05);
   padding: 14px 16px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 10px;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .bookings-search {
   position: relative;
-  flex: 1;
-  min-width: 200px;
 }
 
 .search-icon {
@@ -171,6 +169,7 @@
   color: #1A2238;
   background: #F9FAFB;
   outline: none;
+  box-sizing: border-box;
   transition: border-color 0.18s, background 0.18s;
 }
 .bookings-filter-card .search-input:focus { border-color: #C9943A; background: #fff; box-shadow: 0 0 0 3px rgba(201,148,58,0.08); }
@@ -180,7 +179,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .filter-select {
@@ -193,7 +191,7 @@
   background: #F9FAFB;
   outline: none;
   cursor: pointer;
-  min-width: 168px;
+  min-width: 160px;
   transition: border-color 0.18s;
 }
 .filter-select:focus { border-color: #C9943A; background: #fff; }
@@ -209,24 +207,23 @@
   outline: none;
   min-width: 130px;
   transition: border-color 0.18s;
+  cursor: pointer;
 }
 .filter-date:focus { border-color: #C9943A; background: #fff; }
 
 .btn-filtra {
-  padding: 9px 18px;
+  padding: 9px 14px;
   background: #061B3A;
   color: #fff;
   border: none;
   border-radius: 10px;
   font-size: 0.86rem;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  white-space: nowrap;
+  justify-content: center;
   transition: background 0.18s, transform 0.14s;
+  flex-shrink: 0;
 }
 .btn-filtra:hover { background: #0F3460; transform: translateY(-1px); }
 
@@ -401,9 +398,10 @@
   gap: 5px;
 }
 .badge-dot { font-size: 0.4rem; }
-.badge-attesa     { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
-.badge-confermata { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-.badge-cancellata { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+.badge-attesa      { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+.badge-confermata  { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+.badge-cancellata  { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+.badge-completata  { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
 
 /* Code + total (right) */
 .booking-meta-right {
@@ -573,6 +571,24 @@
 
 .btn-danger-outline { color: #DC2626; border-color: #FECACA; }
 .btn-danger-outline:hover { background: #FEF2F2; border-color: #F87171; color: #B91C1C; }
+
+/* "Lascia una recensione" — gold/star accent */
+.btn-review {
+  color: #92400E;
+  border-color: #FDE68A;
+  background: #FFFBEB;
+}
+.btn-review:hover { background: #FEF3C7; border-color: #F59E0B; color: #78350F; transform: translateY(-1px); }
+.btn-review i { color: #D97706; }
+
+/* "Prenota di nuovo" — green rebook accent */
+.btn-rebook {
+  color: #065F46;
+  border-color: #A7F3D0;
+  background: #F0FDF9;
+}
+.btn-rebook:hover { background: #D1FAE5; border-color: #34D399; color: #064E3B; transform: translateY(-1px); }
+.btn-rebook i { color: #059669; }
 
 .btn-booking-icon {
   width: 36px;
@@ -767,16 +783,15 @@
 @media (max-width: 680px) {
   .bookings-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .stat-value { font-size: 1.25rem; }
-  .bookings-filter-card { flex-direction: column; gap: 8px; }
-  .bookings-search { min-width: 100%; }
-  .filter-controls { width: 100%; flex-direction: column; }
+  .bookings-filter-card { grid-template-columns: 1fr; gap: 8px; }
+  .filter-controls { flex-direction: column; }
   .filter-select,
   .filter-date,
   .btn-filtra { width: 100%; box-sizing: border-box; }
 }
 
 @media (max-width: 580px) {
-  .bookings-tabs { overflow-x: auto; padding-bottom: 2px; }
+  .tab-btn { flex: 1; justify-content: center; padding: 10px 4px; font-size: 0.78rem; gap: 4px; }
   .booking-card { flex-direction: column; }
   .booking-image { width: 100%; height: 150px; }
   .booking-img-placeholder { min-height: 150px; }

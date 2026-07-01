@@ -13,6 +13,7 @@ import { sharedDict } from './i18n/shared.dict';
 import { statisticheDict } from './i18n/statistiche.dict';
 import { mieiHotelDict } from './i18n/miei-hotel.dict';
 import { aggiungiHotelDict } from './i18n/aggiungi-hotel.dict';
+import { preferitiDict }    from './i18n/preferiti.dict';
 
 const ALL_DICTS: LangDict[] = [
   coreDict,
@@ -27,6 +28,7 @@ const ALL_DICTS: LangDict[] = [
   statisticheDict,
   mieiHotelDict,
   aggiungiHotelDict,
+  preferitiDict,
 ];
 
 const LANGS: Lang[] = ['it', 'en', 'es', 'fr', 'de'];

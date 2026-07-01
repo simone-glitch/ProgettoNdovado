@@ -1,0 +1,67 @@
+<div class="pref-container">
+
+  <div class="pref-header">
+    <div>
+      <h1 class="pref-title">{{ 'pref.title' | translate }}</h1>
+      <p class="pref-sub">{{ 'pref.sub' | translate }}</p>
+    </div>
+  </div>
+
+  @if (hotels.length === 0) {
+    <div class="pref-empty">
+      <div class="pref-empty-ico"><i class="far fa-heart"></i></div>
+      <h3>{{ 'pref.empty.title' | translate }}</h3>
+      <p>{{ 'pref.empty.sub' | translate }}</p>
+      <button class="pref-discover-btn" (click)="scopriHotel()">
+        <i class="fas fa-search"></i> {{ 'pref.empty.btn' | translate }}
+      </button>
+    </div>
+  } @else {
+    <div class="pref-hotel-grid">
+      @for (hotel of hotels; track hotel.id) {
+        <div class="pref-hotel-card" (click)="vaiDettaglio(hotel.id)">
+          <div class="pref-card-img-wrap">
+            <img
+              [src]="getHotelImage(hotel)"
+              (error)="onImageError($event, hotel)"
+              loading="lazy"
+              [alt]="hotel.nome"
+              class="pref-card-photo">
+            <div class="pref-star-badge">
+              <i class="fas fa-hotel"></i> {{ hotel.stelle }}★
+            </div>
+            @if (hotel.stelle >= 4) {
+              <div class="pref-premium-tag">Premium</div>
+            }
+            <button class="pref-remove-btn" (click)="rimuovi(hotel, $event)" [title]="'pref.rimuovi' | translate">
+              <i class="fas fa-heart"></i>
+            </button>
+          </div>
+          <div class="pref-card-body">
+            <h3 class="pref-card-name">{{ hotel.nome }}</h3>
+            <p class="pref-card-loc"><i class="fas fa-map-marker-alt"></i> {{ hotel.citta }}</p>
+            @if (hotel.votoMedio) {
+              <div class="pref-card-rating">
+                <span class="pref-rating-stars">{{ ratingStars(hotel.votoMedio) }}</span>
+                <span class="pref-rating-val">{{ hotel.votoMedio | number:'1.1-1' }}</span>
+              </div>
+            }
+            <div class="pref-card-foot">
+              <div class="pref-price-block">
+                @if (hotel.camere && hotel.camere.length > 0) {
+                  <span class="pref-price-from">Da </span>
+                  <strong class="pref-price-val">€{{ hotel.camere[0].prezzoNotte | number:'1.0-0' }}</strong>
+                  <span class="pref-price-per">/notte</span>
+                } @else {
+                  <span class="pref-price-from">Verifica disponibilità</span>
+                }
+              </div>
+              <button class="pref-detail-btn">{{ 'home.vedi-hotel' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

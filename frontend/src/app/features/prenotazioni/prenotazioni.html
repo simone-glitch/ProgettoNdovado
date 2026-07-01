@@ -106,12 +106,13 @@
           <select [(ngModel)]="filterStatus" class="filter-select">
             <option value="">{{ 'tab.filtro-tutte' | translate }}</option>
             <option value="IN_ATTESA">{{ 'tab.filtro-attesa' | translate }}</option>
-            <option value="CONFERMATA">{{ 'tab.filtro-confermate' | translate }}</option>
+            <option value="CONFERMATA">{{ 'tab.filtro-prenotate' | translate }}</option>
+            <option value="_COMPLETATA">{{ 'tab.filtro-completate' | translate }}</option>
             <option value="CANCELLATA">{{ 'tab.filtro-cancellate' | translate }}</option>
           </select>
           <input type="date" [(ngModel)]="filterPeriodo" class="filter-date" [title]="'booking.filtra-periodo' | translate" />
-          <button class="btn-filtra" (click)="applyFilters()">
-            <i class="fas fa-filter"></i> {{ 'booking.filtra' | translate }}
+          <button class="btn-filtra" (click)="applyFilters()" [title]="'booking.filtra' | translate">
+            <i class="fas fa-filter"></i>
           </button>
         </div>
       </div>
@@ -124,12 +125,25 @@
             <span class="tab-count">{{ prenotazioni.length }}</span>
           }
         </button>
-        <button class="tab-btn" [class.tab-active]="activeTab === 'arrivo'" (click)="setTab('arrivo')">
-          {{ 'tab.arrivo' | translate }}
-          @if (!loading && countArrivo > 0) {
-            <span class="tab-count tab-count-green">{{ countArrivo }}</span>
-          }
-        </button>
+
+        @if (isGuest) {
+          <button class="tab-btn" [class.tab-active]="activeTab === 'prenotate'" (click)="setTab('prenotate')">
+            Prenotate
+            @if (!loading && countPrenotate > 0) {
+              <span class="tab-count tab-count-green">{{ countPrenotate }}</span>
+            }
+          </button>
+        }
+
+        @if (!isGuest) {
+          <button class="tab-btn" [class.tab-active]="activeTab === 'arrivo'" (click)="setTab('arrivo')">
+            {{ 'tab.arrivo' | translate }}
+            @if (!loading && countArrivo > 0) {
+              <span class="tab-count tab-count-green">{{ countArrivo }}</span>
+            }
+          </button>
+        }
+
         <button class="tab-btn" [class.tab-active]="activeTab === 'completate'" (click)="setTab('completate')">
           {{ 'tab.completate' | translate }}
           @if (!loading && countCompletate > 0) {
@@ -227,9 +241,9 @@
                 <div class="booking-top-row">
                   <div class="booking-name-status">
                     <h3 class="booking-hotel-name">{{ p.nomeHotel || ('booking.hotel-non-disponibile' | translate) }}</h3>
-                    <span class="booking-status-badge" [ngClass]="getStatoBadgeClass(p.stato)">
+                    <span class="booking-status-badge" [ngClass]="getStatoBadgeClass(p.stato, p)">
                       <i class="fas fa-circle badge-dot"></i>
-                      {{ getStatoLabel(p.stato) }}
+                      {{ getStatoLabel(p.stato, p) }}
                     </span>
                   </div>
                   <div class="booking-meta-right">
@@ -298,16 +312,16 @@
 
                   <!-- GUEST actions -->
                   @if (isGuest) {
-                    @if (p.stato === 'IN_ATTESA') {
+                    @if (p.stato === 'IN_ATTESA' && !isScaduta(p)) {
                       <button class="btn-booking-secondary btn-danger-outline" (click)="cancella(p.id)">
                         <i class="fas fa-times-circle"></i> {{ 'booking.annulla-prenotazione' | translate }}
                       </button>
                     }
-                    @if (isCompletataBooking(p)) {
-                      <button class="btn-booking-secondary" (click)="vaiAgliHotel()">
+                    @if (isCompletataBooking(p) && !isScaduta(p)) {
+                      <button class="btn-booking-secondary btn-review" (click)="lasciaRecensione(p)">
                         <i class="fas fa-star"></i> {{ 'booking.lascia-recensione' | translate }}
                       </button>
-                      <button class="btn-booking-secondary" (click)="vaiAgliHotel()">
+                      <button class="btn-booking-secondary btn-rebook" (click)="prenotaDiNuovo(p)">
                         <i class="fas fa-redo"></i> {{ 'booking.prenota-di-nuovo' | translate }}
                       </button>
                     }
@@ -315,7 +329,7 @@
 
                   <!-- HOST / ADMIN actions -->
                   @if (isHost || isAdmin) {
-                    @if (p.stato === 'IN_ATTESA') {
+                    @if (p.stato === 'IN_ATTESA' && !isScaduta(p)) {
                       <button class="btn-booking-primary" (click)="aggiornaStato(p.id, 'CONFERMATA')">
                         <i class="fas fa-check"></i> {{ 'common.conferma' | translate }}
                       </button>
@@ -377,26 +391,6 @@
             <span class="benefit-title">{{ 'booking.assistenza-247' | translate }}</span>
             <span class="benefit-desc">{{ 'booking.assistenza-247-desc' | translate }}</span>
           </div>
-        </div>
-      </div>
-
-      <!-- Quick documents card -->
-      <div class="quick-documents-card">
-        <h4 class="sidebar-card-title">{{ 'booking.documenti-titolo' | translate }}</h4>
-        <div class="doc-item" (click)="showAlertMessage(i18n.translate('booking.msg.fatture-presto'), 'info')">
-          <div class="doc-icon-wrap"><i class="fas fa-file-invoice"></i></div>
-          <span class="doc-label">{{ 'booking.fatture' | translate }}</span>
-          <i class="fas fa-chevron-right doc-arrow"></i>
-        </div>
-        <div class="doc-item" (click)="showAlertMessage(i18n.translate('booking.msg.conferme-presto'), 'info')">
-          <div class="doc-icon-wrap"><i class="fas fa-file-alt"></i></div>
-          <span class="doc-label">{{ 'booking.conferme' | translate }}</span>
-          <i class="fas fa-chevron-right doc-arrow"></i>
-        </div>
-        <div class="doc-item" (click)="showAlertMessage(i18n.translate('booking.msg.pagamenti-presto'), 'info')">
-          <div class="doc-icon-wrap"><i class="fas fa-credit-card"></i></div>
-          <span class="doc-label">{{ 'booking.metodi-pagamento' | translate }}</span>
-          <i class="fas fa-chevron-right doc-arrow"></i>
         </div>
       </div>
 

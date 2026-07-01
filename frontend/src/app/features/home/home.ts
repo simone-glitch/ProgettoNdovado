@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HotelService } from '../../services/hotel.service';
+import { FavoritesService } from '../../services/favorites.service';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -24,7 +25,11 @@ export class Home implements OnInit {
     numOspiti: new FormControl<number | null>(null)
   });
 
-  constructor(private hotelService: HotelService, private router: Router) {}
+  constructor(
+    private hotelService: HotelService,
+    private router: Router,
+    public favService: FavoritesService,
+  ) {}
 
   ngOnInit() { this.caricaTutti(); }
 
@@ -61,29 +66,40 @@ export class Home implements OnInit {
   vaiDettaglio(id: number) {
     this.router.navigate(['/dashboard/hotel-detail', id]);
   }
-  getHotelImage(hotel: any): string {
+  private cityFallback(citta: string): string {
+    switch (citta?.toLowerCase()) {
+      case 'napoli':  return '/assets/images/Hotel_Image/Napoli.jpg';
+      case 'roma':    return '/assets/images/Hotel_Image/Roma.jpg';
+      case 'venezia': return '/assets/images/Hotel_Image/Venezia.jpg';
+      case 'siena':   return '/assets/images/Hotel_Image/Toscana.jpg';
+      default:        return '/assets/images/Hotel_Image/Roma.jpg';
+    }
+  }
 
+  getHotelImage(hotel: any): string {
     if (hotel.fotoUrls && hotel.fotoUrls.length > 0) {
       return hotel.fotoUrls[0];
     }
+    return this.cityFallback(hotel.citta);
+  }
 
-    switch (hotel.citta?.toLowerCase()) {
-      case 'napoli':
-        return '/assets/images/Hotel_Image/Napoli.jpg';
-
-      case 'roma':
-        return '/assets/images/Hotel_Image/Roma.jpg';
-
-      case 'venezia':
-        return '/assets/images/Hotel_Image/Venezia.jpg';
-
-      case 'siena':
-        return '/assets/images/Hotel_Image/Toscana.jpg';
-
-      default:
-        return '/assets/images/Hotel_Image/default.jpg';
+  onImageError(event: Event, hotel: any): void {
+    const img = event.target as HTMLImageElement;
+    const fallback = this.cityFallback(hotel.citta);
+    if (!img.src.endsWith(fallback)) {
+      img.src = fallback;
     }
   }
-  stelle(n: number): string { return '★'.repeat(n) + '☆'.repeat(5 - n); }
+
+  toggleFavorite(hotel: any, event: Event): void {
+    event.stopPropagation();
+    this.favService.toggle(hotel);
+  }
+
+  ratingStars(voto: number): string {
+    const filled = Math.round(voto);
+    return '★'.repeat(filled) + '☆'.repeat(5 - filled);
+  }
+
   skeletons(): number[] { return [1, 2, 3, 4, 5, 6]; }
 }

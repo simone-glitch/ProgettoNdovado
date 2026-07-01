@@ -38,6 +38,7 @@ public class PrenotazioneDAO {
         try { p.setNomeUtente(rs.getString("nome_utente")); } catch (Exception ignored) {}
         try { p.setTipoCamera(rs.getString("tipo_camera")); } catch (Exception ignored) {}
         try { p.setNomeHotel(rs.getString("nome_hotel"));   } catch (Exception ignored) {}
+        try { p.setIdHotel(rs.getInt("id_hotel"));          } catch (Exception ignored) {}
         return p;
     };
 
@@ -66,7 +67,8 @@ public class PrenotazioneDAO {
                 SELECT p.*,
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
-                       h.nome                     AS nome_hotel
+                       h.nome                     AS nome_hotel,
+                       h.id_hotel                 AS id_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -85,7 +87,8 @@ public class PrenotazioneDAO {
                 SELECT p.*,
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
-                       h.nome                     AS nome_hotel
+                       h.nome                     AS nome_hotel,
+                       h.id_hotel                 AS id_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -101,7 +104,8 @@ public class PrenotazioneDAO {
                 SELECT p.*,
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
-                       h.nome                     AS nome_hotel
+                       h.nome                     AS nome_hotel,
+                       h.id_hotel                 AS id_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -117,7 +121,8 @@ public class PrenotazioneDAO {
                 SELECT p.*,
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
-                       h.nome                     AS nome_hotel
+                       h.nome                     AS nome_hotel,
+                       h.id_hotel                 AS id_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -133,7 +138,8 @@ public class PrenotazioneDAO {
                 SELECT p.*,
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
-                       h.nome                     AS nome_hotel
+                       h.nome                     AS nome_hotel,
+                       h.id_hotel                 AS id_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -149,6 +155,42 @@ public class PrenotazioneDAO {
 
     public void elimina(Integer id) {
         jdbcTemplate.update("DELETE FROM prenotazioni WHERE id_prenotazione = ?", id);
+    }
+
+    public int cancellaScadute() {
+        return jdbcTemplate.update("""
+                UPDATE prenotazioni
+                SET stato = 'CANCELLATA'
+                WHERE stato = 'IN_ATTESA'
+                  AND data_checkout <= CURRENT_DATE
+                """);
+    }
+
+    public boolean hasSoggiornato(Integer idUtente, Integer idHotel) {
+        String sql = """
+                SELECT COUNT(*) FROM prenotazioni p
+                JOIN camere c ON c.id_camera = p.id_camera
+                WHERE p.id_utente = ?
+                  AND c.id_hotel  = ?
+                  AND p.stato     != 'CANCELLATA'
+                  AND p.data_checkout <= CURRENT_DATE
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, idUtente, idHotel);
+        return count != null && count > 0;
+    }
+
+    public int ripristinaDisponibilitaCamere() {
+        String sql = """
+                UPDATE camere
+                SET disponibile = true
+                WHERE disponibile = false
+                  AND id_camera NOT IN (
+                      SELECT DISTINCT id_camera FROM prenotazioni
+                      WHERE stato NOT IN ('CANCELLATA')
+                        AND data_checkout > CURRENT_DATE
+                  )
+                """;
+        return jdbcTemplate.update(sql);
     }
 
     public boolean verificaDisponibilita(Integer idCamera, String dataCheckin, String dataCheckout) {

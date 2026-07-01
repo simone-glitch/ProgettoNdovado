@@ -1,4 +1,4 @@
-* ── Home Container ── */
+/* ── Home Container ── */
 .home-container {
   min-height: 100%;
   font-family: 'Inter', sans-serif;
@@ -179,8 +179,8 @@
 /* ── Benefits dentro l'hero ── */
 .ndv-hero-benefits {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
   margin-top: 32px;
   padding-top: 28px;
   border-top: 1px solid rgba(255,255,255,0.13);
@@ -191,12 +191,13 @@
 .ndv-hero-benefit {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 13px;
+  min-width: 0;
 }
 
 .ndv-hb-ico {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   background: rgba(201,164,92,0.14);
   border: 1px solid rgba(201,164,92,0.3);
   border-radius: 12px;
@@ -204,13 +205,17 @@
   align-items: center;
   justify-content: center;
   color: #C9A45C;
-  font-size: 1.45rem;
+  font-size: 1.35rem;
   flex-shrink: 0;
+}
+
+.ndv-hb-text {
+  min-width: 0;
 }
 
 .ndv-hb-text strong {
   display: block;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #fff;
   margin-bottom: 3px;
@@ -218,7 +223,7 @@
 }
 
 .ndv-hb-text span {
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   color: rgba(255,255,255,0.52);
   line-height: 1.4;
 }
@@ -386,6 +391,10 @@
   background: #fff;
   color: #EF4444;
   transform: scale(1.1);
+}
+.ndv-heart-active {
+  color: #EF4444 !important;
+  background: #fff !important;
 }
 
 .ndv-card-body { padding: 20px 22px; }
@@ -676,4 +685,3 @@
   .ndv-benefit-item:nth-child(4) { border-top: none; }
   .ndv-sec-hdr { gap: 8px; }
 }
-/

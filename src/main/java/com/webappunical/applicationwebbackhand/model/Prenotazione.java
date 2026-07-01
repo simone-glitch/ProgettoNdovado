@@ -17,6 +17,7 @@ public class Prenotazione {
     private String nomeUtente;
     private String tipoCamera;
     private String nomeHotel;
+    private Integer idHotel;
 
     public Prenotazione() {}
 
@@ -52,4 +53,7 @@ public class Prenotazione {
 
     public String getNomeHotel() { return nomeHotel; }
     public void setNomeHotel(String nomeHotel) { this.nomeHotel = nomeHotel; }
+
+    public Integer getIdHotel() { return idHotel; }
+    public void setIdHotel(Integer idHotel) { this.idHotel = idHotel; }
 }

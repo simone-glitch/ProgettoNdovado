@@ -96,6 +96,13 @@
         <span>{{ 'home.hb3.sub' | translate }}</span>
       </div>
     </div>
+    <div class="ndv-hero-benefit">
+      <div class="ndv-hb-ico"><i class="fas fa-star"></i></div>
+      <div class="ndv-hb-text">
+        <strong>{{ 'home.hb4.title' | translate }}</strong>
+        <span>{{ 'home.hb4.sub' | translate }}</span>
+      </div>
+    </div>
   </div>
 
   </div>
@@ -139,14 +146,22 @@
             <div class="ndv-card-img-wrap">
               <img
                 [src]="getHotelImage(hotel)"
+                (error)="onImageError($event, hotel)"
+                loading="lazy"
                 [alt]="hotel.nome"
                 class="ndv-card-photo">
-              <div class="ndv-star-badge">{{ stelle(hotel.stelle) }}</div>
+              <div class="ndv-star-badge" [title]="'home.badge-categoria' | translate">
+                <i class="fas fa-hotel"></i> {{ hotel.stelle }}★
+              </div>
               @if (hotel.stelle >= 4) {
                 <div class="ndv-premium-tag">Premium</div>
               }
-              <button class="ndv-heart-btn" (click)="$event.stopPropagation()">
-                <i class="far fa-heart"></i>
+              <button
+                class="ndv-heart-btn"
+                [class.ndv-heart-active]="favService.isFavorite(hotel.id)"
+                (click)="toggleFavorite(hotel, $event)"
+                [title]="(favService.isFavorite(hotel.id) ? 'pref.rimuovi' : 'home.aggiungi-preferiti') | translate">
+                <i [class]="favService.isFavorite(hotel.id) ? 'fas fa-heart' : 'far fa-heart'"></i>
               </button>
             </div>
             <div class="ndv-card-body">
@@ -154,7 +169,7 @@
               <p class="ndv-card-loc"><i class="fas fa-map-marker-alt"></i> {{ hotel.citta }}</p>
               @if (hotel.votoMedio) {
                 <div class="ndv-card-rating">
-                  <span class="ndv-rating-stars">★★★★★</span>
+                  <span class="ndv-rating-stars">{{ ratingStars(hotel.votoMedio) }}</span>
                   <span class="ndv-rating-val">{{ hotel.votoMedio | number:'1.1-1' }}</span>
                 </div>
               }

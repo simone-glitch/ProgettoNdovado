@@ -15,6 +15,7 @@
 
         @if (isGuest) {
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.prenotazioni-guest' | translate }}</a>
+          <a routerLink="/dashboard/preferiti" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.preferiti' | translate }}</a>
         }
         @if (isHost) {
           <a routerLink="/dashboard/miei-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.miei-hotel' | translate }}</a>
@@ -64,6 +65,10 @@
             <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-calendar-check"></i> {{ 'nav.prenotazioni-guest' | translate }}
+            </a>
+            <a routerLink="/dashboard/preferiti" routerLinkActive="ndv-mob-active"
+               class="ndv-mob-link" (click)="closeSidebar()">
+              <i class="fas fa-heart"></i> {{ 'nav.preferiti' | translate }}
             </a>
           }
           @if (isHost) {

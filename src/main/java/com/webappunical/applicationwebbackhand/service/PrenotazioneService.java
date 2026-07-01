@@ -40,6 +40,12 @@ public class PrenotazioneService {
         return prenotazioneDAO.trovaPerHotel(idHotel);
     }
 
+    public boolean puoiRecensire(String emailUtente, Integer idHotel) {
+        Utente utente = utenteJDBC.trovaPerEmail(emailUtente);
+        if (utente == null) return false;
+        return prenotazioneDAO.hasSoggiornato(utente.getId(), idHotel);
+    }
+
     public List<Prenotazione> getTutte() {
         return prenotazioneDAO.trovaTutte();
     }
@@ -69,6 +75,7 @@ public class PrenotazioneService {
 
         Integer id = prenotazioneDAO.salva(prenotazione);
         prenotazione.setId(id);
+        cameraDAO.setDisponibile(camera.getId(), false);
         return prenotazione;
     }
 

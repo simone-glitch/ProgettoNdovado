@@ -6,6 +6,8 @@ import { ChatWindow }  from '../../components/chat-window/chat-window';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
+import { TranslationService } from '../../services/translation.service';
+import { FavoritesService } from '../../services/favorites.service';
 import { SharedModule } from '../../shared/shared.module';
 
 @Component({
@@ -26,6 +28,8 @@ export class Dashboard implements OnInit {
     private authService: AuthService,
     private router: Router,
     private prefsService: PreferencesService,
+    private i18n: TranslationService,
+    public favService: FavoritesService,
   ) {}
 
   ngOnInit(): void {
@@ -49,8 +53,11 @@ export class Dashboard implements OnInit {
   }
 
   get roleBadge(): string {
-    const map: Record<string, string> = { ADMIN: 'Admin', HOST: 'Host', GUEST: 'Guest' };
-    return map[this.currentUser?.ruolo] ?? '';
+    const ruolo = this.currentUser?.ruolo;
+    if (ruolo === 'GUEST') return this.i18n.translate('auth.ruolo-guest');
+    if (ruolo === 'HOST')  return this.i18n.translate('auth.ruolo-host');
+    if (ruolo === 'ADMIN') return 'Admin';
+    return '';
   }
 
   toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }
