@@ -17,6 +17,9 @@
       <h1 class="host-hotels-title">{{ 'myhotel.title' | translate }}</h1>
       <p class="host-hotels-subtitle">{{ 'myhotel.subtitle' | translate }}</p>
     </div>
+    <button class="btn-add-hotel-header" (click)="apriNuovoHotel()">
+      <i class="fas fa-plus-circle"></i> {{ 'myhotel.aggiungi-hotel' | translate }}
+    </button>
   </div>
 
   @if (loading) {
@@ -284,3 +287,150 @@
 
 </div>
 
+<!-- ══════════════════════════════════════════════ -->
+<!-- MEGA MODAL — AGGIUNGI / MODIFICA HOTEL        -->
+<!-- ══════════════════════════════════════════════ -->
+@if (showHotelModal) {
+  <div class="hm-overlay" (click)="chiudiModal()" role="dialog" aria-modal="true"
+    [attr.aria-label]="editingHotel ? ('myhotel.modal.modifica-hotel' | translate) : ('myhotel.modal.aggiungi-hotel' | translate)">
+    <div class="hm-modal" (click)="$event.stopPropagation()">
+
+      <!-- HEADER -->
+      <div class="hm-header">
+        <div class="hm-header-left">
+          <div class="hm-header-icon" [class.hm-icon-edit]="editingHotel">
+            <i class="fas" [ngClass]="editingHotel ? 'fa-pen' : 'fa-hotel'"></i>
+          </div>
+          <div>
+            <h2 class="hm-title">{{ editingHotel ? ('myhotel.modal.modifica-struttura' | translate) : ('myhotel.modal.aggiungi-struttura' | translate) }}</h2>
+            <p class="hm-subtitle">{{ editingHotel ? ('myhotel.modal.aggiorna-dati' | translate) : ('myhotel.modal.inserisci-dati' | translate) }}</p>
+          </div>
+        </div>
+        <button class="hm-close" (click)="chiudiModal()" [attr.aria-label]="'common.chiudi' | translate">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="hm-body">
+        <form [formGroup]="hotelForm" (ngSubmit)="salvaHotel()" novalidate>
+
+          <!-- SEZIONE 1: Informazioni principali -->
+          <div class="hm-section">
+            <h3 class="hm-section-title">
+              <span class="hm-step">1</span> {{ 'myhotel.modal.sezione1' | translate }}
+            </h3>
+            <div class="hm-grid-2">
+              <div class="hm-field hm-field-full">
+                <label class="hm-label">{{ 'myhotel.modal.nome-struttura' | translate }} <span class="hm-required">*</span></label>
+                <input type="text" formControlName="nome" class="hm-input"
+                  [placeholder]="'myhotel.modal.nome-placeholder' | translate"
+                  [class.hm-input-error]="hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid">
+                @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
+                }
+              </div>
+              <div class="hm-field">
+                <label class="hm-label">{{ 'myhotel.modal.citta' | translate }} <span class="hm-required">*</span></label>
+                <input type="text" formControlName="citta" class="hm-input" [placeholder]="'myhotel.modal.citta-placeholder' | translate"
+                  [class.hm-input-error]="hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid">
+                @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
+                }
+              </div>
+              <div class="hm-field">
+                <label class="hm-label">{{ 'myhotel.modal.stelle' | translate }} <span class="hm-required">*</span></label>
+                <select formControlName="stelle" class="hm-input hm-select">
+                  <option value="1">{{ 'myhotel.modal.stelle-1' | translate }}</option>
+                  <option value="2">{{ 'myhotel.modal.stelle-2' | translate }}</option>
+                  <option value="3">{{ 'myhotel.modal.stelle-3' | translate }}</option>
+                  <option value="4">{{ 'myhotel.modal.stelle-4' | translate }}</option>
+                  <option value="5">{{ 'myhotel.modal.stelle-5' | translate }}</option>
+                </select>
+              </div>
+              <div class="hm-field hm-field-full">
+                <label class="hm-label">{{ 'myhotel.modal.indirizzo' | translate }} <span class="hm-required">*</span></label>
+                <input type="text" formControlName="indirizzo" class="hm-input" [placeholder]="'myhotel.modal.indirizzo-placeholder' | translate"
+                  [class.hm-input-error]="hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid">
+                @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
+                  <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- SEZIONE 2: Descrizione -->
+          <div class="hm-section">
+            <h3 class="hm-section-title">
+              <span class="hm-step">2</span> {{ 'myhotel.modal.sezione2' | translate }}
+            </h3>
+            <div class="hm-field">
+              <label class="hm-label">{{ 'myhotel.modal.descrizione-struttura' | translate }} <span class="hm-required">*</span></label>
+              <textarea formControlName="descrizione" class="hm-input hm-textarea" rows="4"
+                [placeholder]="'myhotel.modal.descrizione-placeholder' | translate"
+                [class.hm-input-error]="hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid">
+              </textarea>
+              @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
+                <span class="hm-error"><i class="fas fa-exclamation-circle"></i> {{ 'myhotel.modal.campo-obbligatorio' | translate }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- SEZIONE 3: Posizione GPS (opzionale) -->
+          <div class="hm-section">
+            <h3 class="hm-section-title">
+              <span class="hm-step">3</span> {{ 'myhotel.modal.sezione3' | translate }} <span class="hm-optional">{{ 'myhotel.modal.opzionale' | translate }}</span>
+            </h3>
+            <div class="hm-grid-2">
+              <div class="hm-field">
+                <label class="hm-label">{{ 'myhotel.modal.latitudine' | translate }}</label>
+                <input type="number" formControlName="latitudine" class="hm-input"
+                  step="0.000001" [placeholder]="'myhotel.modal.latitudine-placeholder' | translate">
+              </div>
+              <div class="hm-field">
+                <label class="hm-label">{{ 'myhotel.modal.longitudine' | translate }}</label>
+                <input type="number" formControlName="longitudine" class="hm-input"
+                  step="0.000001" [placeholder]="'myhotel.modal.longitudine-placeholder' | translate">
+              </div>
+            </div>
+          </div>
+
+          <!-- SEZIONE 4: Servizi -->
+          @if (serviziDisponibili.length > 0) {
+            <div class="hm-section">
+              <h3 class="hm-section-title">
+                <span class="hm-step">4</span> {{ 'myhotel.modal.sezione4' | translate }} <span class="hm-optional">{{ 'myhotel.modal.opzionale' | translate }}</span>
+              </h3>
+              <div class="hm-servizi-grid">
+                @for (s of serviziDisponibili; track s.id) {
+                  <label class="hm-servizio-chip" [class.hm-chip-selected]="isServizioSelezionato(s.id)">
+                    <input type="checkbox" [checked]="isServizioSelezionato(s.id)" (change)="toggleServizio(s.id)">
+                    <i class="fas {{ getServizioIcon(s.nome) }}"></i>
+                    {{ s.nome }}
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- FOOTER AZIONI -->
+          <div class="hm-footer">
+            <button type="button" class="hm-btn-cancel" (click)="chiudiModal()" [disabled]="savingHotel">
+              {{ 'common.annulla' | translate }}
+            </button>
+            <button type="submit" class="hm-btn-save" [disabled]="savingHotel">
+              @if (savingHotel) {
+                <span class="hm-spinner"></span> {{ 'myhotel.modal.salvataggio' | translate }}
+              } @else {
+                <i class="fas" [ngClass]="editingHotel ? 'fa-save' : 'fa-plus-circle'"></i>
+                {{ editingHotel ? ('myhotel.modal.salva-modifiche' | translate) : ('myhotel.modal.crea-struttura' | translate) }}
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+}

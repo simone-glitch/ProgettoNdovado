@@ -1,5 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
-import flatpickr from 'flatpickr';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -18,16 +17,17 @@ import { SharedModule } from '../../shared/shared.module';
   templateUrl: './hotel-detail.html',
   styleUrl: './hotel-detail.css',
 })
-export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
+export class HotelDetail implements OnInit, AfterViewInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
-  @ViewChild('checkinFp')   checkinInput?: ElementRef;
-  @ViewChild('checkoutFp')  checkoutInput?: ElementRef;
 
   hotel: any = null;
   camere: any[] = [];
   recensioni: any[] = [];
   loading = true;
   fotoAttiva = 0;
+
+  lightboxOpen = false;
+  lightboxImage = '';
 
   selectedCamera: any = null;
   bookingForm!: FormGroup;
@@ -47,13 +47,6 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   carteLocali: any[] = [];
   cartaSelezionataIdx: number | null = null;
 
-  showCapienzaInfo = false;
-
-  occupazioni: Array<{checkin: string; checkout: string}> = [];
-  erroreOccupata = '';
-  private fpCheckin:  any = null;
-  private fpCheckout: any = null;
-
   puoRecensire = false;
 
   private mapInitialized = false;
@@ -67,8 +60,7 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     private recensioneService: RecensioneService,
     private authService: AuthService,
     private i18n: TranslationService,
-    private prefsService: PreferencesService,
-    private ngZone: NgZone
+    private prefsService: PreferencesService
   ) {}
 
   formatPrezzo(val: number | null | undefined): string {
@@ -124,18 +116,13 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   caricaHotel(id: number) {
-    this.destroyFlatpickr();
     this.loading = true;
-    this.occupazioni = [];
     this.hotelService.getDettaglio(id).subscribe({
       next: (h) => {
         this.hotel = h;
         this.camere = h.camere ?? [];
         this.loading = false;
-        setTimeout(() => {
-          this.inizializzaMappa();
-          this.initFlatpickr();
-        }, 300);
+        setTimeout(() => this.inizializzaMappa(), 300);
       },
       error: () => { this.loading = false; }
     });
@@ -182,19 +169,7 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
 
   selezionaCamera(camera: any) {
     if (!camera.disponibile) return;
-    if (this.selectedCamera?.id === camera.id) {
-      this.selectedCamera = null;
-      this.showCapienzaInfo = false;
-      this.occupazioni = [];
-      this.aggiornaFlatpickrDisabled();
-      return;
-    }
-    this.selectedCamera = camera;
-    this.showCapienzaInfo = false;
-    this.prenotazioneService.getOccupazioniCamera(camera.id).subscribe({
-      next: (occ) => { this.occupazioni = occ; this.aggiornaFlatpickrDisabled(); },
-      error: ()    => { this.occupazioni = [];  this.aggiornaFlatpickrDisabled(); }
-    });
+    this.selectedCamera = (this.selectedCamera?.id === camera.id) ? null : camera;
   }
 
   get numNotti(): number {
@@ -216,6 +191,7 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   get todayStr(): string {
     return new Date().toISOString().split('T')[0];
   }
+
 
   get minCheckout(): string {
     const checkin = this.bookingForm.value.dataCheckin;
@@ -273,7 +249,14 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     return !this.erroreCheckin && !this.erroreCheckout && !this.erroreOspiti
       && !!this.bookingForm.value.dataCheckin && !!this.bookingForm.value.dataCheckout;
   }
+  openLightbox(img: string) {
+    this.lightboxImage = img;
+    this.lightboxOpen = true;
+  }
 
+  closeLightbox() {
+    this.lightboxOpen = false;
+  }
   private readonly tipoCameraKeys: Record<string, string> = {
     SINGOLA: 'booking.camera.singola',
     DOPPIA: 'booking.camera.doppia',
@@ -318,9 +301,9 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
 
   private caricaCarteLocali(): void {
     try {
-      const raw = localStorage.getItem(this.authService.userKey('ndv_metodi_pagamento'));
+      const raw = localStorage.getItem('ndv_metodi_pagamento');
       this.carteLocali = raw ? JSON.parse(raw) : [];
-      const sel = localStorage.getItem(this.authService.userKey('ndv_carta_selezionata'));
+      const sel = localStorage.getItem('ndv_carta_selezionata');
       if (sel !== null && sel !== 'null' && this.carteLocali.length > 0) {
         const idx = Number(sel);
         this.cartaSelezionataIdx = idx < this.carteLocali.length ? idx : 0;
@@ -350,10 +333,6 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
         this.cartaSelezionataIdx = null;
         this.showAlertMessage(this.i18n.translate('hoteldetail.msg.prenotazione-ok'), 'success');
         this.selectedCamera = null;
-        this.occupazioni = [];
-        this.erroreOccupata = '';
-        this.fpCheckin?.clear();
-        this.fpCheckout?.clear();
         this.bookingForm.reset({ numAdulti: 1, numBambini: 0 });
         this.caricaHotel(this.hotel.id);
       },
@@ -408,94 +387,6 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   onAlertDismiss() { this.showAlert = false; }
   indietro()       { this.router.navigate(['/dashboard/home']); }
 
-  ngOnDestroy(): void {
-    this.destroyFlatpickr();
-  }
-
-  private getDisabledRanges(): Array<{from: string; to: string}> {
-    return this.occupazioni.map(o => {
-      const to = new Date(o.checkout);
-      to.setDate(to.getDate() - 1);
-      const toStr = to.toISOString().split('T')[0];
-      return { from: o.checkin, to: toStr };
-    }).filter(r => r.from <= r.to);
-  }
-
-  private buildOccupatoClickHandler(fp: any): void {
-    fp.calendarContainer?.addEventListener('click', (e: MouseEvent) => {
-      const dayEl = (e.target as HTMLElement).closest?.('.flatpickr-day.flatpickr-disabled');
-      if (dayEl) {
-        this.ngZone.run(() => {
-          this.erroreOccupata = this.i18n.translate('hoteldetail.msg.stanza-occupata');
-          setTimeout(() => this.ngZone.run(() => { this.erroreOccupata = ''; }), 3500);
-        });
-      }
-    }, true);
-  }
-
-  private initFlatpickr(): void {
-    if (!this.checkinInput?.nativeElement || !this.checkoutInput?.nativeElement) return;
-    this.destroyFlatpickr();
-    const disabled = this.getDisabledRanges();
-
-    this.fpCheckin = flatpickr(this.checkinInput.nativeElement, {
-      dateFormat: 'Y-m-d',
-      altInput: true,
-      altFormat: 'd/m/Y',
-      minDate: 'today',
-      disable: disabled,
-      disableMobile: false,
-      onChange: (_: any, dateStr: any) => {
-        this.ngZone.run(() => {
-          this.bookingForm.patchValue({ dataCheckin: dateStr || '' });
-          if (dateStr && this.fpCheckout) {
-            const next = new Date(dateStr);
-            next.setDate(next.getDate() + 1);
-            this.fpCheckout.set('minDate', next.toISOString().split('T')[0]);
-          }
-          this.erroreOccupata = '';
-        });
-      },
-      onReady: (_: any, __: any, fp: any) => { this.buildOccupatoClickHandler(fp); }
-    } as any);
-
-    const minCheckoutDate = (() => {
-      const d = new Date();
-      d.setDate(d.getDate() + 1);
-      return d.toISOString().split('T')[0];
-    })();
-
-    this.fpCheckout = flatpickr(this.checkoutInput.nativeElement, {
-      dateFormat: 'Y-m-d',
-      altInput: true,
-      altFormat: 'd/m/Y',
-      minDate: minCheckoutDate,
-      disable: disabled,
-      disableMobile: false,
-      onChange: (_: any, dateStr: any) => {
-        this.ngZone.run(() => {
-          this.bookingForm.patchValue({ dataCheckout: dateStr || '' });
-          this.erroreOccupata = '';
-        });
-      },
-      onReady: (_: any, __: any, fp: any) => { this.buildOccupatoClickHandler(fp); }
-    } as any);
-  }
-
-  private destroyFlatpickr(): void {
-    try { this.fpCheckin?.destroy(); }  catch {}
-    try { this.fpCheckout?.destroy(); } catch {}
-    this.fpCheckin  = null;
-    this.fpCheckout = null;
-  }
-
-  private aggiornaFlatpickrDisabled(): void {
-    if (!this.fpCheckin || !this.fpCheckout) return;
-    const ranges = this.getDisabledRanges();
-    this.fpCheckin.set('disable',  ranges);
-    this.fpCheckout.set('disable', ranges);
-  }
-
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     const citta = this.hotel?.citta?.toLowerCase();
@@ -509,5 +400,66 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     if (!img.src.endsWith(fallback)) {
       img.src = fallback;
     }
+  }
+  getHotelImage(hotel: any): string {
+
+    switch (hotel.nome) {
+
+      case 'B&B Napoli Centro':
+        return '/assets/images/Hotel_Image/Napoli.jpg';
+
+      case 'Grand Hotel Roma':
+        return '/assets/images/Hotel_Image/Roma.jpg';
+
+      case 'Hotel Venezia Palace':
+        return '/assets/images/Hotel_Image/Venezia.jpg';
+
+      case 'Relais Toscana':
+        return '/assets/images/Hotel_Image/Toscana.jpg';
+
+      default:
+        return '/assets/images/Hotel_Image/Roma.jpg';
+    }
+  }
+  getHotelGallery(hotel: any): string[] {
+
+    switch (hotel.nome) {
+
+      case 'B&B Napoli Centro':
+        return [
+          '/assets/images/Hotel Details/Napoli1.jpg',
+          '/assets/images/Hotel Details/Napoli2.jpg',
+          '/assets/images/Hotel Details/Napoli3.jpg',
+          '/assets/images/Hotel Details/Napoli4.jpg'
+        ];
+
+      case 'Grand Hotel Roma':
+        return [
+          '/assets/images/Hotel Details/Roma1.jpg',
+          '/assets/images/Hotel Details/Roma2.jpg',
+          '/assets/images/Hotel Details/Roma3.jpg',
+          '/assets/images/Hotel Details/Roma4.jpg'
+        ];
+
+      case 'Hotel Venezia Palace':
+        return [
+          '/assets/images/Hotel Details/Venezia1.jpg',
+          '/assets/images/Hotel Details/Venezia2.jpg',
+          '/assets/images/Hotel Details/Venezia3.jpg',
+          '/assets/images/Hotel Details/Venezia4.jpg'
+        ];
+
+      case 'Relais Toscana':
+        return [
+          '/assets/images/Hotel Details/Toscana1.jpg',
+          '/assets/images/Hotel Details/Toscana2.jpg',
+          '/assets/images/Hotel Details/Toscana3.jpg',
+          '/assets/images/Hotel Details/Toscana4.jpg'
+        ];
+
+      default:
+        return [];
+    }
+
   }
 }
