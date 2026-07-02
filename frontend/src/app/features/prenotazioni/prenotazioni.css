@@ -304,10 +304,17 @@
 
 /* Hotel image / placeholder */
 .booking-image {
-  width: 195px;
-  flex-shrink: 0;
+  width: 240px;
+  height: 250px;
   overflow: hidden;
-  position: relative;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+.booking-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 .booking-img-placeholder {

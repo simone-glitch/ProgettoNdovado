@@ -227,17 +227,21 @@
 
               <!-- Hotel image / placeholder -->
               <div class="booking-image">
-                <div class="booking-img-placeholder">
-                  <span class="hotel-initials">{{ getHotelInitials(p.nomeHotel) }}</span>
-                </div>
-                <!-- Location badge over image (only if available from backend) -->
+
+                <img
+                  [src]="getHotelImage(p.nomeHotel)"
+                  [alt]="p.nomeHotel"
+                  class="booking-img">
+
                 @if (p.citta || p.city || p.destinazione || p.destination) {
                   <div class="booking-img-location">
                     <i class="fas fa-map-marker-alt"></i>
                     {{ p.citta || p.city || p.destinazione || p.destination }}
                   </div>
                 }
+
               </div>
+                <!-- Location badge over image (only if available from backend) -->
 
               <!-- Main content -->
               <div class="booking-content">

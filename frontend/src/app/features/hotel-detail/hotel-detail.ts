@@ -299,22 +299,6 @@ export class HotelDetail implements OnInit, AfterViewInit {
     this.showPaymentModal = true;
   }
 
-  private caricaCarteLocali(): void {
-    try {
-      const raw = localStorage.getItem('ndv_metodi_pagamento');
-      this.carteLocali = raw ? JSON.parse(raw) : [];
-      const sel = localStorage.getItem('ndv_carta_selezionata');
-      if (sel !== null && sel !== 'null' && this.carteLocali.length > 0) {
-        const idx = Number(sel);
-        this.cartaSelezionataIdx = idx < this.carteLocali.length ? idx : 0;
-      } else {
-        this.cartaSelezionataIdx = this.carteLocali.length > 0 ? 0 : null;
-      }
-    } catch {
-      this.carteLocali = [];
-      this.cartaSelezionataIdx = null;
-    }
-  }
 
   eseguiPagamento() {
     if (this.cartaSelezionataIdx === null) {
@@ -344,6 +328,29 @@ export class HotelDetail implements OnInit, AfterViewInit {
         this.showAlertMessage(msg, 'error');
       }
     });
+  }
+  private caricaCarteLocali(): void {
+    try {
+      const raw = localStorage.getItem(
+        this.authService.userKey('ndv_metodi_pagamento')
+      );
+
+      this.carteLocali = raw ? JSON.parse(raw) : [];
+
+      const sel = localStorage.getItem(
+        this.authService.userKey('ndv_carta_selezionata')
+      );
+
+      if (sel !== null && sel !== 'null' && this.carteLocali.length > 0) {
+        const idx = Number(sel);
+        this.cartaSelezionataIdx = idx < this.carteLocali.length ? idx : 0;
+      } else {
+        this.cartaSelezionataIdx = this.carteLocali.length > 0 ? 0 : null;
+      }
+    } catch {
+      this.carteLocali = [];
+      this.cartaSelezionataIdx = null;
+    }
   }
 
   annullaPagamento() {

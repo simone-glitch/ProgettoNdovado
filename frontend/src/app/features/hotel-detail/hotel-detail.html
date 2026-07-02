@@ -525,7 +525,7 @@
             @if (carteLocali.length === 0) {
               <div class="ndv-pay-no-cards">
                 <i class="fas fa-credit-card"></i>
-                <span>Nessuna carta salvata. <a routerLink="/dashboard/impostazioni" (click)="annullaPagamento()">Aggiungila nelle impostazioni</a>.</span>
+                <span>Nessuna carta salvata. <a routerLink="/dashboard/settings" (click)="annullaPagamento()">Aggiungila nelle impostazioni</a>.</span>
               </div>
             }
             @for (carta of carteLocali; track carta.numero + carta.scadenza; let i = $index) {

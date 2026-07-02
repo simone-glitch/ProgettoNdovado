@@ -269,6 +269,28 @@ export class Prenotazioni implements OnInit {
     return nome.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
   }
 
+  getHotelImage(nomeHotel: string): string {
+
+    switch (nomeHotel) {
+
+      case 'B&B Napoli Centro':
+        return '/assets/images/Hotel_Image/Napoli.jpg';
+
+      case 'Grand Hotel Roma':
+        return '/assets/images/Hotel_Image/Roma.jpg';
+
+      case 'Hotel Venezia Palace':
+        return '/assets/images/Hotel_Image/Venezia.jpg';
+
+      case 'Relais Toscana':
+        return '/assets/images/Hotel_Image/Toscana.jpg';
+
+      default:
+        return '/assets/images/Hotel_Image/Roma.jpg';
+    }
+
+  }
+
   // ── Tab / filter ──
 
   setTab(tab: 'tutte' | 'arrivo' | 'prenotate' | 'completate' | 'cancellate') {
