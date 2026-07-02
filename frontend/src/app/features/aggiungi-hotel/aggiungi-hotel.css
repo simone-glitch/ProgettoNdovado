@@ -4,7 +4,10 @@
   font-family: 'Inter', sans-serif;
   color: #0A2342;
   padding-bottom: 80px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
+*, *::before, *::after { box-sizing: border-box; }
 
 /* ── Breadcrumb ── */
 .host-breadcrumb {
@@ -46,7 +49,11 @@
   margin-bottom: 28px;
   overflow-x: auto;
   padding-bottom: 4px;
+  /* Lo stepper resta scorrevole al tatto ma senza barra di scorrimento visibile. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.add-hotel-stepper::-webkit-scrollbar { display: none; }
 
 .add-hotel-step {
   display: flex;
@@ -109,6 +116,9 @@
   gap: 24px;
   align-items: start;
 }
+/* min-width:0 permette alle colonne della grid di restringersi ed evita overflow orizzontale */
+.add-hotel-main,
+.add-hotel-sidebar { min-width: 0; }
 
 /* ── Form card ── */
 .add-hotel-form-card {
@@ -117,7 +127,25 @@
   border: 1px solid #E8EDF5;
   box-shadow: 0 2px 16px rgba(10,35,66,0.06);
   overflow: hidden;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
 }
+
+/* Nota informativa in fondo alla card (riempie lo spazio e dà contesto allo step) */
+.step-help {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  background: #F7F9FC;
+  border-top: 1px solid #EEF2F8;
+  color: #6B7280;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.step-help i { color: #C9A45C; font-size: 1rem; flex-shrink: 0; }
 
 /* ── Section ── */
 .add-hotel-section {
@@ -168,6 +196,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* Permette all'item della grid di restringersi sotto la larghezza del contenuto. */
+  min-width: 0;
 }
 
 .field-label {
@@ -191,6 +221,10 @@
   transition: border-color 0.2s, box-shadow 0.2s;
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
+  /* Gli input nativi time/number/date hanno una larghezza minima intrinseca:
+     senza questo, nelle grid non si restringono e generano scroll orizzontale. */
+  min-width: 0;
+  max-width: 100%;
 }
 .add-hotel-input:focus,
 .add-hotel-select:focus,
@@ -384,6 +418,31 @@
   gap: 12px;
   flex-wrap: wrap;
 }
+.add-hotel-actions-left {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Riepilogo (step 5) ── */
+.riepilogo-testo { font-size: 0.9rem; color: #6B7280; margin: 0 0 16px; }
+.riepilogo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.riepilogo-voce {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  background: #F7F9FC;
+  border: 1px solid #E5EBF3;
+  border-radius: 10px;
+}
+.riepilogo-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em; color: #9BAFCF; font-weight: 600; }
+.riepilogo-val   { font-size: 0.95rem; color: #0A2342; font-weight: 600; }
 
 .save-draft-button {
   display: flex;
@@ -719,6 +778,20 @@
   .photo-dropzone { flex: none; width: 100%; }
   .photo-slots { justify-content: flex-start; }
   .add-hotel-actions { flex-direction: column; }
+  .add-hotel-actions-left { flex-direction: column; width: 100%; }
   .save-draft-button, .continue-button { width: 100%; justify-content: center; }
   .add-hotel-page-title { font-size: 1.5rem; }
+
+  /* Stepper compatto: solo i cerchi numerati (le etichette lunghe non entrano)
+     così tutti gli step stanno in riga senza taglio/scroll orizzontale. */
+  .add-hotel-stepper { justify-content: space-between; gap: 0; }
+  .step-label { display: none; }
+  .step-connector { margin-bottom: 0; }
+}
+
+@media (max-width: 460px) {
+  .grid-4 { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+  .riepilogo-grid { grid-template-columns: 1fr; }
+  .add-hotel-page-title { font-size: 1.35rem; }
 }

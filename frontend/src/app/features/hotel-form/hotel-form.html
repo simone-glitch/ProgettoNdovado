@@ -78,27 +78,10 @@
       </div>
     </section>
 
-    <!-- SEZIONE 3 -->
-    <section class="hf-card">
-      <h2 class="hf-section-title"><span class="hf-step">3</span> {{ 'gestionehotel.latitudine' | translate }} / {{ 'gestionehotel.longitudine' | translate }}</h2>
-      <div class="hf-grid">
-        <div class="hf-field">
-          <label>{{ 'gestionehotel.latitudine' | translate }}</label>
-          <input type="number" formControlName="latitudine" class="hf-input" step="0.000001"
-            [placeholder]="'gestionehotel.latitudine-placeholder' | translate">
-        </div>
-        <div class="hf-field">
-          <label>{{ 'gestionehotel.longitudine' | translate }}</label>
-          <input type="number" formControlName="longitudine" class="hf-input" step="0.000001"
-            [placeholder]="'gestionehotel.longitudine-placeholder' | translate">
-        </div>
-      </div>
-    </section>
-
-    <!-- SEZIONE 4: SERVIZI -->
+    <!-- SEZIONE 3: SERVIZI -->
     @if (serviziDisponibili.length > 0) {
       <section class="hf-card">
-        <h2 class="hf-section-title"><span class="hf-step">4</span> {{ 'gestionehotel.servizi-offerti' | translate }}</h2>
+        <h2 class="hf-section-title"><span class="hf-step">3</span> {{ 'gestionehotel.servizi-offerti' | translate }}</h2>
         <div class="hf-servizi">
           @for (s of serviziDisponibili; track s.id) {
             <label class="hf-servizio" [class.hf-servizio-on]="isServizioSelezionato(s.id)">

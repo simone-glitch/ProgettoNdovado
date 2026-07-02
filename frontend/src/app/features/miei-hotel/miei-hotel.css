@@ -143,8 +143,7 @@
 }
 .search-wrap {
   position: relative;
-  flex: 1;
-  min-width: 180px;
+  flex: 2 1 240px;
 }
 .search-icon {
   position: absolute;
@@ -170,7 +169,15 @@
 .search-input:focus { outline: none; border-color: #C9943A; background: #fff; }
 .search-input::placeholder { color: #94A3B8; }
 
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 240px;
+}
 .filter-select {
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 10px 14px;
   border: 1.5px solid #E8EDF4;
   border-radius: 10px;
@@ -182,6 +189,22 @@
   transition: border-color 0.2s;
 }
 .filter-select:focus { outline: none; border-color: #C9943A; }
+
+.btn-filtra {
+  padding: 9px 14px;
+  background: #061B3A;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, transform 0.14s;
+  flex-shrink: 0;
+}
+.btn-filtra:hover { background: #0F3460; transform: translateY(-1px); }
 
 .btn-add-hotel {
   display: flex;
@@ -415,6 +438,12 @@
   color: #fff;
 }
 .btn-navy:hover { background: linear-gradient(135deg, #C9943A, #A67828); }
+.btn-danger {
+  background: transparent;
+  border: 1.5px solid #FECACA;
+  color: #DC2626;
+}
+.btn-danger:hover { background: #FEF2F2; border-color: #F87171; color: #B91C1C; }
 
 /* ── Status Badges ── */
 .host-hotel-status-badge {
@@ -687,10 +716,12 @@
   .host-hotel-occupancy { flex: 1; min-width: 120px; }
   .host-hotel-revenue   { flex: 1; min-width: 120px; }
   .host-hotel-actions   { flex-direction: row; flex-wrap: wrap; width: 100%; }
-  .btn-action           { flex: 1; min-width: 90px; }
+  /* Due pulsanti per riga: il testo lungo ("Gestisci camere") non viene più tagliato. */
+  .btn-action           { flex: 1 1 calc(50% - 3px); min-width: 0; white-space: nowrap; }
   .filters-inner        { flex-direction: column; align-items: stretch; }
-  .search-wrap          { min-width: auto; }
-  .filter-select        { width: 100%; }
+  /* In colonna il flex-basis agisce sull'altezza: va resettato per non "gonfiare" i campi. */
+  .search-wrap          { flex: 0 0 auto; }
+  .filter-controls      { flex: 0 0 auto; width: 100%; }
   .btn-add-hotel        { width: 100%; justify-content: center; }
   .host-hotels-sidebar  { grid-template-columns: 1fr; }
   .host-support-card    { grid-column: auto; }

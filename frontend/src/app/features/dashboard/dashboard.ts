@@ -21,6 +21,7 @@ export class Dashboard implements OnInit {
   currentUser: any = {};
   sidebarOpen = false;
   isPrenotazioniRoute = false;
+  isMieiHotelRoute = false;
   showLogoutConfirm = false;
 
   constructor(
@@ -36,9 +37,9 @@ export class Dashboard implements OnInit {
     this.currentUser = this.authService.getLoggedUser() ?? {};
     this.prefsService.load();
 
-    this.isPrenotazioniRoute = this.router.url.includes('/dashboard/prenotazioni');
+    this.updateRouteFlags();
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
-      this.isPrenotazioniRoute = this.router.url.includes('/dashboard/prenotazioni');
+      this.updateRouteFlags();
     });
   }
 
@@ -58,6 +59,11 @@ export class Dashboard implements OnInit {
     if (ruolo === 'HOST')  return this.i18n.translate('auth.ruolo-host');
     if (ruolo === 'ADMIN') return 'Admin';
     return '';
+  }
+
+  private updateRouteFlags(): void {
+    this.isPrenotazioniRoute = this.router.url.includes('/dashboard/prenotazioni');
+    this.isMieiHotelRoute    = this.router.url.includes('/dashboard/miei-hotel');
   }
 
   toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }

@@ -131,7 +131,7 @@
   </main>
 
   <!-- ── AI CHAT BUTTON ── -->
-  @if (!isPrenotazioniRoute) {
+  @if (!isPrenotazioniRoute && !isMieiHotelRoute) {
     <div class="div-ai" (click)="toggleChat()" [title]="'dashboard.ai-assistant' | translate">
       <i class="fas fa-robot"></i>
     </div>

@@ -29,6 +29,14 @@ public class HotelDAO {
         h.setLatitudine(rs.getDouble("latitudine"));
         h.setLongitudine(rs.getDouble("longitudine"));
         h.setIdProprietario(rs.getInt("id_proprietario"));
+        h.setStato(rs.getString("stato"));
+        h.setCheckIn(rs.getString("check_in"));
+        h.setCheckOut(rs.getString("check_out"));
+        h.setTelefono(rs.getString("telefono"));
+        h.setEmail(rs.getString("email"));
+        // getObject preserva il null (getInt/getDouble restituirebbero 0)
+        h.setNumCamere(rs.getObject("num_camere") != null ? rs.getInt("num_camere") : null);
+        h.setPrezzoMedio(rs.getObject("prezzo_medio") != null ? rs.getDouble("prezzo_medio") : null);
         return h;
     };
 
@@ -41,7 +49,7 @@ public class HotelDAO {
         StringBuilder sql = new StringBuilder("""
                 SELECT DISTINCT h.* FROM hotel h
                 LEFT JOIN camere c ON c.id_hotel = h.id_hotel
-                WHERE 1=1
+                WHERE h.stato = 'PUBBLICATO'
                 """);
 
         if (citta != null && !citta.isBlank())
@@ -73,8 +81,9 @@ public class HotelDAO {
 
     public Integer salva(Hotel hotel) {
         String sql = """
-                INSERT INTO hotel (nome, descrizione, citta, indirizzo, stelle, latitudine, longitudine, id_proprietario)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO hotel (nome, descrizione, citta, indirizzo, stelle, latitudine, longitudine,
+                                   id_proprietario, stato, check_in, check_out, telefono, email, num_camere, prezzo_medio)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -87,6 +96,13 @@ public class HotelDAO {
             ps.setObject(6, hotel.getLatitudine());
             ps.setObject(7, hotel.getLongitudine());
             ps.setInt(8, hotel.getIdProprietario());
+            ps.setString(9, hotel.getStato() != null ? hotel.getStato() : "BOZZA");
+            ps.setString(10, hotel.getCheckIn());
+            ps.setString(11, hotel.getCheckOut());
+            ps.setString(12, hotel.getTelefono());
+            ps.setString(13, hotel.getEmail());
+            ps.setObject(14, hotel.getNumCamere());
+            ps.setObject(15, hotel.getPrezzoMedio());
             return ps;
         }, keyHolder);
         return keyHolder.getKey() != null ? keyHolder.getKey().intValue() : null;
@@ -96,12 +112,17 @@ public class HotelDAO {
         String sql = """
                 UPDATE hotel
                 SET nome = ?, descrizione = ?, citta = ?, indirizzo = ?,
-                    stelle = ?, latitudine = ?, longitudine = ?
+                    stelle = ?, latitudine = ?, longitudine = ?,
+                    stato = COALESCE(?, stato), check_in = ?, check_out = ?,
+                    telefono = ?, email = ?, num_camere = ?, prezzo_medio = ?
                 WHERE id_hotel = ?
                 """;
         jdbcTemplate.update(sql,
                 hotel.getNome(), hotel.getDescrizione(), hotel.getCitta(), hotel.getIndirizzo(),
-                hotel.getStelle(), hotel.getLatitudine(), hotel.getLongitudine(), hotel.getId());
+                hotel.getStelle(), hotel.getLatitudine(), hotel.getLongitudine(),
+                hotel.getStato(), hotel.getCheckIn(), hotel.getCheckOut(),
+                hotel.getTelefono(), hotel.getEmail(), hotel.getNumCamere(), hotel.getPrezzoMedio(),
+                hotel.getId());
     }
 
     public void elimina(Integer id) {

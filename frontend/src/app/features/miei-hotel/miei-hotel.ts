@@ -6,6 +6,7 @@ import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
+import { ChatService } from '../../services/chat.service';
 import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 import { forkJoin, of } from 'rxjs';
@@ -31,6 +32,11 @@ export class MieiHotel implements OnInit {
   alertMessage = '';
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
+  // Conferma eliminazione
+  showConfirm = false;
+  confirmMessage = '';
+  hotelDaEliminare: any = null;
+
   readonly skeletonItems = [1, 2, 3];
 
   constructor(
@@ -38,6 +44,7 @@ export class MieiHotel implements OnInit {
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
     private prefsService: PreferencesService,
+    private chatService: ChatService,
     private i18n: TranslationService,
     private router: Router
   ) {}
@@ -79,7 +86,9 @@ export class MieiHotel implements OnInit {
   }
 
   apriModificaHotel(hotel: any) {
-    if (hotel?.id) this.router.navigate(['/dashboard/hotel', hotel.id, 'modifica']);
+    // Il wizard è l'editor unificato: riaprendolo con l'id si riprende dal punto lasciato
+    // (ripristina i campi salvati e lo step memorizzato).
+    if (hotel?.id) this.router.navigate(['/dashboard/aggiungi-hotel', hotel.id]);
   }
 
   // ── Date helpers ──
@@ -265,8 +274,32 @@ export class MieiHotel implements OnInit {
   vaiGestisciCamere(hotel: any) { if (hotel?.id) this.router.navigate(['/dashboard/hotel', hotel.id, 'camere']); }
   vaiStatistiche()  { this.router.navigate(['/dashboard/statistiche']); }
   vaiPrenotazioni() { this.router.navigate(['/dashboard/prenotazioni']); }
-  vaiSupporto()     { this.showAlertMessage(this.i18n.translate('myhotel.supporto.msg'), 'info'); }
+  vaiSupporto()     { this.chatService.openChat(); }
   navigateTo(route: string) { if (route) this.router.navigateByUrl(route); }
+
+  // ── Eliminazione hotel/bozza ──
+
+  chiediElimina(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelDaEliminare = hotel;
+    const nome = hotel.nome || this.i18n.translate('myhotel.struttura-fallback');
+    this.confirmMessage = this.i18n.translate('myhotel.msg.conferma-elimina').replace('{nome}', nome);
+    this.showConfirm = true;
+  }
+
+  gestisciEliminazione(conferma: boolean) {
+    this.showConfirm = false;
+    const hotel = this.hotelDaEliminare;
+    this.hotelDaEliminare = null;
+    if (!conferma || !hotel?.id) return;
+    this.hotelService.elimina(hotel.id).subscribe({
+      next: () => {
+        this.hotels = this.hotels.filter(h => h.id !== hotel.id);
+        this.showAlertMessage(this.i18n.translate('myhotel.msg.hotel-eliminato'), 'success');
+      },
+      error: () => this.showAlertMessage(this.i18n.translate('myhotel.msg.errore-elimina'), 'error'),
+    });
+  }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {
     this.alertMessage = msg; this.alertType = type; this.showAlert = true;

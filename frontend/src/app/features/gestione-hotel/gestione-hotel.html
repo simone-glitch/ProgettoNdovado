@@ -1,4 +1,9 @@
 <div class="gestione-container">
+  <nav class="page-breadcrumb">
+    <a routerLink="/dashboard/home" class="pb-home"><i class="fas fa-home"></i> {{ 'common.home' | translate }}</a>
+    <span class="pb-sep">/</span>
+    <span class="pb-current">{{ (isAdmin ? 'gestionehotel.title-admin' : 'gestionehotel.title-host') | translate }}</span>
+  </nav>
   <header class="page-header">
     <div>
       <h1>{{ (isAdmin ? 'gestionehotel.title-admin' : 'gestionehotel.title-host') | translate }}</h1>

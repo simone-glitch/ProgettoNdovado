@@ -108,14 +108,19 @@
               <input type="text" class="search-input" [placeholder]="'myhotel.cerca-placeholder' | translate"
                 [(ngModel)]="searchQuery" [attr.aria-label]="'myhotel.cerca-placeholder' | translate">
             </div>
-            <select class="filter-select" [(ngModel)]="filterStato" [attr.aria-label]="'myhotel.filtra-stato' | translate">
-              <option value="">{{ 'myhotel.stato.tutti' | translate }}</option>
-              <option value="PUBBLICATO">{{ 'myhotel.stato.pubblicato' | translate }}</option>
-              <option value="IN_REVISIONE">{{ 'myhotel.stato.in-revisione' | translate }}</option>
-              <option value="BOZZA">{{ 'myhotel.stato.bozza' | translate }}</option>
-              <option value="NON_ATTIVO">{{ 'myhotel.stato.non-attivo' | translate }}</option>
-              <option value="SOSPESO">{{ 'myhotel.stato.sospeso' | translate }}</option>
-            </select>
+            <div class="filter-controls">
+              <select class="filter-select" [(ngModel)]="filterStato" [attr.aria-label]="'myhotel.filtra-stato' | translate">
+                <option value="">{{ 'myhotel.stato.tutti' | translate }}</option>
+                <option value="PUBBLICATO">{{ 'myhotel.stato.pubblicato' | translate }}</option>
+                <option value="IN_REVISIONE">{{ 'myhotel.stato.in-revisione' | translate }}</option>
+                <option value="BOZZA">{{ 'myhotel.stato.bozza' | translate }}</option>
+                <option value="NON_ATTIVO">{{ 'myhotel.stato.non-attivo' | translate }}</option>
+                <option value="SOSPESO">{{ 'myhotel.stato.sospeso' | translate }}</option>
+              </select>
+              <button type="button" class="btn-filtra" [title]="'myhotel.filtra-stato' | translate" [attr.aria-label]="'myhotel.filtra-stato' | translate">
+                <i class="fas fa-filter"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -212,6 +217,10 @@
                     <button class="btn-action btn-navy" (click)="vaiGestisciCamere(hotel)">
                       <i class="fas fa-bed"></i> {{ 'myhotel.gestisci-camere' | translate }}
                     </button>
+                    <button class="btn-action btn-danger" (click)="chiediElimina(hotel)"
+                      [title]="'myhotel.elimina' | translate" [attr.aria-label]="'myhotel.elimina' | translate">
+                      <i class="fas fa-trash"></i> {{ 'myhotel.elimina' | translate }}
+                    </button>
                   </div>
                 </div>
 
@@ -281,6 +290,13 @@
       </div>
     </div>
   }
+
+  <!-- CONFERMA ELIMINAZIONE -->
+  <app-conferma-box
+    *ngIf="showConfirm"
+    [messaggio]="confirmMessage"
+    (risposta)="gestisciEliminazione($event)">
+  </app-conferma-box>
 
 </div>
 

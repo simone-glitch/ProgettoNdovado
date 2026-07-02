@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HotelService } from '../../services/hotel.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
@@ -9,7 +9,7 @@ import { SharedModule } from '../../shared/shared.module';
 @Component({
   selector: 'app-gestione-hotel',
   standalone: true,
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule, RouterLink, SharedModule],
   templateUrl: './gestione-hotel.html',
   styleUrl: './gestione-hotel.css',
 })

@@ -13,6 +13,15 @@ public class HotelDTO {
     private Double longitudine;
     private List<Integer> idServizi;
 
+    // Ciclo di vita e dati operativi della struttura
+    private String stato;
+    private String checkIn;
+    private String checkOut;
+    private String telefono;
+    private String email;
+    private Integer numCamere;
+    private Double prezzoMedio;
+
     public HotelDTO() {}
 
     public String getNome() { return nome; }
@@ -38,4 +47,25 @@ public class HotelDTO {
 
     public List<Integer> getIdServizi() { return idServizi; }
     public void setIdServizi(List<Integer> idServizi) { this.idServizi = idServizi; }
+
+    public String getStato() { return stato; }
+    public void setStato(String stato) { this.stato = stato; }
+
+    public String getCheckIn() { return checkIn; }
+    public void setCheckIn(String checkIn) { this.checkIn = checkIn; }
+
+    public String getCheckOut() { return checkOut; }
+    public void setCheckOut(String checkOut) { this.checkOut = checkOut; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public Integer getNumCamere() { return numCamere; }
+    public void setNumCamere(Integer numCamere) { this.numCamere = numCamere; }
+
+    public Double getPrezzoMedio() { return prezzoMedio; }
+    public void setPrezzoMedio(Double prezzoMedio) { this.prezzoMedio = prezzoMedio; }
 }

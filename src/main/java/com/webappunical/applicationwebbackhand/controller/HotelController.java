@@ -169,6 +169,13 @@ public class HotelController {
         h.setStelle(dto.getStelle());
         h.setLatitudine(dto.getLatitudine());
         h.setLongitudine(dto.getLongitudine());
+        h.setStato(dto.getStato());
+        h.setCheckIn(dto.getCheckIn());
+        h.setCheckOut(dto.getCheckOut());
+        h.setTelefono(dto.getTelefono());
+        h.setEmail(dto.getEmail());
+        h.setNumCamere(dto.getNumCamere());
+        h.setPrezzoMedio(dto.getPrezzoMedio());
         return h;
     }
 }

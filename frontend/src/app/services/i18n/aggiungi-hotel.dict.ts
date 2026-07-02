@@ -48,6 +48,7 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.email-struttura':        'Email struttura',
     'addhotel.email-struttura.placeholder': 'Es. info@hotelrivieraparadise.com',
     'addhotel.email-non-valida':       'Email non valida',
+    'addhotel.telefono-non-valido':    'Inserisci un numero di telefono valido (8–15 cifre)',
 
     'addhotel.sezione-c.titolo':       'C. Servizi principali',
 
@@ -81,6 +82,12 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.salvataggio':            'Salvataggio...',
     'addhotel.salva-bozza':            'Salva bozza',
     'addhotel.continua':               'Continua',
+    'addhotel.indietro':               'Indietro',
+    'addhotel.registra':               'Registra hotel',
+    'addhotel.riepilogo-titolo':       'Riepilogo e registrazione',
+    'addhotel.riepilogo-testo':        'Controlla i dati inseriti e completa la registrazione della struttura.',
+    'addhotel.msg.hotel-registrato':   'Struttura registrata con successo!',
+    'addhotel.msg.compila-obbligatori':'Compila tutti i campi obbligatori prima di registrare.',
     'addhotel.miei-hotel':             'I miei hotel',
 
     'addhotel.anteprima-struttura':    'Anteprima struttura',
@@ -94,9 +101,15 @@ export const aggiungiHotelDict: LangDict = {
 
     'addhotel.prima-pubblicazione':    'Prima della pubblicazione',
     'addhotel.checklist.indirizzo':    "Completa l'indirizzo della struttura",
+    'addhotel.checklist.servizi':      'Seleziona almeno un servizio',
     'addhotel.checklist.foto':         'Aggiungi almeno 5 foto',
     'addhotel.checklist.camera':       'Definisci almeno 1 camera con prezzo',
     'addhotel.checklist.policy':       'Conferma le policy della struttura',
+    'addhotel.help.step1':             'Inserisci le informazioni principali della struttura: nome, categoria, posizione e descrizione.',
+    'addhotel.help.step2':             'Definisci orari di check-in/out, numero di camere, prezzo medio e i contatti della struttura.',
+    'addhotel.help.step3':             'Seleziona i servizi offerti: aiutano gli ospiti a scegliere la tua struttura.',
+    'addhotel.help.step4':             "Carica fino a 5 foto di qualità: la prima sarà l'immagine principale.",
+    'addhotel.help.step5':             'Controlla il riepilogo e completa la registrazione della struttura.',
 
     'addhotel.consigli-host':          'Consigli per host',
     'addhotel.consigli-testo':         'Inserisci descrizioni chiare, foto di qualità e prezzi aggiornati per aumentare le prenotazioni e la visibilità.',
@@ -175,6 +188,7 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.email-struttura':        'Property email',
     'addhotel.email-struttura.placeholder': 'E.g. info@hotelrivieraparadise.com',
     'addhotel.email-non-valida':       'Invalid email',
+    'addhotel.telefono-non-valido':    'Enter a valid phone number (8–15 digits)',
 
     'addhotel.sezione-c.titolo':       'C. Main amenities',
 
@@ -208,6 +222,12 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.salvataggio':            'Saving...',
     'addhotel.salva-bozza':            'Save draft',
     'addhotel.continua':               'Continue',
+    'addhotel.indietro':               'Back',
+    'addhotel.registra':               'Register hotel',
+    'addhotel.riepilogo-titolo':       'Summary and registration',
+    'addhotel.riepilogo-testo':        'Review the entered data and complete the property registration.',
+    'addhotel.msg.hotel-registrato':   'Property registered successfully!',
+    'addhotel.msg.compila-obbligatori':'Fill in all required fields before registering.',
     'addhotel.miei-hotel':             'My hotels',
 
     'addhotel.anteprima-struttura':    'Property preview',
@@ -221,9 +241,15 @@ export const aggiungiHotelDict: LangDict = {
 
     'addhotel.prima-pubblicazione':    'Before publishing',
     'addhotel.checklist.indirizzo':    'Complete the property address',
+    'addhotel.checklist.servizi':      'Select at least one amenity',
     'addhotel.checklist.foto':         'Add at least 5 photos',
     'addhotel.checklist.camera':       'Define at least 1 room with a price',
     'addhotel.checklist.policy':       'Confirm the property policies',
+    'addhotel.help.step1':             'Enter the main property information: name, category, location and description.',
+    'addhotel.help.step2':             'Set check-in/out times, number of rooms, average price and the property contacts.',
+    'addhotel.help.step3':             'Select the amenities offered: they help guests choose your property.',
+    'addhotel.help.step4':             'Upload up to 5 quality photos: the first one will be the main image.',
+    'addhotel.help.step5':             'Review the summary and complete the property registration.',
 
     'addhotel.consigli-host':          'Tips for hosts',
     'addhotel.consigli-testo':         'Add clear descriptions, quality photos and up-to-date prices to increase bookings and visibility.',
@@ -302,6 +328,7 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.email-struttura':        'Correo de la propiedad',
     'addhotel.email-struttura.placeholder': 'Ej. info@hotelrivieraparadise.com',
     'addhotel.email-non-valida':       'Correo no válido',
+    'addhotel.telefono-non-valido':    'Introduce un número de teléfono válido (8–15 cifras)',
 
     'addhotel.sezione-c.titolo':       'C. Servicios principales',
 
@@ -335,6 +362,12 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.salvataggio':            'Guardando...',
     'addhotel.salva-bozza':            'Guardar borrador',
     'addhotel.continua':               'Continuar',
+    'addhotel.indietro':               'Atrás',
+    'addhotel.registra':               'Registrar hotel',
+    'addhotel.riepilogo-titolo':       'Resumen y registro',
+    'addhotel.riepilogo-testo':        'Revisa los datos introducidos y completa el registro de la propiedad.',
+    'addhotel.msg.hotel-registrato':   '¡Propiedad registrada con éxito!',
+    'addhotel.msg.compila-obbligatori':'Completa todos los campos obligatorios antes de registrar.',
     'addhotel.miei-hotel':             'Mis hoteles',
 
     'addhotel.anteprima-struttura':    'Vista previa de la propiedad',
@@ -348,9 +381,15 @@ export const aggiungiHotelDict: LangDict = {
 
     'addhotel.prima-pubblicazione':    'Antes de publicar',
     'addhotel.checklist.indirizzo':    'Completa la dirección de la propiedad',
+    'addhotel.checklist.servizi':      'Selecciona al menos un servicio',
     'addhotel.checklist.foto':         'Añade al menos 5 fotos',
     'addhotel.checklist.camera':       'Define al menos 1 habitación con precio',
     'addhotel.checklist.policy':       'Confirma las políticas de la propiedad',
+    'addhotel.help.step1':             'Introduce la información principal de la propiedad: nombre, categoría, ubicación y descripción.',
+    'addhotel.help.step2':             'Define los horarios de check-in/out, el número de habitaciones, el precio medio y los contactos.',
+    'addhotel.help.step3':             'Selecciona los servicios ofrecidos: ayudan a los huéspedes a elegir tu propiedad.',
+    'addhotel.help.step4':             'Sube hasta 5 fotos de calidad: la primera será la imagen principal.',
+    'addhotel.help.step5':             'Revisa el resumen y completa el registro de la propiedad.',
 
     'addhotel.consigli-host':          'Consejos para anfitriones',
     'addhotel.consigli-testo':         'Añade descripciones claras, fotos de calidad y precios actualizados para aumentar las reservas y la visibilidad.',
@@ -429,6 +468,7 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.email-struttura':        "E-mail de l'établissement",
     'addhotel.email-struttura.placeholder': 'Ex. info@hotelrivieraparadise.com',
     'addhotel.email-non-valida':       'E-mail non valide',
+    'addhotel.telefono-non-valido':    'Saisissez un numéro de téléphone valide (8 à 15 chiffres)',
 
     'addhotel.sezione-c.titolo':       'C. Services principaux',
 
@@ -462,6 +502,12 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.salvataggio':            'Enregistrement...',
     'addhotel.salva-bozza':            'Enregistrer le brouillon',
     'addhotel.continua':               'Continuer',
+    'addhotel.indietro':               'Retour',
+    'addhotel.registra':               "Enregistrer l'hôtel",
+    'addhotel.riepilogo-titolo':       'Récapitulatif et enregistrement',
+    'addhotel.riepilogo-testo':        "Vérifiez les données saisies et finalisez l'enregistrement de l'établissement.",
+    'addhotel.msg.hotel-registrato':   'Établissement enregistré avec succès !',
+    'addhotel.msg.compila-obbligatori':"Remplissez tous les champs obligatoires avant d'enregistrer.",
     'addhotel.miei-hotel':             'Mes hôtels',
 
     'addhotel.anteprima-struttura':    "Aperçu de l'établissement",
@@ -475,9 +521,15 @@ export const aggiungiHotelDict: LangDict = {
 
     'addhotel.prima-pubblicazione':    'Avant de publier',
     'addhotel.checklist.indirizzo':    "Complétez l'adresse de l'établissement",
+    'addhotel.checklist.servizi':      'Sélectionnez au moins un service',
     'addhotel.checklist.foto':         'Ajoutez au moins 5 photos',
     'addhotel.checklist.camera':       'Définissez au moins 1 chambre avec un prix',
     'addhotel.checklist.policy':       "Confirmez les politiques de l'établissement",
+    'addhotel.help.step1':             "Saisissez les informations principales de l'établissement : nom, catégorie, emplacement et description.",
+    'addhotel.help.step2':             "Définissez les horaires d'arrivée/départ, le nombre de chambres, le prix moyen et les contacts.",
+    'addhotel.help.step3':             "Sélectionnez les services proposés : ils aident les clients à choisir votre établissement.",
+    'addhotel.help.step4':             "Téléversez jusqu'à 5 photos de qualité : la première sera l'image principale.",
+    'addhotel.help.step5':             "Vérifiez le récapitulatif et finalisez l'enregistrement de l'établissement.",
 
     'addhotel.consigli-host':          'Conseils pour les hôtes',
     'addhotel.consigli-testo':         "Ajoutez des descriptions claires, des photos de qualité et des prix à jour pour augmenter les réservations et la visibilité.",
@@ -556,6 +608,7 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.email-struttura':        'E-Mail der Unterkunft',
     'addhotel.email-struttura.placeholder': 'Z.B. info@hotelrivieraparadise.com',
     'addhotel.email-non-valida':       'Ungültige E-Mail',
+    'addhotel.telefono-non-valido':    'Gültige Telefonnummer eingeben (8–15 Ziffern)',
 
     'addhotel.sezione-c.titolo':       'C. Hauptausstattung',
 
@@ -589,6 +642,12 @@ export const aggiungiHotelDict: LangDict = {
     'addhotel.salvataggio':            'Wird gespeichert...',
     'addhotel.salva-bozza':            'Entwurf speichern',
     'addhotel.continua':               'Weiter',
+    'addhotel.indietro':               'Zurück',
+    'addhotel.registra':               'Hotel registrieren',
+    'addhotel.riepilogo-titolo':       'Zusammenfassung und Registrierung',
+    'addhotel.riepilogo-testo':        'Überprüfen Sie die eingegebenen Daten und schließen Sie die Registrierung der Unterkunft ab.',
+    'addhotel.msg.hotel-registrato':   'Unterkunft erfolgreich registriert!',
+    'addhotel.msg.compila-obbligatori':'Füllen Sie alle Pflichtfelder aus, bevor Sie registrieren.',
     'addhotel.miei-hotel':             'Meine Hotels',
 
     'addhotel.anteprima-struttura':    'Vorschau der Unterkunft',
@@ -602,9 +661,15 @@ export const aggiungiHotelDict: LangDict = {
 
     'addhotel.prima-pubblicazione':    'Vor der Veröffentlichung',
     'addhotel.checklist.indirizzo':    'Vervollständigen Sie die Adresse der Unterkunft',
+    'addhotel.checklist.servizi':      'Wählen Sie mindestens eine Leistung',
     'addhotel.checklist.foto':         'Fügen Sie mindestens 5 Fotos hinzu',
     'addhotel.checklist.camera':       'Legen Sie mindestens 1 Zimmer mit Preis fest',
     'addhotel.checklist.policy':       'Bestätigen Sie die Richtlinien der Unterkunft',
+    'addhotel.help.step1':             'Geben Sie die wichtigsten Informationen zur Unterkunft ein: Name, Kategorie, Lage und Beschreibung.',
+    'addhotel.help.step2':             'Legen Sie Check-in/-out-Zeiten, Zimmeranzahl, Durchschnittspreis und Kontaktdaten fest.',
+    'addhotel.help.step3':             'Wählen Sie die angebotenen Leistungen aus: Sie helfen Gästen bei der Wahl Ihrer Unterkunft.',
+    'addhotel.help.step4':             'Laden Sie bis zu 5 hochwertige Fotos hoch: Das erste ist das Hauptbild.',
+    'addhotel.help.step5':             'Überprüfen Sie die Zusammenfassung und schließen Sie die Registrierung ab.',
 
     'addhotel.consigli-host':          'Tipps für Gastgeber',
     'addhotel.consigli-testo':         'Fügen Sie klare Beschreibungen, hochwertige Fotos und aktuelle Preise hinzu, um Buchungen und Sichtbarkeit zu steigern.',

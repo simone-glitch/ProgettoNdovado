@@ -60,8 +60,18 @@ CREATE TABLE public.hotel (
     latitudine      numeric(10, 7),
     longitudine     numeric(10, 7),
     id_proprietario integer NOT NULL,
+    stato           character varying(20) NOT NULL DEFAULT 'PUBBLICATO',
+    check_in        character varying(10),
+    check_out       character varying(10),
+    telefono        character varying(30),
+    email           character varying(100),
+    num_camere      integer,
+    prezzo_medio    numeric(10, 2),
     CONSTRAINT hotel_pkey PRIMARY KEY (id_hotel),
     CONSTRAINT hotel_stelle_check CHECK (stelle BETWEEN 1 AND 5),
+    CONSTRAINT hotel_stato_check CHECK (
+        stato IN ('BOZZA', 'PUBBLICATO', 'IN_REVISIONE', 'SOSPESO', 'RIFIUTATO', 'NON_ATTIVO')
+    ),
     CONSTRAINT hotel_proprietario_fkey FOREIGN KEY (id_proprietario)
         REFERENCES public.utenti(id_utente) ON DELETE CASCADE
 );
