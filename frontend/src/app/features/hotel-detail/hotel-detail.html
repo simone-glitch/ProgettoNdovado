@@ -72,9 +72,28 @@
             </div>
           </div>
         } @else {
-          <div class="ndv-gallery-empty">
-            <i class="fas fa-hotel"></i>
-            <p>{{ 'hoteldetail.no-foto' | translate }}</p>
+          <div class="ndv-gallery">
+            <div class="ndv-gallery-main">
+              <img
+                [src]="getHotelImage(hotel)"
+                (click)="openLightbox(getHotelImage(hotel))"
+                [alt]="hotel.nome"
+                class="ndv-gallery-img">
+            </div>
+
+            <div class="ndv-gallery-grid">
+
+              @for (img of getHotelGallery(hotel); track img) {
+                <div class="ndv-gallery-cell">
+                  <img
+                    [src]="img"
+                    (click)="openLightbox(img)"
+                    [alt]="hotel.nome"
+                    class="ndv-gallery-img">
+                </div>
+              }
+
+            </div>
           </div>
         }
 
@@ -267,16 +286,14 @@
               <div class="ndv-date-row" [class.ndv-date-row-err]="erroreCheckin || erroreCheckout">
                 <div class="ndv-date-col">
                   <label class="ndv-sidebar-label">{{ 'hoteldetail.checkin' | translate }}</label>
-                  <input #checkinFp class="ndv-date-input" placeholder="gg/mm/aaaa">
+                  <input type="date" formControlName="dataCheckin" class="ndv-date-input" [min]="todayStr">
                 </div>
                 <div class="ndv-date-col">
                   <label class="ndv-sidebar-label">{{ 'hoteldetail.checkout' | translate }}</label>
-                  <input #checkoutFp class="ndv-date-input" placeholder="gg/mm/aaaa">
+                  <input type="date" formControlName="dataCheckout" class="ndv-date-input" [min]="minCheckout">
                 </div>
               </div>
-              @if (erroreOccupata) {
-                <p class="ndv-field-err ndv-occ-err"><i class="fas fa-ban"></i> {{ erroreOccupata }}</p>
-              } @else if (erroreCheckin) {
+              @if (erroreCheckin) {
                 <p class="ndv-field-err"><i class="fas fa-exclamation-circle"></i> {{ erroreCheckin }}</p>
               } @else if (erroreCheckout) {
                 <p class="ndv-field-err"><i class="fas fa-exclamation-circle"></i> {{ erroreCheckout }}</p>
@@ -338,20 +355,11 @@
 
                   @if (selectedCamera) {
                     <div class="ndv-stepper-cap">
-                      <i class="fas fa-info-circle ndv-cap-info-btn"
-                         (click)="showCapienzaInfo = !showCapienzaInfo"></i>
+                      <i class="fas fa-info-circle"></i>
                       {{ 'hoteldetail.capienza-max' | translate }} {{ selectedCamera.capienza }}
                     </div>
                   }
                 </div>
-                @if (selectedCamera && showCapienzaInfo) {
-                  <div class="ndv-cap-tooltip">
-                    <span>{{ 'hoteldetail.capienza-info' | translate }}</span>
-                    <button type="button" class="ndv-cap-tooltip-close" (click)="showCapienzaInfo = false">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                }
                 @if (erroreOspiti) {
                   <p class="ndv-field-err"><i class="fas fa-exclamation-circle"></i> {{ erroreOspiti }}</p>
                 }
@@ -562,5 +570,24 @@
     [messaggio]="confirmMessage"
     (risposta)="gestisciRisposta($event)">
   </app-conferma-box>
+
+  @if (lightboxOpen) {
+
+    <div class="ndv-lightbox" (click)="closeLightbox()">
+
+      <button
+        class="ndv-lightbox-close"
+        (click)="closeLightbox(); $event.stopPropagation()">
+        ✕
+      </button>
+
+      <img
+        [src]="lightboxImage"
+        class="ndv-lightbox-image"
+        (click)="$event.stopPropagation()">
+
+    </div>
+
+  }
 
 </div>
