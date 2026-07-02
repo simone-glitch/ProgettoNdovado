@@ -7,8 +7,8 @@ export const coreDict: LangDict = {
     'nav.prenotazioni-guest':'Le Mie Prenotazioni',
     'nav.miei-hotel':        'I Miei Hotel',
     'nav.statistiche':       'Statistiche',
-    'nav.aggiungi-hotel':    'Aggiungi hotel',
-    'nav.gestione-hotel':    'Hotel',
+    'nav.aggiungi-hotel':    'Aggiungi Hotel',
+    'nav.gestione-hotel':    'Gestione Hotel',
     'nav.utenti':            'Utenti',
     'nav.impostazioni':      'Impostazioni',
 
@@ -95,8 +95,8 @@ export const coreDict: LangDict = {
     'nav.prenotazioni-guest':'My Bookings',
     'nav.miei-hotel':        'My Hotels',
     'nav.statistiche':       'Statistics',
-    'nav.aggiungi-hotel':    'Add hotel',
-    'nav.gestione-hotel':    'Hotels',
+    'nav.aggiungi-hotel':    'Add Hotel',
+    'nav.gestione-hotel':    'Manage Hotels',
     'nav.utenti':            'Users',
     'nav.impostazioni':      'Settings',
 
@@ -183,8 +183,8 @@ export const coreDict: LangDict = {
     'nav.prenotazioni-guest':'Mis Reservas',
     'nav.miei-hotel':        'Mis Hoteles',
     'nav.statistiche':       'Estadísticas',
-    'nav.aggiungi-hotel':    'Añadir hotel',
-    'nav.gestione-hotel':    'Hoteles',
+    'nav.aggiungi-hotel':    'Añadir Hotel',
+    'nav.gestione-hotel':    'Gestión de hoteles',
     'nav.utenti':            'Usuarios',
     'nav.impostazioni':      'Configuración',
 
@@ -271,8 +271,8 @@ export const coreDict: LangDict = {
     'nav.prenotazioni-guest':'Mes Réservations',
     'nav.miei-hotel':        'Mes Hôtels',
     'nav.statistiche':       'Statistiques',
-    'nav.aggiungi-hotel':    'Ajouter hôtel',
-    'nav.gestione-hotel':    'Hôtels',
+    'nav.aggiungi-hotel':    'Ajouter Hôtel',
+    'nav.gestione-hotel':    'Gestion des hôtels',
     'nav.utenti':            'Utilisateurs',
     'nav.impostazioni':      'Paramètres',
 
@@ -360,7 +360,7 @@ export const coreDict: LangDict = {
     'nav.miei-hotel':        'Meine Hotels',
     'nav.statistiche':       'Statistiken',
     'nav.aggiungi-hotel':    'Hotel hinzufügen',
-    'nav.gestione-hotel':    'Hotels',
+    'nav.gestione-hotel':    'Hotelverwaltung',
     'nav.utenti':            'Benutzer',
     'nav.impostazioni':      'Einstellungen',
 

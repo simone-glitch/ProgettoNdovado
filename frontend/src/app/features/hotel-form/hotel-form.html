@@ -1,0 +1,124 @@
+<div class="hf-page">
+
+  @if (showAlert) {
+    <app-alert [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+  }
+
+  <!-- BACK -->
+  <a [routerLink]="listaRoute" class="hf-back">
+    <span class="hf-back-icon"><i class="fas fa-arrow-left"></i></span>
+    {{ 'gestionehotel.torna-miei-hotel' | translate }}
+  </a>
+
+  <!-- HEADER -->
+  <header class="hf-header">
+    <span class="hf-header-accent"></span>
+    <div class="hf-header-text">
+      <h1 class="hf-title">{{ (editing ? 'gestionehotel.modifica-hotel-title' : 'gestionehotel.nuovo-hotel-title') | translate }}</h1>
+      <p class="hf-subtitle">{{ 'gestionehotel.subtitle-host' | translate }}</p>
+    </div>
+  </header>
+
+  <form [formGroup]="hotelForm" (ngSubmit)="salva()" novalidate class="hf-form">
+
+    <!-- SEZIONE 1 -->
+    <section class="hf-card">
+      <h2 class="hf-section-title"><span class="hf-step">1</span> {{ 'gestionehotel.nome-struttura' | translate }}</h2>
+      <div class="hf-grid">
+        <div class="hf-field hf-field-full">
+          <label>{{ 'gestionehotel.nome-struttura' | translate }}</label>
+          <input type="text" formControlName="nome" class="hf-input"
+            [placeholder]="'gestionehotel.nome-struttura-placeholder' | translate"
+            [class.hf-input-error]="hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid">
+          @if (hotelForm.get('nome')?.touched && hotelForm.get('nome')?.invalid) {
+            <span class="hf-err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</span>
+          }
+        </div>
+        <div class="hf-field">
+          <label>{{ 'gestionehotel.citta' | translate }}</label>
+          <input type="text" formControlName="citta" class="hf-input"
+            [placeholder]="'gestionehotel.citta-placeholder' | translate"
+            [class.hf-input-error]="hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid">
+          @if (hotelForm.get('citta')?.touched && hotelForm.get('citta')?.invalid) {
+            <span class="hf-err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</span>
+          }
+        </div>
+        <div class="hf-field">
+          <label>{{ 'gestionehotel.stelle' | translate }}</label>
+          <select formControlName="stelle" class="hf-input">
+            <option [value]="1">{{ 'gestionehotel.stella-1' | translate }}</option>
+            <option [value]="2">{{ 'gestionehotel.stella-2' | translate }}</option>
+            <option [value]="3">{{ 'gestionehotel.stella-3' | translate }}</option>
+            <option [value]="4">{{ 'gestionehotel.stella-4' | translate }}</option>
+            <option [value]="5">{{ 'gestionehotel.stella-5' | translate }}</option>
+          </select>
+        </div>
+        <div class="hf-field hf-field-full">
+          <label>{{ 'gestionehotel.indirizzo' | translate }}</label>
+          <input type="text" formControlName="indirizzo" class="hf-input"
+            [placeholder]="'gestionehotel.indirizzo-placeholder' | translate"
+            [class.hf-input-error]="hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid">
+          @if (hotelForm.get('indirizzo')?.touched && hotelForm.get('indirizzo')?.invalid) {
+            <span class="hf-err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</span>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- SEZIONE 2 -->
+    <section class="hf-card">
+      <h2 class="hf-section-title"><span class="hf-step">2</span> {{ 'gestionehotel.descrizione-hotel' | translate }}</h2>
+      <div class="hf-field">
+        <textarea formControlName="descrizione" class="hf-input hf-textarea" rows="4"
+          [placeholder]="'gestionehotel.descrizione-hotel-placeholder' | translate"
+          [class.hf-input-error]="hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid"></textarea>
+        @if (hotelForm.get('descrizione')?.touched && hotelForm.get('descrizione')?.invalid) {
+          <span class="hf-err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</span>
+        }
+      </div>
+    </section>
+
+    <!-- SEZIONE 3 -->
+    <section class="hf-card">
+      <h2 class="hf-section-title"><span class="hf-step">3</span> {{ 'gestionehotel.latitudine' | translate }} / {{ 'gestionehotel.longitudine' | translate }}</h2>
+      <div class="hf-grid">
+        <div class="hf-field">
+          <label>{{ 'gestionehotel.latitudine' | translate }}</label>
+          <input type="number" formControlName="latitudine" class="hf-input" step="0.000001"
+            [placeholder]="'gestionehotel.latitudine-placeholder' | translate">
+        </div>
+        <div class="hf-field">
+          <label>{{ 'gestionehotel.longitudine' | translate }}</label>
+          <input type="number" formControlName="longitudine" class="hf-input" step="0.000001"
+            [placeholder]="'gestionehotel.longitudine-placeholder' | translate">
+        </div>
+      </div>
+    </section>
+
+    <!-- SEZIONE 4: SERVIZI -->
+    @if (serviziDisponibili.length > 0) {
+      <section class="hf-card">
+        <h2 class="hf-section-title"><span class="hf-step">4</span> {{ 'gestionehotel.servizi-offerti' | translate }}</h2>
+        <div class="hf-servizi">
+          @for (s of serviziDisponibili; track s.id) {
+            <label class="hf-servizio" [class.hf-servizio-on]="isServizioSelezionato(s.id)">
+              <input type="checkbox" [checked]="isServizioSelezionato(s.id)" (change)="toggleServizio(s.id)" hidden>
+              <i class="fas {{ getServizioIcon(s.nome) }}"></i> {{ s.nome }}
+            </label>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- ACTIONS -->
+    <div class="hf-actions">
+      <a [routerLink]="listaRoute" class="hf-btn-ghost">{{ 'gestionehotel.annulla' | translate }}</a>
+      <button type="submit" class="hf-btn-primary" [disabled]="saving">
+        @if (saving) { <span class="hf-spinner"></span> }
+        <i class="fas" [ngClass]="editing ? 'fa-save' : 'fa-plus-circle'"></i>
+        {{ (editing ? 'gestionehotel.salva-modifiche' : 'gestionehotel.crea-hotel') | translate }}
+      </button>
+    </div>
+  </form>
+
+</div>

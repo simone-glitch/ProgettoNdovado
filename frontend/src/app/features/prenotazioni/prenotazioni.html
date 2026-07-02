@@ -332,21 +332,22 @@
                     }
                   }
 
-                  <!-- HOST / ADMIN actions -->
-                  @if (isHost || isAdmin) {
-                    @if (p.stato === 'IN_ATTESA' && !isScaduta(p)) {
-                      <button class="btn-booking-primary" (click)="aggiornaStato(p.id, 'CONFERMATA')">
-                        <i class="fas fa-check"></i> {{ 'common.conferma' | translate }}
-                      </button>
-                      <button class="btn-booking-secondary btn-danger-outline" (click)="aggiornaStato(p.id, 'CANCELLATA')">
-                        <i class="fas fa-times"></i> {{ 'booking.rifiuta' | translate }}
-                      </button>
-                    }
-                    @if (isAdmin) {
-                      <button class="btn-booking-icon btn-danger-icon" (click)="elimina(p.id)" [title]="'booking.elimina-prenotazione' | translate">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    }
+                  <!-- HOST actions: accettare/rifiutare le richieste è compito
+                       del proprietario della struttura, non dell'amministratore. -->
+                  @if (isHost && p.stato === 'IN_ATTESA' && !isScaduta(p)) {
+                    <button class="btn-booking-primary" (click)="aggiornaStato(p.id, 'CONFERMATA')">
+                      <i class="fas fa-check"></i> {{ 'common.conferma' | translate }}
+                    </button>
+                    <button class="btn-booking-secondary btn-danger-outline" (click)="aggiornaStato(p.id, 'CANCELLATA')">
+                      <i class="fas fa-times"></i> {{ 'booking.rifiuta' | translate }}
+                    </button>
+                  }
+
+                  <!-- ADMIN: solo moderazione (eliminazione), nessuna gestione operativa -->
+                  @if (isAdmin) {
+                    <button class="btn-booking-icon btn-danger-icon" (click)="elimina(p.id)" [title]="'booking.elimina-prenotazione' | translate">
+                      <i class="fas fa-trash"></i>
+                    </button>
                   }
 
                 </div>

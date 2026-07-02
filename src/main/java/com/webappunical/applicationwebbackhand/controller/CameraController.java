@@ -94,6 +94,7 @@ public class CameraController {
         c.setCapienza(dto.getCapienza());
         c.setDisponibile(dto.isDisponibile());
         c.setIdHotel(dto.getIdHotel());
+        c.setFoto(dto.getFoto());
         return c;
     }
 }

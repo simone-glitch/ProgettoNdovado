@@ -1,5 +1,7 @@
 package com.webappunical.applicationwebbackhand.model;
 
+import java.util.List;
+
 public class Camera {
 
     private Integer id;
@@ -9,6 +11,10 @@ public class Camera {
     private Integer capienza;
     private boolean disponibile;
     private Integer idHotel;
+
+    // Galleria della camera: immagini come data URL base64 (upload da file).
+    // Caricata a parte dalla query principale.
+    private List<String> foto;
 
     public Camera() {}
 
@@ -32,4 +38,7 @@ public class Camera {
 
     public Integer getIdHotel() { return idHotel; }
     public void setIdHotel(Integer idHotel) { this.idHotel = idHotel; }
+
+    public List<String> getFoto() { return foto; }
+    public void setFoto(List<String> foto) { this.foto = foto; }
 }

@@ -218,6 +218,27 @@ ALTER SEQUENCE public.foto_hotel_id_foto_seq OWNED BY public.foto_hotel.id_foto;
 ALTER TABLE ONLY public.foto_hotel ALTER COLUMN id_foto SET DEFAULT nextval('public.foto_hotel_id_foto_seq'::regclass);
 
 -- ==================================================
+-- TABELLA: foto_camere
+-- Galleria fotografica di ogni camera.
+-- dati_foto contiene l'immagine come data URL base64 (upload da file,
+-- non da URL esterno), coerente con la gestione foto lato applicazione.
+-- ==================================================
+
+CREATE TABLE public.foto_camere (
+    id_foto     integer NOT NULL,
+    dati_foto   text NOT NULL,
+    id_camera   integer NOT NULL,
+    CONSTRAINT foto_camere_pkey PRIMARY KEY (id_foto),
+    CONSTRAINT foto_camere_id_camera_fkey FOREIGN KEY (id_camera)
+        REFERENCES public.camere(id_camera) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE public.foto_camere_id_foto_seq
+    AS integer START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+ALTER SEQUENCE public.foto_camere_id_foto_seq OWNED BY public.foto_camere.id_foto;
+ALTER TABLE ONLY public.foto_camere ALTER COLUMN id_foto SET DEFAULT nextval('public.foto_camere_id_foto_seq'::regclass);
+
+-- ==================================================
 -- TABELLA: messaggi_chat  (invariata — chatbot Gemini)
 -- ==================================================
 

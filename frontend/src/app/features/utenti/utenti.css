@@ -100,11 +100,29 @@
   white-space: nowrap;
 }
 
-/* Colori badge — palette blu */
-.badge-admin  { background: #0A2342; color: #fff; }
-.badge-host   { background: #2563EB; color: #fff; }
-.badge-user   { background: #60A5FA; color: #1E3A5F; }
-.badge-banned { background: #93C5FD; color: #1E3A5F; }
+/* Colori badge — palette brand (navy + oro), con gerarchia per ruolo.
+   ADMIN è l'unico solido (ruolo elevato); HOST/GUEST sono pillole "soft"
+   coordinate; BANNATO usa un rosso semantico per segnalare lo stato negativo. */
+.badge-admin  {
+  background: linear-gradient(135deg, #0F3460, #0A2342);
+  color: #E8D5A0;
+  border: 1px solid transparent;
+}
+.badge-host   {
+  background: rgba(15, 52, 96, 0.10);
+  color: #0F3460;
+  border: 1px solid rgba(15, 52, 96, 0.22);
+}
+.badge-user   {
+  background: #EDF1F7;
+  color: #4A5565;
+  border: 1px solid #D1D9E6;
+}
+.badge-banned {
+  background: #FCEBEA;
+  color: #B23A34;
+  border: 1px solid #F1C7C3;
+}
 
 /* ── Bottoni azione — pastello, distinti dai badge solidi ── */
 .actions {

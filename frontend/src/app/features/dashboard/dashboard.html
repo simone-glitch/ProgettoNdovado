@@ -21,12 +21,11 @@
           <a routerLink="/dashboard/miei-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.miei-hotel' | translate }}</a>
           <a routerLink="/dashboard/statistiche" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.statistiche' | translate }}</a>
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.prenotazioni' | translate }}</a>
-          <a routerLink="/dashboard/aggiungi-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item ndv-nav-item-cta">{{ 'nav.aggiungi-hotel' | translate }}</a>
+          <a routerLink="/dashboard/aggiungi-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.aggiungi-hotel' | translate }}</a>
         }
         @if (isAdmin) {
           <a routerLink="/dashboard/gestione-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.gestione-hotel' | translate }}</a>
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.prenotazioni' | translate }}</a>
-          <a routerLink="/dashboard/statistiche" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.statistiche' | translate }}</a>
           <a routerLink="/dashboard/utenti" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.utenti' | translate }}</a>
         }
         <a routerLink="/dashboard/settings" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.impostazioni' | translate }}</a>
@@ -85,7 +84,7 @@
               <i class="fas fa-calendar-check"></i> {{ 'nav.prenotazioni' | translate }}
             </a>
             <a routerLink="/dashboard/aggiungi-hotel" routerLinkActive="ndv-mob-active"
-               class="ndv-mob-link ndv-mob-link-cta" (click)="closeSidebar()">
+               class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-plus-circle"></i> {{ 'nav.aggiungi-hotel' | translate }}
             </a>
           }
@@ -97,10 +96,6 @@
             <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-calendar-check"></i> {{ 'nav.prenotazioni' | translate }}
-            </a>
-            <a routerLink="/dashboard/statistiche" routerLinkActive="ndv-mob-active"
-               class="ndv-mob-link" (click)="closeSidebar()">
-              <i class="fas fa-chart-bar"></i> {{ 'nav.statistiche' | translate }}
             </a>
             <a routerLink="/dashboard/utenti" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">

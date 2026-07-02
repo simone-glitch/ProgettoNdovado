@@ -1,5 +1,7 @@
 package com.webappunical.applicationwebbackhand.dto;
 
+import java.util.List;
+
 public class CameraDTO {
 
     private String tipo;
@@ -8,6 +10,7 @@ public class CameraDTO {
     private Integer capienza;
     private boolean disponibile;
     private Integer idHotel;
+    private List<String> foto;
 
     public CameraDTO() {}
 
@@ -28,4 +31,7 @@ public class CameraDTO {
 
     public Integer getIdHotel() { return idHotel; }
     public void setIdHotel(Integer idHotel) { this.idHotel = idHotel; }
+
+    public List<String> getFoto() { return foto; }
+    public void setFoto(List<String> foto) { this.foto = foto; }
 }

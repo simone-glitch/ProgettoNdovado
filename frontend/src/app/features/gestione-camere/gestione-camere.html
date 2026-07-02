@@ -1,0 +1,172 @@
+<div class="gc-page">
+
+  @if (showAlert) {
+    <app-alert [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+  }
+  @if (showConfirm) {
+    <app-conferma-box [messaggio]="confirmMessage" (risposta)="gestisciRisposta($event)"></app-conferma-box>
+  }
+
+  <!-- BACK -->
+  <a routerLink="/dashboard/miei-hotel" class="gc-back">
+    <span class="gc-back-icon"><i class="fas fa-arrow-left"></i></span>
+    {{ 'gestionehotel.torna-miei-hotel' | translate }}
+  </a>
+
+  <!-- HEADER -->
+  <header class="gc-header">
+    <div class="gc-header-left">
+      <span class="gc-header-accent"></span>
+      <div class="gc-header-text">
+        <h1 class="gc-title">{{ 'gestionehotel.gestione-camere' | translate }}</h1>
+        <p class="gc-subtitle">
+          @if (hotel) { <span class="gc-hotel-name">{{ hotel.nome }}</span> · }
+          {{ 'gestionehotel.camere-hotel-sub' | translate }}
+        </p>
+      </div>
+    </div>
+    @if (!showCameraForm) {
+      <button class="gc-btn-primary" (click)="apriNuovaCamera()">
+        <i class="fas fa-plus-circle"></i> {{ 'gestionehotel.aggiungi-camera' | translate }}
+      </button>
+    }
+  </header>
+
+  <!-- FORM CAMERA (pannello in pagina) -->
+  @if (showCameraForm) {
+    <section class="gc-form-card">
+      <div class="gc-form-head">
+        <h2>{{ editingCamera ? ('gestionehotel.modifica-camera' | translate) : ('gestionehotel.nuova-camera' | translate) }}</h2>
+        <button class="gc-icon-btn" (click)="chiudiForm()" [attr.aria-label]="'common.chiudi' | translate">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="cameraForm" (ngSubmit)="salvaCamera()" novalidate>
+        <div class="gc-grid">
+          <div class="gc-field">
+            <label>{{ 'gestionehotel.tipo' | translate }}</label>
+            <select formControlName="tipo" class="gc-input">
+              @for (t of tipiCamera; track t) { <option [value]="t">{{ formatTipo(t) }}</option> }
+            </select>
+          </div>
+          <div class="gc-field">
+            <label>{{ 'gestionehotel.prezzo-notte' | translate }}</label>
+            <input type="number" formControlName="prezzoNotte" class="gc-input" min="0" step="0.01"
+              [class.gc-input-error]="cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid">
+            @if (cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid) {
+              <span class="gc-err">{{ 'gestionehotel.campo-obbligatorio' | translate }}</span>
+            }
+          </div>
+          <div class="gc-field">
+            <label>{{ 'gestionehotel.capienza-ospiti' | translate }}</label>
+            <input type="number" formControlName="capienza" class="gc-input" min="1">
+          </div>
+          <div class="gc-field gc-field-check">
+            <label class="gc-check">
+              <input type="checkbox" formControlName="disponibile">
+              <span>{{ 'gestionehotel.disponibile' | translate }}</span>
+            </label>
+          </div>
+          <div class="gc-field gc-field-full">
+            <label>{{ 'gestionehotel.descrizione' | translate }}</label>
+            <textarea formControlName="descrizione" class="gc-input gc-textarea" rows="3"
+              [placeholder]="'gestionehotel.descrizione-camera-placeholder' | translate"></textarea>
+          </div>
+        </div>
+
+        <!-- FOTO -->
+        <div class="gc-foto-section">
+          <div class="gc-foto-head">
+            <label>{{ 'gestionehotel.foto-camera' | translate }}</label>
+            <span class="gc-foto-hint">{{ 'gestionehotel.foto-hint' | translate }}</span>
+          </div>
+          <div class="gc-foto-grid">
+            @for (f of fotoCamera; track $index) {
+              <div class="gc-foto-thumb">
+                <img [src]="f" alt="">
+                <button type="button" class="gc-foto-remove" (click)="rimuoviFoto($index)"
+                  [attr.aria-label]="'gestionehotel.rimuovi-foto' | translate">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            }
+            <label class="gc-foto-add">
+              <input type="file" accept="image/*" multiple (change)="onFotoSelezionate($event)" hidden>
+              <i class="fas fa-camera"></i>
+              <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="gc-form-actions">
+          <button type="button" class="gc-btn-ghost" (click)="chiudiForm()" [disabled]="savingCamera">
+            {{ 'gestionehotel.annulla' | translate }}
+          </button>
+          <button type="submit" class="gc-btn-primary" [disabled]="savingCamera">
+            @if (savingCamera) { <span class="gc-spinner"></span> }
+            <i class="fas fa-save"></i>
+            {{ editingCamera ? ('gestionehotel.salva-modifiche' | translate) : ('gestionehotel.crea-camera' | translate) }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <!-- LISTA CAMERE -->
+  @if (loading) {
+    <div class="gc-list">
+      @for (s of [1,2,3]; track s) { <div class="gc-skeleton"></div> }
+    </div>
+  } @else if (camere.length === 0) {
+    <div class="gc-empty">
+      <div class="gc-empty-icon"><i class="fas fa-bed"></i></div>
+      <h3>{{ 'gestionehotel.nessuna-camera' | translate }}</h3>
+      @if (!showCameraForm) {
+        <button class="gc-btn-primary" (click)="apriNuovaCamera()">
+          <i class="fas fa-plus-circle"></i> {{ 'gestionehotel.aggiungi-camera' | translate }}
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="gc-list">
+      @for (c of camere; track c.id) {
+        <div class="gc-camera-card">
+          <div class="gc-camera-img">
+            @if (fotoCopertina(c)) {
+              <img [src]="fotoCopertina(c)" alt="">
+            } @else {
+              <div class="gc-camera-noimg"><i class="fas fa-bed"></i></div>
+            }
+            @if ((c.foto?.length ?? 0) > 1) {
+              <span class="gc-foto-count"><i class="fas fa-images"></i> {{ c.foto.length }}</span>
+            }
+          </div>
+          <div class="gc-camera-body">
+            <div class="gc-camera-top">
+              <h3 class="gc-camera-tipo">{{ formatTipo(c.tipo) }}</h3>
+              <span class="gc-badge" [class.gc-badge-off]="!c.disponibile">
+                {{ (c.disponibile ? 'gestionehotel.disponibile' : 'gestionehotel.occupata') | translate }}
+              </span>
+            </div>
+            @if (c.descrizione) { <p class="gc-camera-desc">{{ c.descrizione }}</p> }
+            <div class="gc-camera-meta">
+              <span><i class="fas fa-user"></i> {{ c.capienza }}</span>
+              <span class="gc-camera-price">{{ fmtPrezzo(c.prezzoNotte) }}</span>
+            </div>
+          </div>
+          <div class="gc-camera-actions">
+            <button class="gc-btn-ghost" (click)="apriModificaCamera(c)">
+              <i class="fas fa-pen"></i> {{ 'common.modifica' | translate }}
+            </button>
+            <button class="gc-icon-btn gc-icon-danger" (click)="chiediEliminaCamera(c)"
+              [attr.aria-label]="'common.elimina' | translate">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
