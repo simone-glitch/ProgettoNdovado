@@ -20,8 +20,11 @@ export class AuthService {
     );
   }
 
-  register(dati: { nome: string; cognome: string; email: string; password: string; ruolo: string; telefono?: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, dati);
+  register(dati: any): Observable<any> {
+    const url = `${this.apiUrl}/register`;
+
+
+    return this.http.post<any>(url, dati);
   }
 
   forgotPassword(email: string): Observable<any> {
