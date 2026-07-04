@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,6 +63,10 @@ public class AuthController {
             response.put("message", "Login effettuato con successo!");
             response.put("userDetails", utente);
             return ResponseEntity.ok(response);
+        } catch (LockedException e) {
+            // Account bannato/sospeso: messaggio dedicato, distinto dalle credenziali errate.
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Il tuo account è stato temporaneamente sospeso. Contatta l'amministratore.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenziali non valide.");
         }
@@ -123,7 +128,8 @@ public class AuthController {
                     request.get("cognome"),
                     request.get("email"),
                     request.get("password"),
-                    request.get("ruolo")   // GUEST (default) o HOST
+                    request.get("ruolo"),   // GUEST (default) o HOST
+                    request.get("telefono") // opzionale, univoco se valorizzato
             );
             utente.setPassword(null);
             Map<String, Object> response = new HashMap<>();

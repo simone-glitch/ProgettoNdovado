@@ -23,6 +23,8 @@ export const authDict: LangDict = {
     'auth.accedi':                'Accedi',
     'auth.non-hai-account':       'Non hai un account?',
     'auth.msg.credenziali-errate':'Credenziali errate. Riprova.',
+    'auth.msg.account-sospeso':   'Il tuo account è stato temporaneamente sospeso. Contatta l\'amministratore.',
+    'auth.msg.sessione-scaduta':  'La tua sessione è scaduta. Effettua di nuovo l\'accesso.',
 
     'auth.register.tagline1':     'Registrati gratis e inizia',
     'auth.register.tagline2':     'a esplorare il mondo.',
@@ -93,6 +95,8 @@ export const authDict: LangDict = {
     'auth.accedi':                'Log in',
     'auth.non-hai-account':       "Don't have an account?",
     'auth.msg.credenziali-errate':'Incorrect credentials. Try again.',
+    'auth.msg.account-sospeso':   'Your account has been temporarily suspended. Please contact the administrator.',
+    'auth.msg.sessione-scaduta':  'Your session has expired. Please log in again.',
 
     'auth.register.tagline1':     'Sign up for free and start',
     'auth.register.tagline2':     'exploring the world.',
@@ -163,6 +167,8 @@ export const authDict: LangDict = {
     'auth.accedi':                'Iniciar sesión',
     'auth.non-hai-account':       '¿No tienes una cuenta?',
     'auth.msg.credenziali-errate':'Credenciales incorrectas. Inténtalo de nuevo.',
+    'auth.msg.account-sospeso':   'Tu cuenta ha sido suspendida temporalmente. Contacta con el administrador.',
+    'auth.msg.sessione-scaduta':  'Tu sesión ha caducado. Vuelve a iniciar sesión.',
 
     'auth.register.tagline1':     'Regístrate gratis y empieza',
     'auth.register.tagline2':     'a explorar el mundo.',
@@ -233,6 +239,8 @@ export const authDict: LangDict = {
     'auth.accedi':                'Se connecter',
     'auth.non-hai-account':       "Vous n'avez pas de compte ?",
     'auth.msg.credenziali-errate':'Identifiants incorrects. Réessayez.',
+    'auth.msg.account-sospeso':   'Votre compte a été temporairement suspendu. Contactez l\'administrateur.',
+    'auth.msg.sessione-scaduta':  'Votre session a expiré. Veuillez vous reconnecter.',
 
     'auth.register.tagline1':     'Inscrivez-vous gratuitement et commencez',
     'auth.register.tagline2':     'à explorer le monde.',
@@ -303,6 +311,8 @@ export const authDict: LangDict = {
     'auth.accedi':                'Anmelden',
     'auth.non-hai-account':       'Sie haben noch kein Konto?',
     'auth.msg.credenziali-errate':'Falsche Anmeldedaten. Versuchen Sie es erneut.',
+    'auth.msg.account-sospeso':   'Ihr Konto wurde vorübergehend gesperrt. Bitte wenden Sie sich an den Administrator.',
+    'auth.msg.sessione-scaduta':  'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
 
     'auth.register.tagline1':     'Registrieren Sie sich kostenlos und beginnen Sie',
     'auth.register.tagline2':     'die Welt zu entdecken.',

@@ -35,6 +35,13 @@ public class HotelProxy extends Hotel {
         this.setLatitudine(hotelReale.getLatitudine());
         this.setLongitudine(hotelReale.getLongitudine());
         this.setIdProprietario(hotelReale.getIdProprietario());
+        this.setStato(hotelReale.getStato());
+        this.setCheckIn(hotelReale.getCheckIn());
+        this.setCheckOut(hotelReale.getCheckOut());
+        this.setTelefono(hotelReale.getTelefono());
+        this.setEmail(hotelReale.getEmail());
+        this.setNumCamere(hotelReale.getNumCamere());
+        this.setPrezzoMedio(hotelReale.getPrezzoMedio());
         this.setVotoMedio(hotelReale.getVotoMedio());
     }
 

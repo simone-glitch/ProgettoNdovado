@@ -45,10 +45,10 @@
     <!-- LEFT: FORM -->
     <div class="add-hotel-main">
 
-      @if (currentStep === 1) {
+      <form [formGroup]="hotelForm" novalidate>
+        <div class="add-hotel-form-card">
 
-        <form [formGroup]="hotelForm" novalidate>
-          <div class="add-hotel-form-card">
+          @if (currentStep === 1) {
 
             <!-- ── SEZIONE A: Informazioni struttura ── -->
             <div class="add-hotel-section">
@@ -141,7 +141,7 @@
               </div>
             </div>
 
-            <div class="section-divider"></div>
+          } @else if (currentStep === 2) {
 
             <!-- ── SEZIONE B: Dettagli operativi ── -->
             <div class="add-hotel-section">
@@ -151,7 +151,7 @@
               <div class="section-body">
                 <h3 class="section-title">{{ 'addhotel.sezione-b.titolo' | translate }}</h3>
 
-                <div class="add-hotel-form-grid grid-4">
+                <div class="add-hotel-form-grid grid-2">
                   <div class="form-field">
                     <label class="field-label">{{ 'addhotel.checkin-dalle' | translate }} <span class="field-required">*</span></label>
                     <input type="time" formControlName="checkIn" class="add-hotel-input"
@@ -168,27 +168,6 @@
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
                     }
                   </div>
-                  <div class="form-field">
-                    <label class="field-label">{{ 'addhotel.numero-camere' | translate }} <span class="field-required">*</span></label>
-                    <input type="number" formControlName="numCamere" class="add-hotel-input"
-                      [placeholder]="'addhotel.numero-camere.placeholder' | translate" min="1"
-                      [class.input-error]="hotelForm.get('numCamere')?.touched && hotelForm.get('numCamere')?.invalid">
-                    @if (hotelForm.get('numCamere')?.touched && hotelForm.get('numCamere')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.minimo-1' | translate }}</span>
-                    }
-                  </div>
-                  <div class="form-field">
-                    <label class="field-label">{{ 'addhotel.prezzo-medio-notte' | translate }} <span class="field-required">*</span></label>
-                    <div class="input-prefix-wrap">
-                      <span class="input-prefix">€</span>
-                      <input type="number" formControlName="prezzoMedio" class="add-hotel-input input-with-prefix"
-                        [placeholder]="'addhotel.prezzo-medio-notte.placeholder' | translate" min="0"
-                        [class.input-error]="hotelForm.get('prezzoMedio')?.touched && hotelForm.get('prezzoMedio')?.invalid">
-                    </div>
-                    @if (hotelForm.get('prezzoMedio')?.touched && hotelForm.get('prezzoMedio')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
-                    }
-                  </div>
                 </div>
 
                 <div class="add-hotel-form-grid grid-2">
@@ -197,8 +176,12 @@
                     <input type="tel" formControlName="telefono" class="add-hotel-input"
                       [placeholder]="'addhotel.telefono-struttura.placeholder' | translate"
                       [class.input-error]="hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.invalid">
-                    @if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.invalid) {
+                    @if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.errors?.['required']) {
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
+                    } @else if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.errors?.['pattern']) {
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.telefono-non-valido' | translate }}</span>
+                    } @else if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.errors?.['duplicato']) {
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.telefono-duplicato' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
@@ -210,13 +193,105 @@
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     } @else if (hotelForm.get('email')?.touched && hotelForm.get('email')?.errors?.['email']) {
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.email-non-valida' | translate }}</span>
+                    } @else if (hotelForm.get('email')?.touched && hotelForm.get('email')?.errors?.['duplicato']) {
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.email-duplicata' | translate }}</span>
                     }
                   </div>
+                </div>
+
+                <!-- ── Camere: builder inline (una camera alla volta) ── -->
+                <div class="add-hotel-camere">
+                  <p class="add-hotel-hint">
+                    <i class="fas fa-circle-info"></i> {{ 'addhotel.camere-intro' | translate }}
+                  </p>
+
+                  <div [formGroup]="cameraForm" class="camera-builder">
+                    <div class="add-hotel-form-grid grid-4">
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.tipo' | translate }}</label>
+                        <select formControlName="tipo" class="add-hotel-select">
+                          @for (t of tipiCamera; track t) { <option [value]="t">{{ formatTipoCamera(t) }}</option> }
+                        </select>
+                      </div>
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.prezzo-notte' | translate }} <span class="field-required">*</span></label>
+                        <div class="input-prefix-wrap">
+                          <span class="input-prefix">€</span>
+                          <input type="number" formControlName="prezzoNotte" class="add-hotel-input input-with-prefix" min="0" step="0.01"
+                            [class.input-error]="cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid">
+                        </div>
+                        @if (cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid) {
+                          <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.camera.prezzo-obbligatorio' | translate }}</span>
+                        }
+                      </div>
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.capienza-ospiti' | translate }} <span class="field-required">*</span></label>
+                        <input type="number" formControlName="capienza" class="add-hotel-input" min="1"
+                          [class.input-error]="cameraForm.get('capienza')?.touched && cameraForm.get('capienza')?.invalid">
+                        @if (cameraForm.get('capienza')?.touched && cameraForm.get('capienza')?.invalid) {
+                          <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.camera.capienza-obbligatoria' | translate }}</span>
+                        }
+                      </div>
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.disponibile' | translate }}</label>
+                        <label class="add-hotel-check">
+                          <input type="checkbox" formControlName="disponibile">
+                          <span>{{ 'gestionehotel.disponibile' | translate }}</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-field">
+                      <label class="field-label">{{ 'gestionehotel.descrizione' | translate }}</label>
+                      <textarea formControlName="descrizione" class="add-hotel-textarea" rows="2"
+                        [placeholder]="'gestionehotel.descrizione-camera-placeholder' | translate"></textarea>
+                    </div>
+
+                    <div class="camera-foto-row">
+                      @for (f of fotoCameraNuova; track $index) {
+                        <div class="camera-foto-thumb">
+                          <img [src]="f" alt="">
+                          <button type="button" (click)="rimuoviFotoCameraNuova($index)"
+                            [attr.aria-label]="'gestionehotel.rimuovi-foto' | translate"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                      <label class="camera-foto-add">
+                        <input type="file" accept="image/*" multiple (change)="onFotoCameraSelezionate($event)" hidden>
+                        <i class="fas fa-camera"></i>
+                        <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
+                      </label>
+                    </div>
+
+                    <button type="button" class="btn-aggiungi-camera" (click)="aggiungiCamera()"
+                      [disabled]="savingCamera">
+                      @if (savingCamera) { <span class="btn-spinner"></span> }
+                      <i class="fas fa-plus-circle"></i> {{ 'gestionehotel.aggiungi-camera' | translate }}
+                    </button>
+                  </div>
+
+                  @if (camereCreate.length > 0) {
+                    <div class="camere-aggiunte">
+                      @for (c of camereCreate; track c.id) {
+                        <div class="camera-riga">
+                          <span class="camera-riga-tipo">{{ formatTipoCamera(c.tipo) }}</span>
+                          <span class="camera-riga-meta"><i class="fas fa-user"></i> {{ c.capienza }}</span>
+                          <span class="camera-riga-prezzo">€ {{ c.prezzoNotte }}</span>
+                          @if ((c.foto?.length ?? 0) > 0) {
+                            <span class="camera-riga-foto"><i class="fas fa-images"></i> {{ c.foto.length }}</span>
+                          }
+                          <button type="button" class="camera-riga-del" (click)="rimuoviCameraSalvata(c)"
+                            [attr.aria-label]="'common.elimina' | translate"><i class="fas fa-trash"></i></button>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="add-hotel-hint add-hotel-hint-muted">{{ 'gestionehotel.nessuna-camera' | translate }}</p>
+                  }
                 </div>
               </div>
             </div>
 
-            <div class="section-divider"></div>
+          } @else if (currentStep === 3) {
 
             <!-- ── SEZIONE C: Servizi principali ── -->
             <div class="add-hotel-section">
@@ -237,7 +312,7 @@
               </div>
             </div>
 
-            <div class="section-divider"></div>
+          } @else if (currentStep === 4) {
 
             <!-- ── SEZIONE D: Carica foto ── -->
             <div class="add-hotel-section">
@@ -287,84 +362,85 @@
               </div>
             </div>
 
-          </div>
-        </form>
+          } @else if (currentStep === 5) {
 
-      } @else if (currentStep === 2) {
+            <!-- ── RIEPILOGO E REGISTRAZIONE ── -->
+            <div class="add-hotel-section">
+              <div class="section-icon-wrap"><i class="fas fa-rocket"></i></div>
+              <div class="section-body">
+                <h3 class="section-title">{{ 'addhotel.riepilogo-titolo' | translate }}</h3>
+                <p class="riepilogo-testo">{{ 'addhotel.riepilogo-testo' | translate }}</p>
 
-        <div class="add-hotel-form-card step-placeholder">
-          <div class="placeholder-icon"><i class="fas fa-bed"></i></div>
-          <h3>{{ 'addhotel.step2.titolo' | translate }}</h3>
-          <p>{{ 'addhotel.step2.testo' | translate }} <strong>{{ 'addhotel.step2.link' | translate }}</strong>.</p>
-          @if (savedHotelId) {
-            <a [routerLink]="['/dashboard/gestione-hotel']" class="btn-go-manage">
-              <i class="fas fa-hotel"></i> {{ 'addhotel.step2.gestisci-camere' | translate }}
-            </a>
-          } @else {
-            <p class="step-hint">{{ 'addhotel.step2.hint' | translate }}</p>
-          }
-        </div>
+                <div class="riepilogo-grid">
+                  <div class="riepilogo-voce">
+                    <span class="riepilogo-label">{{ 'addhotel.nome-hotel' | translate }}</span>
+                    <span class="riepilogo-val">{{ previewNome }}</span>
+                  </div>
+                  <div class="riepilogo-voce">
+                    <span class="riepilogo-label">{{ 'addhotel.citta-regione' | translate }}</span>
+                    <span class="riepilogo-val">{{ previewCitta }}</span>
+                  </div>
+                  <div class="riepilogo-voce">
+                    <span class="riepilogo-label">{{ 'addhotel.categoria-stelle' | translate }}</span>
+                    <span class="riepilogo-val">{{ previewStelle > 0 ? previewStelle : '—' }}</span>
+                  </div>
+                  <div class="riepilogo-voce">
+                    <span class="riepilogo-label">{{ 'addhotel.numero-camere' | translate }}</span>
+                    <span class="riepilogo-val">{{ camereCreate.length || '—' }}</span>
+                  </div>
+                </div>
 
-      } @else if (currentStep === 3) {
-
-        <div class="add-hotel-form-card step-placeholder">
-          <div class="placeholder-icon"><i class="fas fa-concierge-bell"></i></div>
-          <h3>{{ 'addhotel.step3.titolo' | translate }}</h3>
-          <p>{{ 'addhotel.step3.testo' | translate }}</p>
-        </div>
-
-      } @else if (currentStep === 4) {
-
-        <div class="add-hotel-form-card step-placeholder">
-          <div class="placeholder-icon"><i class="fas fa-camera"></i></div>
-          <h3>{{ 'addhotel.step4.titolo' | translate }}</h3>
-          <p>{{ 'addhotel.step4.testo' | translate }} <strong>{{ 'addhotel.step4.link' | translate }}</strong>.</p>
-        </div>
-
-      } @else if (currentStep === 5) {
-
-        <div class="add-hotel-form-card step-placeholder">
-          <div class="placeholder-icon step-icon-gold"><i class="fas fa-rocket"></i></div>
-          <h3>{{ 'addhotel.step5.titolo' | translate }}</h3>
-          <p>{{ 'addhotel.step5.testo' | translate }}</p>
-          <div class="publish-checklist-inline">
-            @for (item of checklistItems; track item.label) {
-              <div class="checklist-item-inline">
-                <span class="check-icon-inline" [class.check-done]="item.done">
-                  <i class="fas" [ngClass]="item.done ? 'fa-check-circle' : 'fa-circle'"></i>
-                </span>
-                <span>{{ item.label | translate }}</span>
+                <div class="publish-checklist-inline">
+                  @for (item of checklistItems; track item.label) {
+                    <div class="checklist-item-inline">
+                      <span class="check-icon-inline" [class.check-done]="item.done">
+                        <i class="fas" [ngClass]="item.done ? 'fa-check-circle' : 'fa-circle'"></i>
+                      </span>
+                      <span>{{ item.label | translate }}</span>
+                    </div>
+                  }
+                </div>
               </div>
-            }
-          </div>
-          @if (savedHotelId) {
-            <button class="btn-publish" (click)="showAlertMessage(i18n.translate('addhotel.msg.pubblicata'), 'success')">
-              <i class="fas fa-check"></i> {{ 'addhotel.step5.pubblica' | translate }}
-            </button>
-          } @else {
-            <p class="step-hint">{{ 'addhotel.step5.hint' | translate }}</p>
-          }
-        </div>
+            </div>
 
-      }
+          }
+
+          <div class="step-help">
+            <i class="fas fa-info-circle"></i>
+            <span>{{ stepHelp | translate }}</span>
+          </div>
+
+        </div>
+      </form>
 
       <!-- ── BOTTOM ACTIONS ── -->
       <div class="add-hotel-actions">
-        <button class="save-draft-button" (click)="salvaBozza()" [disabled]="saving">
-          @if (saving) {
-            <span class="btn-spinner"></span> {{ 'addhotel.salvataggio' | translate }}
-          } @else {
-            <i class="fas fa-save"></i> {{ 'addhotel.salva-bozza' | translate }}
+        <div class="add-hotel-actions-left">
+          <button type="button" class="save-draft-button" (click)="salvaBozza()" [disabled]="saving">
+            @if (saving) {
+              <span class="btn-spinner"></span> {{ 'addhotel.salvataggio' | translate }}
+            } @else {
+              <i class="fas fa-save"></i> {{ 'addhotel.salva-bozza' | translate }}
+            }
+          </button>
+          @if (currentStep > 1) {
+            <button type="button" class="save-draft-button" (click)="indietro()" [disabled]="saving">
+              <i class="fas fa-arrow-left"></i> {{ 'addhotel.indietro' | translate }}
+            </button>
           }
-        </button>
+        </div>
         @if (currentStep < totalSteps) {
-          <button class="continue-button" (click)="continua()" [disabled]="saving">
+          <button type="button" class="continue-button" (click)="continua()" [disabled]="saving">
             {{ 'addhotel.continua' | translate }} <i class="fas fa-arrow-right"></i>
           </button>
         } @else {
-          <a routerLink="/dashboard/miei-hotel" class="continue-button">
-            {{ 'addhotel.miei-hotel' | translate }} <i class="fas fa-hotel"></i>
-          </a>
+          <button type="button" class="continue-button" (click)="registra()" [disabled]="saving">
+            @if (saving) {
+              <span class="btn-spinner"></span> {{ 'addhotel.salvataggio' | translate }}
+            } @else {
+              <i class="fas fa-check"></i> {{ 'addhotel.registra' | translate }}
+            }
+          </button>
         }
       </div>
     </div>
@@ -428,17 +504,6 @@
         </div>
       </div>
 
-      <!-- Consigli per host -->
-      <div class="host-tips-card sidebar-card">
-        <div class="tips-header">
-          <span class="tips-icon"><i class="fas fa-lightbulb"></i></span>
-          <h3 class="sidebar-card-title">{{ 'addhotel.consigli-host' | translate }}</h3>
-        </div>
-        <p class="tips-text">{{ 'addhotel.consigli-testo' | translate }}</p>
-        <button class="btn-support" (click)="openSupporto()">
-          <i class="fas fa-headset"></i> {{ 'addhotel.centro-assistenza' | translate }}
-        </button>
-      </div>
 
     </div>
   </div>

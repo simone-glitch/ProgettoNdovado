@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
 import { TranslationService } from '../../services/translation.service';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -50,7 +50,8 @@ export class Setting implements OnInit {
     private prefsService: PreferencesService,
     private i18n: TranslationService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.profileForm = this.fb.group({
       nome: ['', Validators.required],
@@ -76,6 +77,25 @@ export class Setting implements OnInit {
     this.caricaProfilo();
     this.caricaPreferenze();
     this.caricaCarteLocali();
+    this.apriDaQueryParams();
+  }
+
+  // Permette di aprire i Settings già sulla sezione giusta (es. dal modale di
+  // pagamento "Aggiungila nelle impostazioni"): ?section=pagamenti&aggiungi=1
+  // porta direttamente alla sezione Metodi di pagamento con il form già aperto.
+  private apriDaQueryParams(): void {
+    const qp = this.route.snapshot.queryParamMap;
+    const section = qp.get('section');
+    if (!section) return;
+    this.activeSection = section;
+    if (section === 'pagamenti' && qp.get('aggiungi') === '1') {
+      this.apriFormCarta();
+    }
+    // Attende il render della sezione prima di scrollare fino ad essa.
+    setTimeout(() => {
+      const el = document.getElementById('section-' + section);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   }
 
   caricaProfilo(): void {
@@ -130,6 +150,7 @@ export class Setting implements OnInit {
       nome: this.profileForm.value.nome?.trim(),
       cognome: this.profileForm.value.cognome?.trim(),
       email: newEmail,
+      telefono: this.profileForm.value.telefono?.trim() ?? '',
     };
 
     this.isSavingProfile = true;
@@ -325,7 +346,12 @@ export class Setting implements OnInit {
     const lunghezzaAttesa = isAmex ? 15 : 16;
     if (num.length !== lunghezzaAttesa) this.nuovaCartaErrors['numero'] = `Inserisci un numero di carta valido (${lunghezzaAttesa} cifre)`;
     if (!/^\d{2}\/\d{2}$/.test(this.nuovaCarta.scadenza)) this.nuovaCartaErrors['scadenza'] = 'Formato non valido (MM/AA)';
-    if (!this.nuovaCarta.intestatario.trim()) this.nuovaCartaErrors['intestatario'] = 'Inserisci il nome del titolare';
+    const intestatario = this.nuovaCarta.intestatario.trim();
+    if (!intestatario) {
+      this.nuovaCartaErrors['intestatario'] = 'Inserisci nome e cognome del titolare';
+    } else if (intestatario.split(/\s+/).filter(Boolean).length < 2) {
+      this.nuovaCartaErrors['intestatario'] = 'Inserisci sia il nome sia il cognome del titolare';
+    }
     if (!/^\d{3,4}$/.test(this.nuovaCarta.cvv)) this.nuovaCartaErrors['cvv'] = 'CVV non valido';
 
     const [mm, aa] = this.nuovaCarta.scadenza.split('/').map(Number);

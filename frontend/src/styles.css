@@ -25,6 +25,19 @@
 }
 .flatpickr-weekday { color: #6B7280; font-weight: 700; font-size: 0.72rem; }
 
+/* Evita la selezione/evidenziazione del testo quando si clicca su date, orari e numeri */
+.flatpickr-calendar,
+.flatpickr-day,
+.flatpickr-time input,
+input[type="number"],
+input[type="time"],
+input[type="date"],
+input[type="datetime-local"] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
 .flatpickr-day {
   border-radius: 8px;
   font-size: 0.85rem;
@@ -268,4 +281,29 @@ input:focus, select:focus {
 .btn-submit:hover {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
   box-shadow: 0 4px 16px rgba(201,148,58,0.3);
+}
+
+/* ===============================
+   Campi numero/ora/data
+   Rimuove l'evidenziazione blu ("selezione testo") che il browser mette sui
+   segmenti quando ci si clicca sopra per modificarli tramite scorrimento/spinner.
+   =============================== */
+input[type="number"],
+input[type="time"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+input[type="number"]::selection,
+input[type="time"]::selection,
+input[type="date"]::selection,
+input[type="datetime-local"]::selection,
+input[type="month"]::selection,
+input[type="week"]::selection {
+  background: transparent;
+  color: inherit;
 }

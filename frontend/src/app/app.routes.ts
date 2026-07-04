@@ -40,6 +40,7 @@ export const routes: Routes = [
       { path: 'hotel/:id/camere',    component: GestioneCamere, canActivate: [RoleGuard], data: { roles: ['HOST', 'ADMIN'] } },
       { path: 'miei-hotel',          component: MieiHotel,     canActivate: [RoleGuard], data: { roles: ['HOST'] } },
       { path: 'aggiungi-hotel',      component: AggiungiHotel, canActivate: [RoleGuard], data: { roles: ['HOST'] } },
+      { path: 'aggiungi-hotel/:id',  component: AggiungiHotel, canActivate: [RoleGuard], data: { roles: ['HOST'] } },
       { path: 'statistiche',         component: Statistiche,   canActivate: [RoleGuard], data: { roles: ['HOST'] } },
       { path: 'utenti',              component: Utenti,        canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
       { path: 'preferiti',           component: Preferiti,     canActivate: [RoleGuard], data: { roles: ['GUEST'] } },

@@ -4,6 +4,7 @@ import com.webappunical.applicationwebbackhand.dao.ServizioDAO;
 import com.webappunical.applicationwebbackhand.dto.HotelDTO;
 import com.webappunical.applicationwebbackhand.model.Hotel;
 import com.webappunical.applicationwebbackhand.model.Servizio;
+import com.webappunical.applicationwebbackhand.model.StatoHotel;
 import com.webappunical.applicationwebbackhand.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,14 @@ public class HotelController {
         return ResponseEntity.ok(hotelService.getTutti());
     }
 
+    // Vista di moderazione ADMIN: tutte le strutture (tranne le bozze altrui),
+    // con l'indicazione del proprietario. Riservata all'ADMIN.
+    @GetMapping("/gestione")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Hotel>> getPerGestione() {
+        return ResponseEntity.ok(hotelService.getTuttiPerAdmin());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getDettaglio(@PathVariable Integer id) {
         try {
@@ -69,6 +78,74 @@ public class HotelController {
     @PreAuthorize("hasAnyRole('HOST','ADMIN')")
     public ResponseEntity<List<Hotel>> getMiei(Authentication auth) {
         return ResponseEntity.ok(hotelService.getHotelDelHost(auth.getName()));
+    }
+
+    // ----------------------------------------------------------------
+    // Transizioni di stato (ciclo di vita della struttura)
+    // La legalità della transizione è validata nel service in base a
+    // stato corrente + ruolo; qui il @PreAuthorize è il gate grossolano.
+    // ----------------------------------------------------------------
+
+    /** HOST proprietario: invia la bozza (o una rifiutata) in revisione. */
+    @PutMapping("/{id}/invia-revisione")
+    @PreAuthorize("hasAnyRole('HOST','ADMIN')")
+    public ResponseEntity<?> inviaInRevisione(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.IN_REVISIONE, auth);
+    }
+
+    /** HOST proprietario: mette in pausa una struttura pubblicata. */
+    @PutMapping("/{id}/disattiva")
+    @PreAuthorize("hasAnyRole('HOST','ADMIN')")
+    public ResponseEntity<?> disattiva(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.NON_ATTIVO, auth);
+    }
+
+    /** HOST proprietario: riattiva una struttura messa in pausa (NON_ATTIVO → PUBBLICATO). */
+    @PutMapping("/{id}/attiva")
+    @PreAuthorize("hasAnyRole('HOST','ADMIN')")
+    public ResponseEntity<?> attiva(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.PUBBLICATO, auth);
+    }
+
+    /** ADMIN: approva una struttura in revisione (IN_REVISIONE → PUBBLICATO). */
+    @PutMapping("/{id}/approva")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> approva(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.PUBBLICATO, auth);
+    }
+
+    /** ADMIN: respinge una struttura in revisione. */
+    @PutMapping("/{id}/rifiuta")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> rifiuta(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.RIFIUTATO, auth);
+    }
+
+    /** ADMIN: sospende una struttura (moderazione). */
+    @PutMapping("/{id}/sospendi")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> sospendi(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.SOSPESO, auth);
+    }
+
+    /** ADMIN: revoca la sospensione (SOSPESO → PUBBLICATO). */
+    @PutMapping("/{id}/riattiva")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> riattiva(@PathVariable Integer id, Authentication auth) {
+        return transizione(id, StatoHotel.PUBBLICATO, auth);
+    }
+
+    // Helper condiviso: mappa le eccezioni del service sugli status HTTP corretti.
+    private ResponseEntity<?> transizione(Integer id, StatoHotel target, Authentication auth) {
+        try {
+            return ResponseEntity.ok(hotelService.cambiaStato(id, target.name(), auth.getName()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping
@@ -147,6 +224,23 @@ public class HotelController {
         }
     }
 
+    // Sostituisce l'intera galleria dell'hotel (usato dal wizard: invia la lista
+    // completa delle foto — data URL base64 o URL esterni — dopo il salvataggio).
+    @PutMapping("/{id}/foto")
+    @PreAuthorize("hasAnyRole('HOST','ADMIN')")
+    public ResponseEntity<?> sostituisciFoto(@PathVariable Integer id,
+                                              @RequestBody List<String> foto,
+                                              Authentication auth) {
+        try {
+            hotelService.sostituisciFoto(id, foto, auth.getName());
+            return ResponseEntity.ok("Foto aggiornate.");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}/foto/{idFoto}")
     @PreAuthorize("hasAnyRole('HOST','ADMIN')")
     public ResponseEntity<?> eliminaFoto(@PathVariable Integer id,
@@ -169,6 +263,14 @@ public class HotelController {
         h.setStelle(dto.getStelle());
         h.setLatitudine(dto.getLatitudine());
         h.setLongitudine(dto.getLongitudine());
+        // Lo stato NON si imposta qui: creazione → BOZZA (forzato nel service),
+        // update → invariato. Le transizioni passano dagli endpoint dedicati.
+        h.setCheckIn(dto.getCheckIn());
+        h.setCheckOut(dto.getCheckOut());
+        h.setTelefono(dto.getTelefono());
+        h.setEmail(dto.getEmail());
+        h.setNumCamere(dto.getNumCamere());
+        h.setPrezzoMedio(dto.getPrezzoMedio());
         return h;
     }
 }

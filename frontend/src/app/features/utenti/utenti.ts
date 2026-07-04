@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { UtenteService } from '../../services/utente.service';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +9,7 @@ import { TranslationService } from '../../services/translation.service';
 @Component({
   selector: 'app-utenti',
   standalone: true,
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule, RouterLink, SharedModule],
   templateUrl: './utenti.html',
   styleUrls: ['./utenti.css']
 })

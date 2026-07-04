@@ -43,6 +43,10 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/camere/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/recensioni/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/servizi/**").permitAll()
+                // Occupazioni camera: solo intervalli di date (nessun dato personale).
+                // La pagina di dettaglio hotel è pubblica, quindi il calendario deve
+                // mostrare le date già prenotate anche a chi non è autenticato.
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/prenotazioni/camera/*/occupazioni").permitAll()
                 // Tutto il resto richiede autenticazione
                 .anyRequest().authenticated()
             )

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HotelService } from '../../services/hotel.service';
+import { GeocodingService } from '../../services/geocoding.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
@@ -28,11 +29,16 @@ export class HotelForm implements OnInit {
   alertMessage = '';
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
+  // Coordinate derivate dall'indirizzo (per la mappa): non più inserite a mano.
+  private lat: number | null = null;
+  private lon: number | null = null;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private hotelService: HotelService,
+    private geocoding: GeocodingService,
     private authService: AuthService,
     public i18n: TranslationService,
   ) {}
@@ -64,8 +70,6 @@ export class HotelForm implements OnInit {
       citta:       ['', Validators.required],
       indirizzo:   ['', Validators.required],
       stelle:      [3, [Validators.required, Validators.min(1), Validators.max(5)]],
-      latitudine:  [null],
-      longitudine: [null],
     });
   }
 
@@ -76,8 +80,9 @@ export class HotelForm implements OnInit {
         this.hotelForm.patchValue({
           nome: h.nome, descrizione: h.descrizione, citta: h.citta,
           indirizzo: h.indirizzo, stelle: h.stelle,
-          latitudine: h.latitudine ?? null, longitudine: h.longitudine ?? null,
         });
+        this.lat = h.latitudine ?? null;
+        this.lon = h.longitudine ?? null;
         this.selectedServizi = (h.servizi ?? []).map((s: any) => s?.id).filter((v: any) => v != null);
         this.loading = false;
       },
@@ -110,7 +115,6 @@ export class HotelForm implements OnInit {
   salva() {
     if (this.hotelForm.invalid) { this.hotelForm.markAllAsTouched(); return; }
     this.saving = true;
-    const dati = this.hotelForm.value;
 
     const afterSave = (id: number, msg: string) => {
       if (this.selectedServizi.length > 0 || this.editing) {
@@ -121,18 +125,33 @@ export class HotelForm implements OnInit {
     };
     const onErr = (e: any) => {
       this.saving = false;
-      this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error');
+      this.showAlertMessage(this.estraiErrore(e, 'gestionehotel.msg.errore'), 'error');
     };
 
-    if (this.editing) {
-      this.hotelService.aggiorna(this.idHotel!, dati).subscribe({
-        next: () => afterSave(this.idHotel!, 'gestionehotel.msg.hotel-aggiornato'), error: onErr,
-      });
-    } else {
-      this.hotelService.crea(dati).subscribe({
-        next: (h) => afterSave(h.id, 'gestionehotel.msg.hotel-creato'), error: onErr,
-      });
-    }
+    // Ricava le coordinate da città+indirizzo (con fallback sulla sola città) e poi salva.
+    const v = this.hotelForm.value;
+    this.geocoding.coordinate(v.indirizzo, v.citta).subscribe(coords => {
+      if (coords) { this.lat = coords.lat; this.lon = coords.lon; }
+      const dati = { ...v, latitudine: this.lat, longitudine: this.lon };
+      if (this.editing) {
+        this.hotelService.aggiorna(this.idHotel!, dati).subscribe({
+          next: () => afterSave(this.idHotel!, 'gestionehotel.msg.hotel-aggiornato'), error: onErr,
+        });
+      } else {
+        this.hotelService.crea(dati).subscribe({
+          next: (h) => afterSave(h.id, 'gestionehotel.msg.hotel-creato'), error: onErr,
+        });
+      }
+    });
+  }
+
+  // Il backend restituisce un body stringa: con responseType json finisce in
+  // e.error.text, non in e.error.message. Estraiamo il messaggio reale.
+  private estraiErrore(e: any, fallbackKey: string): string {
+    if (typeof e?.error === 'string' && e.error) return e.error;
+    if (e?.error?.message) return e.error.message;
+    if (e?.error?.text)    return e.error.text;
+    return this.i18n.translate(fallbackKey);
   }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {

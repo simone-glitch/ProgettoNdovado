@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
+import { ChatService } from '../../services/chat.service';
 import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 import { forkJoin, of } from 'rxjs';
@@ -14,39 +15,36 @@ import { catchError } from 'rxjs/operators';
 @Component({
   selector: 'app-miei-hotel',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, SharedModule],
+  imports: [CommonModule, FormsModule, RouterLink, SharedModule],
   templateUrl: './miei-hotel.html',
   styleUrl: './miei-hotel.css',
 })
 export class MieiHotel implements OnInit {
   hotels: any[] = [];
   prenotazioni: any[] = [];
-  serviziDisponibili: any[] = [];
   loading = false;
   loadingError = false;
 
   searchQuery = '';
   filterStato = '';
 
-  // ── Hotel modal (add / edit) ──
-  showHotelModal = false;
-  editingHotel: any = null;
-  hotelForm!: FormGroup;
-  selectedServizi: number[] = [];
-  savingHotel = false;
-
   showAlert = false;
   alertMessage = '';
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
+  // Conferma eliminazione
+  showConfirm = false;
+  confirmMessage = '';
+  hotelDaEliminare: any = null;
+
   readonly skeletonItems = [1, 2, 3];
 
   constructor(
-    private fb: FormBuilder,
     private hotelService: HotelService,
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
     private prefsService: PreferencesService,
+    private chatService: ChatService,
     private i18n: TranslationService,
     private router: Router
   ) {}
@@ -60,21 +58,7 @@ export class MieiHotel implements OnInit {
       this.router.navigate(['/dashboard/home']);
       return;
     }
-    this.initHotelForm();
     this.caricaDati();
-    this.hotelService.getServizi().subscribe({ next: s => this.serviziDisponibili = s, error: () => {} });
-  }
-
-  private initHotelForm() {
-    this.hotelForm = this.fb.group({
-      nome:        ['', Validators.required],
-      descrizione: ['', Validators.required],
-      citta:       ['', Validators.required],
-      indirizzo:   ['', Validators.required],
-      stelle:      [3, [Validators.required, Validators.min(1), Validators.max(5)]],
-      latitudine:  [null],
-      longitudine: [null],
-    });
   }
 
   caricaDati() {
@@ -95,73 +79,17 @@ export class MieiHotel implements OnInit {
 
   riprova() { this.caricaDati(); }
 
-  // ── Hotel modal ──
+  // ── Navigazione a pagine dedicate (niente più modale) ──
 
   apriNuovoHotel() {
-    this.editingHotel = null;
-    this.selectedServizi = [];
-    this.hotelForm.reset({ stelle: 3 });
-    this.showHotelModal = true;
+    this.router.navigate(['/dashboard/hotel/nuovo']);
   }
 
   apriModificaHotel(hotel: any) {
-    this.editingHotel = hotel;
-    this.selectedServizi = (hotel.servizi ?? []).map((s: any) => s.id).filter(Boolean);
-    this.hotelForm.patchValue({
-      nome:        hotel.nome,
-      descrizione: hotel.descrizione,
-      citta:       hotel.citta,
-      indirizzo:   hotel.indirizzo,
-      stelle:      hotel.stelle,
-      latitudine:  hotel.latitudine  ?? null,
-      longitudine: hotel.longitudine ?? null,
-    });
-    this.showHotelModal = true;
+    // Il wizard è l'editor unificato: riaprendolo con l'id si riprende dal punto lasciato
+    // (ripristina i campi salvati e lo step memorizzato).
+    if (hotel?.id) this.router.navigate(['/dashboard/aggiungi-hotel', hotel.id]);
   }
-
-  chiudiModal() {
-    this.showHotelModal = false;
-    this.editingHotel = null;
-    this.savingHotel = false;
-  }
-
-  salvaHotel() {
-    if (this.hotelForm.invalid) { this.hotelForm.markAllAsTouched(); return; }
-    this.savingHotel = true;
-    const dati = this.hotelForm.value;
-
-    const afterSave = (id: number) => {
-      if (this.selectedServizi.length > 0) {
-        this.hotelService.aggiornaServizi(id, this.selectedServizi).subscribe({ error: () => {} });
-      }
-      this.chiudiModal();
-      this.showAlertMessage(
-        this.editingHotel ? this.i18n.translate('myhotel.msg.hotel-aggiornato') : this.i18n.translate('myhotel.msg.hotel-creato'),
-        'success'
-      );
-      this.caricaDati();
-    };
-
-    if (this.editingHotel) {
-      this.hotelService.aggiorna(this.editingHotel.id, dati).subscribe({
-        next: () => afterSave(this.editingHotel.id),
-        error: (e) => { this.savingHotel = false; this.showAlertMessage(e.error?.message ?? this.i18n.translate('myhotel.msg.errore-salvataggio'), 'error'); }
-      });
-    } else {
-      this.hotelService.crea(dati).subscribe({
-        next: (h) => afterSave(h.id),
-        error: (e) => { this.savingHotel = false; this.showAlertMessage(e.error?.message ?? this.i18n.translate('myhotel.msg.errore-creazione'), 'error'); }
-      });
-    }
-  }
-
-  toggleServizio(id: number) {
-    const i = this.selectedServizi.indexOf(id);
-    if (i >= 0) this.selectedServizi.splice(i, 1);
-    else this.selectedServizi.push(id);
-  }
-
-  isServizioSelezionato(id: number): boolean { return this.selectedServizi.includes(id); }
 
   // ── Date helpers ──
 
@@ -343,11 +271,76 @@ export class MieiHotel implements OnInit {
   // ── Navigation ──
 
   vaiDettagli(hotel: any) { if (hotel?.id) this.router.navigate(['/dashboard/hotel-detail', hotel.id]); }
-  vaiGestisciCamere(hotel: any) { this.router.navigate(['/dashboard/gestione-hotel']); }
+  vaiGestisciCamere(hotel: any) { if (hotel?.id) this.router.navigate(['/dashboard/hotel', hotel.id, 'camere']); }
   vaiStatistiche()  { this.router.navigate(['/dashboard/statistiche']); }
   vaiPrenotazioni() { this.router.navigate(['/dashboard/prenotazioni']); }
-  vaiSupporto()     { this.showAlertMessage(this.i18n.translate('myhotel.supporto.msg'), 'info'); }
+  vaiSupporto()     { this.chatService.openChat(); }
   navigateTo(route: string) { if (route) this.router.navigateByUrl(route); }
+
+  // ── Eliminazione hotel/bozza ──
+
+  chiediElimina(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelDaEliminare = hotel;
+    const nome = hotel.nome || this.i18n.translate('myhotel.struttura-fallback');
+    this.confirmMessage = this.i18n.translate('myhotel.msg.conferma-elimina').replace('{nome}', nome);
+    this.showConfirm = true;
+  }
+
+  gestisciEliminazione(conferma: boolean) {
+    this.showConfirm = false;
+    const hotel = this.hotelDaEliminare;
+    this.hotelDaEliminare = null;
+    if (!conferma || !hotel?.id) return;
+    this.hotelService.elimina(hotel.id).subscribe({
+      next: () => {
+        this.hotels = this.hotels.filter(h => h.id !== hotel.id);
+        this.showAlertMessage(this.i18n.translate('myhotel.msg.hotel-eliminato'), 'success');
+      },
+      error: () => this.showAlertMessage(this.i18n.translate('myhotel.msg.errore-elimina'), 'error'),
+    });
+  }
+
+  // ── Azioni ciclo di vita (host proprietario) ──
+
+  private statoUpper(hotel: any): string { return (hotel?.stato ?? 'BOZZA').toUpperCase(); }
+
+  puoInviareRevisione(hotel: any): boolean {
+    const s = this.statoUpper(hotel);
+    return s === 'BOZZA' || s === 'RIFIUTATO';
+  }
+  puoDisattivare(hotel: any): boolean { return this.statoUpper(hotel) === 'PUBBLICATO'; }
+  puoAttivare(hotel: any): boolean    { return this.statoUpper(hotel) === 'NON_ATTIVO'; }
+
+  private applicaStato(id: number, stato: string, msgKey: string) {
+    const h = this.hotels.find(x => x.id === id);
+    if (h) h.stato = stato;
+    this.showAlertMessage(this.i18n.translate(msgKey), 'success');
+  }
+  private erroreStato = (e: any) =>
+    this.showAlertMessage(e?.error?.message ?? this.i18n.translate('myhotel.msg.errore-stato'), 'error');
+
+  inviaRevisione(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelService.inviaInRevisione(hotel.id).subscribe({
+      next: () => this.applicaStato(hotel.id, 'IN_REVISIONE', 'myhotel.msg.inviato-revisione'),
+      error: this.erroreStato,
+    });
+  }
+  disattivaHotel(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelService.disattiva(hotel.id).subscribe({
+      next: () => this.applicaStato(hotel.id, 'NON_ATTIVO', 'myhotel.msg.disattivato'),
+      error: this.erroreStato,
+    });
+  }
+  attivaHotel(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelService.attiva(hotel.id).subscribe({
+      next: () => this.applicaStato(hotel.id, 'PUBBLICATO', 'myhotel.msg.attivato'),
+      error: this.erroreStato,
+    });
+  }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {
     this.alertMessage = msg; this.alertType = type; this.showAlert = true;

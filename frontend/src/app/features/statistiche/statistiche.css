@@ -1,4 +1,24 @@
 /* ─── Root ─────────────────────────────────────────────────────────────────── */
+/* ── Breadcrumb ── */
+.page-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 0.82rem;
+}
+.page-breadcrumb .pb-home {
+  color: #0F3460;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+.page-breadcrumb .pb-home:hover { text-decoration: underline; }
+.page-breadcrumb .pb-sep { color: #CBD5E1; }
+.page-breadcrumb .pb-current { color: #6B7280; }
+
 .host-statistics-page {
   font-family: 'Inter', sans-serif;
   color: #0A2342;

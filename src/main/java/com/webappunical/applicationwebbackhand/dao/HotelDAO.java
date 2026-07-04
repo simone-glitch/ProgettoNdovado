@@ -29,6 +29,14 @@ public class HotelDAO {
         h.setLatitudine(rs.getDouble("latitudine"));
         h.setLongitudine(rs.getDouble("longitudine"));
         h.setIdProprietario(rs.getInt("id_proprietario"));
+        h.setStato(rs.getString("stato"));
+        h.setCheckIn(rs.getString("check_in"));
+        h.setCheckOut(rs.getString("check_out"));
+        h.setTelefono(rs.getString("telefono"));
+        h.setEmail(rs.getString("email"));
+        // getObject preserva il null (getInt/getDouble restituirebbero 0)
+        h.setNumCamere(rs.getObject("num_camere") != null ? rs.getInt("num_camere") : null);
+        h.setPrezzoMedio(rs.getObject("prezzo_medio") != null ? rs.getDouble("prezzo_medio") : null);
         return h;
     };
 
@@ -37,11 +45,40 @@ public class HotelDAO {
         return jdbcTemplate.query(sql, hotelRowMapper);
     }
 
+    // Listato pubblico: solo strutture pubblicate (per home e viste non autenticate).
+    public List<Hotel> trovaPubblicati() {
+        String sql = "SELECT * FROM hotel WHERE stato = 'PUBBLICATO' ORDER BY nome";
+        return jdbcTemplate.query(sql, hotelRowMapper);
+    }
+
+    /**
+     * Vista di moderazione ADMIN: tutte le strutture tranne le BOZZA (private
+     * dell'host finché non le invia), arricchite col proprietario per mostrare
+     * "di chi è" ciascuna struttura.
+     */
+    public List<Hotel> trovaPerModerazione() {
+        String sql = """
+                SELECT h.*, u.nome AS prop_nome, u.cognome AS prop_cognome, u.email AS prop_email
+                FROM hotel h
+                JOIN utenti u ON u.id_utente = h.id_proprietario
+                WHERE h.stato <> 'BOZZA'
+                ORDER BY h.nome
+                """;
+        return jdbcTemplate.query(sql, (rs, n) -> {
+            Hotel h = hotelRowMapper.mapRow(rs, n);
+            String nome = ((rs.getString("prop_nome") == null ? "" : rs.getString("prop_nome")) + " "
+                    + (rs.getString("prop_cognome") == null ? "" : rs.getString("prop_cognome"))).trim();
+            h.setNomeProprietario(nome.isEmpty() ? null : nome);
+            h.setEmailProprietario(rs.getString("prop_email"));
+            return h;
+        });
+    }
+
     public List<Hotel> cerca(String citta, Integer stelleMin, Double prezzoMax, Integer numOspiti) {
         StringBuilder sql = new StringBuilder("""
                 SELECT DISTINCT h.* FROM hotel h
                 LEFT JOIN camere c ON c.id_hotel = h.id_hotel
-                WHERE 1=1
+                WHERE h.stato = 'PUBBLICATO'
                 """);
 
         if (citta != null && !citta.isBlank())
@@ -55,6 +92,27 @@ public class HotelDAO {
 
         sql.append(" ORDER BY h.nome");
         return jdbcTemplate.query(sql.toString(), hotelRowMapper);
+    }
+
+    // Unicità dei contatti tra strutture: un telefono/email non può essere usato
+    // da due hotel diversi. excludeId (l'hotel che si sta modificando) è escluso
+    // dal confronto così un update che non tocca il contatto non falsi-positiva.
+    public boolean esisteAltroHotelConTelefono(String telefono, Integer excludeId) {
+        if (telefono == null || telefono.isBlank()) return false;
+        String base = "SELECT COUNT(*) FROM hotel WHERE telefono = ?";
+        Integer count = (excludeId != null)
+                ? jdbcTemplate.queryForObject(base + " AND id_hotel <> ?", Integer.class, telefono, excludeId)
+                : jdbcTemplate.queryForObject(base, Integer.class, telefono);
+        return count != null && count > 0;
+    }
+
+    public boolean esisteAltroHotelConEmail(String email, Integer excludeId) {
+        if (email == null || email.isBlank()) return false;
+        String base = "SELECT COUNT(*) FROM hotel WHERE LOWER(email) = LOWER(?)";
+        Integer count = (excludeId != null)
+                ? jdbcTemplate.queryForObject(base + " AND id_hotel <> ?", Integer.class, email, excludeId)
+                : jdbcTemplate.queryForObject(base, Integer.class, email);
+        return count != null && count > 0;
     }
 
     public Hotel trovaPerId(Integer id) {
@@ -73,8 +131,9 @@ public class HotelDAO {
 
     public Integer salva(Hotel hotel) {
         String sql = """
-                INSERT INTO hotel (nome, descrizione, citta, indirizzo, stelle, latitudine, longitudine, id_proprietario)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO hotel (nome, descrizione, citta, indirizzo, stelle, latitudine, longitudine,
+                                   id_proprietario, stato, check_in, check_out, telefono, email, num_camere, prezzo_medio)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -87,6 +146,13 @@ public class HotelDAO {
             ps.setObject(6, hotel.getLatitudine());
             ps.setObject(7, hotel.getLongitudine());
             ps.setInt(8, hotel.getIdProprietario());
+            ps.setString(9, hotel.getStato() != null ? hotel.getStato() : "BOZZA");
+            ps.setString(10, hotel.getCheckIn());
+            ps.setString(11, hotel.getCheckOut());
+            ps.setString(12, hotel.getTelefono());
+            ps.setString(13, hotel.getEmail());
+            ps.setObject(14, hotel.getNumCamere());
+            ps.setObject(15, hotel.getPrezzoMedio());
             return ps;
         }, keyHolder);
         return keyHolder.getKey() != null ? keyHolder.getKey().intValue() : null;
@@ -96,12 +162,23 @@ public class HotelDAO {
         String sql = """
                 UPDATE hotel
                 SET nome = ?, descrizione = ?, citta = ?, indirizzo = ?,
-                    stelle = ?, latitudine = ?, longitudine = ?
+                    stelle = ?, latitudine = ?, longitudine = ?,
+                    stato = COALESCE(?, stato), check_in = ?, check_out = ?,
+                    telefono = ?, email = ?, num_camere = ?, prezzo_medio = ?
                 WHERE id_hotel = ?
                 """;
         jdbcTemplate.update(sql,
                 hotel.getNome(), hotel.getDescrizione(), hotel.getCitta(), hotel.getIndirizzo(),
-                hotel.getStelle(), hotel.getLatitudine(), hotel.getLongitudine(), hotel.getId());
+                hotel.getStelle(), hotel.getLatitudine(), hotel.getLongitudine(),
+                hotel.getStato(), hotel.getCheckIn(), hotel.getCheckOut(),
+                hotel.getTelefono(), hotel.getEmail(), hotel.getNumCamere(), hotel.getPrezzoMedio(),
+                hotel.getId());
+    }
+
+    // Aggiorna solo lo stato (ciclo di vita): usato dalle transizioni di moderazione,
+    // separato dall'update generico dei dati così un edit non può alterare lo stato.
+    public void aggiornaStato(Integer idHotel, String stato) {
+        jdbcTemplate.update("UPDATE hotel SET stato = ? WHERE id_hotel = ?", stato, idHotel);
     }
 
     public void elimina(Integer id) {
@@ -149,6 +226,20 @@ public class HotelDAO {
 
     public void eliminaFoto(Integer idFoto) {
         jdbcTemplate.update("DELETE FROM foto_hotel WHERE id_foto = ?", idFoto);
+    }
+
+    // Sostituisce l'intera galleria dell'hotel con quella passata (come per le
+    // camere): semplice e sempre coerente con quanto inviato dal wizard.
+    public void sostituisciFoto(Integer idHotel, List<String> foto) {
+        jdbcTemplate.update("DELETE FROM foto_hotel WHERE id_hotel = ?", idHotel);
+        if (foto == null) return;
+        for (String url : foto) {
+            if (url != null && !url.isBlank()) {
+                jdbcTemplate.update(
+                        "INSERT INTO foto_hotel (url_foto, didascalia, id_hotel) VALUES (?, ?, ?)",
+                        url, null, idHotel);
+            }
+        }
     }
 
     public List<String> trovaFotoUrls(Integer idHotel) {

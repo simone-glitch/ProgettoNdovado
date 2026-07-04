@@ -1,4 +1,9 @@
 <div class="utenti-container">
+  <nav class="page-breadcrumb">
+    <a routerLink="/dashboard/home" class="pb-home"><i class="fas fa-home"></i> {{ 'common.home' | translate }}</a>
+    <span class="pb-sep">/</span>
+    <span class="pb-current">{{ 'utenti.titolo' | translate }}</span>
+  </nav>
   <header class="header-main">
     <h1>{{ 'utenti.titolo' | translate }}</h1>
     <p>{{ 'utenti.sottotitolo' | translate }}</p>

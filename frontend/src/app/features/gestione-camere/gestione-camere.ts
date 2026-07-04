@@ -148,7 +148,7 @@ export class GestioneCamere implements OnInit {
     };
     const onErr = (e: any) => {
       this.savingCamera = false;
-      this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error');
+      this.showAlertMessage(this.estraiErrore(e), 'error');
     };
 
     if (this.editingCamera) {
@@ -193,6 +193,18 @@ export class GestioneCamere implements OnInit {
 
   fotoCopertina(c: any): string | null {
     return Array.isArray(c.foto) && c.foto.length > 0 ? c.foto[0] : null;
+  }
+
+  /** Estrae un messaggio leggibile dalla risposta d'errore HTTP.
+   *  Il backend può rispondere con JSON ({message}) o con testo semplice:
+   *  in quest'ultimo caso Angular non riesce a parsarlo e lascia il testo
+   *  grezzo in e.error, quindi lo recuperiamo esplicitamente. */
+  private estraiErrore(e: any): string {
+    const err = e?.error;
+    if (typeof err === 'string' && err.trim()) return err;
+    if (err?.message) return err.message;
+    if (typeof e?.message === 'string' && e.message.trim()) return e.message;
+    return this.i18n.translate('gestionehotel.msg.errore');
   }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {

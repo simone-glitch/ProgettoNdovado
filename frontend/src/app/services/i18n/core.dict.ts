@@ -88,6 +88,7 @@ export const coreDict: LangDict = {
     'common.dettagli':       'Dettagli',
     'common.vedi-tutti':     'Vedi tutti',
     'common.per-notte':      '/notte',
+    'common.home':           'Home',
   },
   en: {
     'nav.hotel':             'Hotels',
@@ -176,6 +177,7 @@ export const coreDict: LangDict = {
     'common.dettagli':       'Details',
     'common.vedi-tutti':     'View all',
     'common.per-notte':      '/night',
+    'common.home':           'Home',
   },
   es: {
     'nav.hotel':             'Hoteles',
@@ -264,6 +266,7 @@ export const coreDict: LangDict = {
     'common.dettagli':       'Detalles',
     'common.vedi-tutti':     'Ver todos',
     'common.per-notte':      '/noche',
+    'common.home':           'Inicio',
   },
   fr: {
     'nav.hotel':             'Hôtels',
@@ -352,6 +355,7 @@ export const coreDict: LangDict = {
     'common.dettagli':       'Détails',
     'common.vedi-tutti':     'Voir tout',
     'common.per-notte':      '/nuit',
+    'common.home':           'Accueil',
   },
   de: {
     'nav.hotel':             'Hotels',
@@ -440,5 +444,6 @@ export const coreDict: LangDict = {
     'common.dettagli':       'Details',
     'common.vedi-tutti':     'Alle anzeigen',
     'common.per-notte':      '/Nacht',
+    'common.home':           'Startseite',
   },
 };

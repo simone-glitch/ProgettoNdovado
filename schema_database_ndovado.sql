@@ -28,6 +28,7 @@ CREATE TABLE public.utenti (
     email       character varying(100) NOT NULL,
     password    character varying(255) NOT NULL,
     ruolo       character varying(20)  NOT NULL,
+    telefono    character varying(30),
     banned      boolean DEFAULT false,
     CONSTRAINT utenti_pkey PRIMARY KEY (id_utente),
     CONSTRAINT utenti_email_key UNIQUE (email),
@@ -40,6 +41,12 @@ CREATE SEQUENCE public.utenti_id_utente_seq
     AS integer START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 ALTER SEQUENCE public.utenti_id_utente_seq OWNED BY public.utenti.id_utente;
 ALTER TABLE ONLY public.utenti ALTER COLUMN id_utente SET DEFAULT nextval('public.utenti_id_utente_seq'::regclass);
+
+-- Colonna telefono: opzionale ma univoca quando valorizzata.
+-- Statement idempotenti così anche i database già creati vengono migrati senza errori.
+ALTER TABLE public.utenti ADD COLUMN IF NOT EXISTS telefono character varying(30);
+-- In PostgreSQL gli indici UNIQUE ignorano i NULL: il vincolo scatta solo tra numeri effettivamente inseriti.
+CREATE UNIQUE INDEX IF NOT EXISTS utenti_telefono_key ON public.utenti (telefono);
 
 -- Utente amministratore di default (password: Admin123 — da cambiare in produzione)
 INSERT INTO public.utenti (nome, cognome, email, password, ruolo) VALUES
@@ -60,8 +67,18 @@ CREATE TABLE public.hotel (
     latitudine      numeric(10, 7),
     longitudine     numeric(10, 7),
     id_proprietario integer NOT NULL,
+    stato           character varying(20) NOT NULL DEFAULT 'PUBBLICATO',
+    check_in        character varying(10),
+    check_out       character varying(10),
+    telefono        character varying(30),
+    email           character varying(100),
+    num_camere      integer,
+    prezzo_medio    numeric(10, 2),
     CONSTRAINT hotel_pkey PRIMARY KEY (id_hotel),
     CONSTRAINT hotel_stelle_check CHECK (stelle BETWEEN 1 AND 5),
+    CONSTRAINT hotel_stato_check CHECK (
+        stato IN ('BOZZA', 'PUBBLICATO', 'IN_REVISIONE', 'SOSPESO', 'RIFIUTATO', 'NON_ATTIVO')
+    ),
     CONSTRAINT hotel_proprietario_fkey FOREIGN KEY (id_proprietario)
         REFERENCES public.utenti(id_utente) ON DELETE CASCADE
 );
@@ -204,7 +221,9 @@ CREATE TABLE public.hotel_servizi (
 
 CREATE TABLE public.foto_hotel (
     id_foto     integer NOT NULL,
-    url_foto    character varying(500) NOT NULL,
+    -- Immagini come data URL base64 (upload da file) oppure URL esterni: text
+    -- per non limitare la lunghezza, coerente con foto_camere.dati_foto.
+    url_foto    text NOT NULL,
     didascalia  character varying(200),
     id_hotel    integer NOT NULL,
     CONSTRAINT foto_hotel_pkey PRIMARY KEY (id_foto),

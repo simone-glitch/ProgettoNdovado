@@ -1,5 +1,12 @@
 <div class="host-statistics-page">
 
+  <!-- ── Breadcrumb ── -->
+  <nav class="page-breadcrumb">
+    <a routerLink="/dashboard/home" class="pb-home"><i class="fas fa-home"></i> {{ 'common.home' | translate }}</a>
+    <span class="pb-sep">/</span>
+    <span class="pb-current">{{ 'stat.page-title' | translate }}</span>
+  </nav>
+
   <!-- ── PAGE HEADER ── -->
   <div class="host-statistics-header">
     <h1>{{ 'stat.page-title' | translate }}</h1>

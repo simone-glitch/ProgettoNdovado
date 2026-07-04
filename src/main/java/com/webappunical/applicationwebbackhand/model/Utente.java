@@ -23,6 +23,9 @@ public class Utente {
     @NotBlank(message = "Il ruolo non può essere vuoto")
     private String ruolo; // ADMIN | HOST | GUEST
 
+    // Opzionale, ma se presente deve essere univoco tra gli utenti.
+    private String telefono;
+
     private boolean banned;
 
     public Utente() {}
@@ -44,6 +47,9 @@ public class Utente {
 
     public String getRuolo() { return ruolo; }
     public void setRuolo(String ruolo) { this.ruolo = ruolo; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
 
     public boolean isBanned() { return banned; }
     public void setBanned(boolean banned) { this.banned = banned; }

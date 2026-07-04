@@ -158,3 +158,36 @@
   box-shadow: 0 3px 10px rgba(201,148,58,0.3);
 }
 .chat-footer button:hover { transform: scale(1.08); box-shadow: 0 5px 14px rgba(201,148,58,0.4); }
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .chat-container {
+    bottom: 84px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    height: min(70vh, 520px);
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 480px) and (max-height: 640px) {
+  .chat-container {
+    top: 12px;
+    bottom: 76px;
+    height: auto;
+  }
+}
+
+/* Schermi molto piccoli: chat a tutto schermo */
+@media (max-width: 360px) {
+  .chat-container {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+  }
+}

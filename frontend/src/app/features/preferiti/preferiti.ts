@@ -22,6 +22,7 @@ export class Preferiti implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.favService.sincronizza();
     this.sub = this.favService.favorites$.subscribe(() => {
       this.hotels = this.favService.getAll();
     });

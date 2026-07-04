@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SharedModule }        from '../../shared/shared.module';
 import { DashboardService }    from '../../services/dashboard.service';
 import { HotelService }        from '../../services/hotel.service';
@@ -18,7 +18,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-statistiche',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule],
+  imports: [CommonModule, FormsModule, RouterLink, SharedModule],
   templateUrl: './statistiche.html',
   styleUrl: './statistiche.css',
 })
