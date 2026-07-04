@@ -1,0 +1,124 @@
+<div class="msg-page">
+
+  @if (showAlert) {
+    <app-alert [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+  }
+  @if (showConfirmSegnala) {
+    <app-conferma-box [messaggio]="'msg.segnala-conferma' | translate" (risposta)="gestisciSegnala($event)"></app-conferma-box>
+  }
+
+  <header class="msg-header">
+    <div>
+      <h1 class="msg-title">{{ 'msg.title' | translate }}</h1>
+      <p class="msg-subtitle">{{ 'msg.sub' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="msg-layout" [class.msg-thread-open]="selezionata">
+
+    <!-- LISTA CONVERSAZIONI -->
+    <aside class="msg-list">
+      <!-- Tab: conversazioni attive / archiviate -->
+      <div class="msg-tabs">
+        <button class="msg-tab" [class.msg-tab-active]="!mostraArchiviate" (click)="cambiaTab(false)">
+          {{ 'msg.tab-attive' | translate }}
+        </button>
+        <button class="msg-tab" [class.msg-tab-active]="mostraArchiviate" (click)="cambiaTab(true)">
+          {{ 'msg.tab-archiviate' | translate }}@if (countArchiviate > 0) { <span class="msg-tab-count">{{ countArchiviate }}</span> }
+        </button>
+      </div>
+
+      @if (loading) {
+        <div class="msg-list-skeleton"></div>
+        <div class="msg-list-skeleton"></div>
+      } @else if (conversazioniVisibili.length === 0) {
+        <div class="msg-empty">
+          <div class="msg-empty-icon"><i class="fas fa-comments"></i></div>
+          <h3>{{ (mostraArchiviate ? 'msg.nessuna-archiviata' : 'msg.nessuna-conv') | translate }}</h3>
+        </div>
+      } @else {
+        @for (c of conversazioniVisibili; track c.id) {
+          <div class="msg-conv" [class.msg-conv-active]="selezionata?.id === c.id" (click)="seleziona(c)"
+               role="button" tabindex="0" (keydown.enter)="seleziona(c)">
+            <span class="msg-avatar">{{ iniziali(altroNome(c)) }}</span>
+            <span class="msg-conv-body">
+              <span class="msg-conv-top">
+                <span class="msg-conv-name">{{ altroNome(c) }}</span>
+                @if (c.nonLetti > 0) { <span class="msg-badge">{{ c.nonLetti }}</span> }
+              </span>
+              @if (c.assistenza) {
+                <span class="msg-conv-hotel msg-conv-assist"><i class="fas fa-headset"></i> {{ 'msg.assistenza' | translate }}</span>
+              } @else if (c.nomeHotel) {
+                <span class="msg-conv-hotel"><i class="fas fa-hotel"></i> {{ c.nomeHotel }}</span>
+              }
+              <span class="msg-conv-preview">{{ c.ultimoMessaggio || ('msg.nessun-messaggio' | translate) }}</span>
+            </span>
+            <button class="msg-conv-archive" (click)="archivia(c, $event)"
+                    [title]="(c.archiviata ? 'msg.ripristina' : 'msg.archivia') | translate"
+                    [attr.aria-label]="(c.archiviata ? 'msg.ripristina' : 'msg.archivia') | translate">
+              <i class="fas" [ngClass]="c.archiviata ? 'fa-inbox' : 'fa-archive'"></i>
+            </button>
+          </div>
+        }
+      }
+    </aside>
+
+    <!-- THREAD -->
+    <section class="msg-thread">
+      @if (!selezionata) {
+        <div class="msg-thread-empty">
+          <i class="fas fa-comment-dots"></i>
+          <p>{{ 'msg.seleziona' | translate }}</p>
+        </div>
+      } @else {
+        <div class="msg-thread-head">
+          <button class="msg-back" (click)="chiudiThread()" [attr.aria-label]="'msg.torna-lista' | translate">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <span class="msg-avatar msg-avatar-sm">{{ iniziali(altroNome(selezionata)) }}</span>
+          <div class="msg-thread-head-text">
+            <span class="msg-thread-name">{{ altroNome(selezionata) }}</span>
+            @if (selezionata.assistenza) {
+              <span class="msg-thread-hotel"><i class="fas fa-headset"></i> {{ 'msg.assistenza' | translate }}</span>
+            } @else if (selezionata.nomeHotel) {
+              <span class="msg-thread-hotel">{{ 'msg.a-proposito' | translate }} {{ selezionata.nomeHotel }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="msg-thread-body" #threadBody>
+          @if (loadingMessaggi) {
+            <div class="msg-loading"><span class="msg-spinner"></span></div>
+          } @else if (messaggi.length === 0) {
+            <p class="msg-thread-vuoto">{{ 'msg.nessun-messaggio' | translate }}</p>
+          } @else {
+            @for (m of messaggi; track m.id) {
+              <div class="msg-bubble-row" [class.msg-mine]="isMine(m)">
+                <div class="msg-bubble">
+                  <span class="msg-bubble-text">{{ m.testo }}</span>
+                  <span class="msg-bubble-time">{{ fmtOra(m.dataInvio) }}</span>
+                </div>
+                @if (puoSegnalare(m)) {
+                  <button class="msg-report" (click)="chiediSegnala(m)"
+                    [title]="'msg.segnala' | translate" [attr.aria-label]="'msg.segnala' | translate">
+                    <i class="fas fa-flag"></i>
+                  </button>
+                }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="msg-composer">
+          <textarea class="msg-input" [(ngModel)]="nuovoTesto" rows="1"
+            [placeholder]="'msg.scrivi-ph' | translate" (keydown)="onKeydown($event)"></textarea>
+          <button class="msg-send" (click)="invia()" [disabled]="sending || !nuovoTesto.trim()"
+            [attr.aria-label]="'msg.invia' | translate">
+            @if (sending) { <span class="msg-spinner"></span> } @else { <i class="fas fa-paper-plane"></i> }
+          </button>
+        </div>
+      }
+    </section>
+
+  </div>
+</div>

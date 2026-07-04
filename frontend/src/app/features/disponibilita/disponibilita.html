@@ -1,0 +1,97 @@
+<div class="disp-page">
+
+  @if (showAlert) {
+    <app-alert [type]="alertType" [message]="alertMessage" (dismissEvent)="onAlertDismiss()"></app-alert>
+  }
+  @if (showConfirm) {
+    <app-conferma-box [messaggio]="confirmMessage" (risposta)="gestisciConferma($event)"></app-conferma-box>
+  }
+
+  <!-- BACK -->
+  <a routerLink="/dashboard/miei-hotel" class="disp-back">
+    <span class="disp-back-icon"><i class="fas fa-arrow-left"></i></span>
+    {{ 'disp.torna' | translate }}
+  </a>
+
+  <!-- HEADER -->
+  <header class="disp-header">
+    <div class="disp-header-text">
+      <h1 class="disp-title">{{ 'disp.title' | translate }}</h1>
+      <p class="disp-subtitle">{{ 'disp.sub' | translate }}</p>
+    </div>
+  </header>
+
+  @if (loading) {
+    <div class="disp-skeleton"></div>
+  } @else if (hotels.length === 0) {
+    <div class="disp-empty">
+      <div class="disp-empty-icon"><i class="fas fa-hotel"></i></div>
+      <p>{{ 'disp.nessun-hotel' | translate }}</p>
+    </div>
+  } @else {
+
+    <!-- SELETTORE STRUTTURA -->
+    <div class="disp-card">
+      <label class="disp-label" for="hotelSel">{{ 'disp.scegli-struttura' | translate }}</label>
+      <select id="hotelSel" class="disp-input" [(ngModel)]="hotelSelezionatoId" (ngModelChange)="onHotelChange()">
+        @for (h of hotels; track h.id) {
+          <option [ngValue]="h.id">{{ h.nome }}{{ h.citta ? ' · ' + h.citta : '' }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="disp-grid">
+
+      <!-- FORM NUOVO BLOCCO -->
+      <section class="disp-card">
+        <h2 class="disp-card-title"><i class="fas fa-calendar-times"></i> {{ 'disp.nuovo-blocco' | translate }}</h2>
+        <div class="disp-form">
+          <div class="disp-field">
+            <label class="disp-label">{{ 'disp.data-inizio' | translate }}</label>
+            <input type="date" class="disp-input" [(ngModel)]="dataInizio" [min]="oggi">
+          </div>
+          <div class="disp-field">
+            <label class="disp-label">{{ 'disp.data-fine' | translate }}</label>
+            <input type="date" class="disp-input" [(ngModel)]="dataFine" [min]="dataInizio || oggi">
+          </div>
+          <p class="disp-info disp-field-full">
+            <i class="fas fa-info-circle"></i> {{ 'disp.info' | translate }}
+          </p>
+          <button class="disp-btn-primary" (click)="aggiungiBlocco()" [disabled]="savingBlocco">
+            @if (savingBlocco) { <span class="disp-spinner"></span> }
+            <i class="fas fa-ban"></i> {{ 'disp.aggiungi' | translate }}
+          </button>
+        </div>
+      </section>
+
+      <!-- LISTA BLOCCHI -->
+      <section class="disp-card">
+        <h2 class="disp-card-title"><i class="fas fa-lock"></i> {{ 'disp.blocchi-attivi' | translate }}</h2>
+        @if (blocchi.length === 0) {
+          <p class="disp-muted">{{ 'disp.nessun-blocco' | translate }}</p>
+        } @else {
+          <ul class="disp-blocchi">
+            @for (b of blocchi; track b.id) {
+              <li class="disp-blocco">
+                <div class="disp-blocco-icon"><i class="fas fa-calendar-day"></i></div>
+                <div class="disp-blocco-body">
+                  <span class="disp-blocco-date">{{ fmtData(b.dataInizio) }} → {{ fmtData(b.dataFine) }}</span>
+                  <span class="disp-blocco-meta">
+                    {{ durata(b) }} {{ durata(b) === 1 ? ('disp.giorno' | translate) : ('disp.giorni' | translate) }}
+                    @if (b.motivo) { · {{ b.motivo }} }
+                  </span>
+                </div>
+                <button class="disp-blocco-del" (click)="chiediRimozione(b)"
+                  [title]="'disp.rimuovi' | translate" [attr.aria-label]="'disp.rimuovi' | translate">
+                  <i class="fas fa-unlock"></i> {{ 'disp.rimuovi' | translate }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+    </div>
+  }
+
+</div>
