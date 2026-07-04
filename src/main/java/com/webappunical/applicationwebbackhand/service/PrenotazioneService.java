@@ -1,5 +1,6 @@
 package com.webappunical.applicationwebbackhand.service;
 
+import com.webappunical.applicationwebbackhand.dao.BloccoHotelDAO;
 import com.webappunical.applicationwebbackhand.dao.CameraDAO;
 import com.webappunical.applicationwebbackhand.dao.HotelDAO;
 import com.webappunical.applicationwebbackhand.dao.PrenotazioneDAO;
@@ -24,14 +25,16 @@ public class PrenotazioneService {
     private final CameraDAO       cameraDAO;
     private final HotelDAO        hotelDAO;
     private final UtenteJDBC      utenteJDBC;
+    private final BloccoHotelDAO  bloccoDAO;
 
     @Autowired
     public PrenotazioneService(PrenotazioneDAO prenotazioneDAO, CameraDAO cameraDAO,
-                               HotelDAO hotelDAO, UtenteJDBC utenteJDBC) {
+                               HotelDAO hotelDAO, UtenteJDBC utenteJDBC, BloccoHotelDAO bloccoDAO) {
         this.prenotazioneDAO = prenotazioneDAO;
         this.cameraDAO       = cameraDAO;
         this.hotelDAO        = hotelDAO;
         this.utenteJDBC      = utenteJDBC;
+        this.bloccoDAO       = bloccoDAO;
     }
 
     public List<Prenotazione> getPrenotazioniUtente(String email) {
@@ -86,6 +89,11 @@ public class PrenotazioneService {
         boolean libera  = prenotazioneDAO.verificaDisponibilita(camera.getId(), checkin, checkout);
         if (!libera) {
             throw new IllegalStateException("La camera non è disponibile nelle date selezionate.");
+        }
+        // L'host può aver bloccato la struttura in quelle date (ferie, lavori...):
+        // il blocco vale per tutte le camere, quindi rende le date non prenotabili.
+        if (bloccoDAO.esisteSovrapposizione(hotel.getId(), checkin, checkout)) {
+            throw new IllegalStateException("La struttura non è disponibile nelle date selezionate.");
         }
 
         long notti = ChronoUnit.DAYS.between(prenotazione.getDataCheckin(), prenotazione.getDataCheckout());

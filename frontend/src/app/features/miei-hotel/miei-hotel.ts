@@ -7,6 +7,7 @@ import { PrenotazioneService } from '../../services/prenotazione.service';
 import { AuthService } from '../../services/auth.service';
 import { PreferencesService } from '../../services/preferences.service';
 import { ChatService } from '../../services/chat.service';
+import { MessaggiService } from '../../services/messaggi.service';
 import { TranslationService } from '../../services/translation.service';
 import { SharedModule } from '../../shared/shared.module';
 import { forkJoin, of } from 'rxjs';
@@ -45,6 +46,7 @@ export class MieiHotel implements OnInit {
     private authService: AuthService,
     private prefsService: PreferencesService,
     private chatService: ChatService,
+    private messaggiService: MessaggiService,
     private i18n: TranslationService,
     private router: Router
   ) {}
@@ -82,7 +84,9 @@ export class MieiHotel implements OnInit {
   // ── Navigazione a pagine dedicate (niente più modale) ──
 
   apriNuovoHotel() {
-    this.router.navigate(['/dashboard/hotel/nuovo']);
+    // Punta al wizard "Aggiungi hotel" (lo stesso raggiungibile dalla top bar),
+    // editor unificato per creare una struttura.
+    this.router.navigate(['/dashboard/aggiungi-hotel']);
   }
 
   apriModificaHotel(hotel: any) {
@@ -172,7 +176,9 @@ export class MieiHotel implements OnInit {
   getCamereCount(hotel: any): number { return hotel?.camere?.length ?? 0; }
 
   getHotelImg(hotel: any): string | null {
-    return hotel?.foto?.[0]?.urlFoto ?? hotel?.immagine ?? hotel?.image ?? null;
+    // La copertina è la prima foto caricata dell'hotel (fotoUrls[0], popolata
+    // dal backend nella lista). Manteniamo i vecchi fallback per sicurezza.
+    return hotel?.fotoUrls?.[0] ?? hotel?.foto?.[0]?.urlFoto ?? hotel?.immagine ?? hotel?.image ?? null;
   }
 
   getHotelInitials(nome: string): string {
@@ -253,7 +259,7 @@ export class MieiHotel implements OnInit {
     if (inAttesa > 0) items.push({ icon: 'fa-calendar-check', iconClass: 'reminder-orange', title: `${inAttesa} ${this.i18n.translate(inAttesa === 1 ? 'myhotel.promemoria.prenotazioni-attesa' : 'myhotel.promemoria.prenotazioni-attesa-plurale')}`, subtitle: this.i18n.translate('myhotel.promemoria.rispondi'), route: '/dashboard/prenotazioni' });
     const inRevisione = this.hotels.filter(h => ['IN_REVISIONE', 'REVISIONE', 'PENDING'].includes((h.stato ?? '').toUpperCase())).length;
     if (inRevisione > 0) items.push({ icon: 'fa-file-alt', iconClass: 'reminder-blue', title: `${inRevisione} ${this.i18n.translate(inRevisione === 1 ? 'myhotel.promemoria.struttura-revisione' : 'myhotel.promemoria.strutture-revisione')}`, subtitle: this.i18n.translate('myhotel.promemoria.attesa-approvazione'), route: '/dashboard/miei-hotel' });
-    const senzaFoto = this.hotels.filter(h => !h.foto?.length);
+    const senzaFoto = this.hotels.filter(h => !h.fotoUrls?.length && !h.foto?.length);
     if (senzaFoto.length > 0) items.push({ icon: 'fa-camera', iconClass: 'reminder-green', title: this.i18n.translate('myhotel.aggiorna-foto'), subtitle: senzaFoto.slice(0, 2).map((h: any) => h.nome || this.i18n.translate('myhotel.struttura-fallback')).join(', '), route: '/dashboard/miei-hotel' });
     const bozze = this.hotels.filter(h => ['BOZZA', 'DRAFT'].includes((h.stato ?? '').toUpperCase())).length;
     if (bozze > 0) items.push({ icon: 'fa-edit', iconClass: 'reminder-yellow', title: `${bozze} ${this.i18n.translate(bozze === 1 ? 'myhotel.promemoria.bozza-completare' : 'myhotel.promemoria.bozze-completare')}`, subtitle: this.i18n.translate('myhotel.promemoria.completa-pubblica'), route: '/dashboard/miei-hotel' });
@@ -273,8 +279,26 @@ export class MieiHotel implements OnInit {
   vaiDettagli(hotel: any) { if (hotel?.id) this.router.navigate(['/dashboard/hotel-detail', hotel.id]); }
   vaiGestisciCamere(hotel: any) { if (hotel?.id) this.router.navigate(['/dashboard/hotel', hotel.id, 'camere']); }
   vaiStatistiche()  { this.router.navigate(['/dashboard/statistiche']); }
+  vaiDisponibilita() { this.router.navigate(['/dashboard/disponibilita']); }
+  vaiMessaggi()      { this.router.navigate(['/dashboard/messaggi']); }
   vaiPrenotazioni() { this.router.navigate(['/dashboard/prenotazioni']); }
-  vaiSupporto()     { this.chatService.openChat(); }
+  // Assistenza = messaggistica diretta con un amministratore (segnalazioni,
+  // disguidi, discrepanze). Apre/crea la conversazione host↔admin e vi naviga.
+  contattandoAssistenza = false;
+  vaiSupporto() {
+    if (this.contattandoAssistenza) return;
+    this.contattandoAssistenza = true;
+    this.messaggiService.avviaAssistenza().subscribe({
+      next: (conv) => {
+        this.contattandoAssistenza = false;
+        this.router.navigate(['/dashboard/messaggi'], { queryParams: { conv: conv.id } });
+      },
+      error: (e) => {
+        this.contattandoAssistenza = false;
+        this.showAlertMessage(e?.error?.message ?? e?.error ?? this.i18n.translate('msg.errore'), 'error');
+      },
+    });
+  }
   navigateTo(route: string) { if (route) this.router.navigateByUrl(route); }
 
   // ── Eliminazione hotel/bozza ──

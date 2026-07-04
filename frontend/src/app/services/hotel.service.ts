@@ -79,4 +79,17 @@ export class HotelService {
   eliminaFoto(idHotel: number, idFoto: number): Observable<any> {
     return this.http.delete<any>(`${this.api}/${idHotel}/foto/${idFoto}`, { responseType: 'text' as 'json' });
   }
+
+  // ── Blocchi di disponibilità (ferie/lavori: giorni non prenotabili) ──
+  getBlocchi(idHotel: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/${idHotel}/blocchi`);
+  }
+
+  aggiungiBlocco(idHotel: number, blocco: { dataInizio: string; dataFine: string; motivo?: string }): Observable<any> {
+    return this.http.post<any>(`${this.api}/${idHotel}/blocchi`, blocco);
+  }
+
+  rimuoviBlocco(idBlocco: number): Observable<any> {
+    return this.http.delete<any>(`${this.api}/blocchi/${idBlocco}`, { responseType: 'text' as 'json' });
+  }
 }

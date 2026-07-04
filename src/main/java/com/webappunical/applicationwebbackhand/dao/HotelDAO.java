@@ -247,6 +247,17 @@ public class HotelDAO {
         return jdbcTemplate.queryForList(sql, String.class, idHotel);
     }
 
+    /** Prima foto caricata dell'hotel (copertina di default): la usano le liste
+     *  (home, "I miei hotel") per la card senza dover caricare l'intera galleria. */
+    public String trovaFotoCopertina(Integer idHotel) {
+        String sql = "SELECT url_foto FROM foto_hotel WHERE id_hotel = ? ORDER BY id_foto LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, idHotel);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public Double trovaVotoMedio(Integer idHotel) {
         String sql = "SELECT AVG(voto) FROM recensioni WHERE id_hotel = ?";
         return jdbcTemplate.queryForObject(sql, Double.class, idHotel);

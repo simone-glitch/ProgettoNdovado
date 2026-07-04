@@ -1,9 +1,11 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
+import flatpickr from 'flatpickr';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
+import { MessaggiService } from '../../services/messaggi.service';
 import { RecensioneService } from '../../services/recensione.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
@@ -17,17 +19,16 @@ import { SharedModule } from '../../shared/shared.module';
   templateUrl: './hotel-detail.html',
   styleUrl: './hotel-detail.css',
 })
-export class HotelDetail implements OnInit, AfterViewInit {
+export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
+  @ViewChild('checkinFp')   checkinInput?: ElementRef;
+  @ViewChild('checkoutFp')  checkoutInput?: ElementRef;
 
   hotel: any = null;
   camere: any[] = [];
   recensioni: any[] = [];
   loading = true;
   fotoAttiva = 0;
-
-  lightboxOpen = false;
-  lightboxImage = '';
 
   selectedCamera: any = null;
   bookingForm!: FormGroup;
@@ -47,6 +48,14 @@ export class HotelDetail implements OnInit, AfterViewInit {
   carteLocali: any[] = [];
   cartaSelezionataIdx: number | null = null;
 
+  showCapienzaInfo = false;
+
+  occupazioni: Array<{checkin: string; checkout: string}> = [];
+  blocchiHotel: Array<{dataInizio: string; dataFine: string; motivo?: string}> = [];
+  erroreOccupata = '';
+  private fpCheckin:  any = null;
+  private fpCheckout: any = null;
+
   puoRecensire = false;
 
   private mapInitialized = false;
@@ -58,9 +67,11 @@ export class HotelDetail implements OnInit, AfterViewInit {
     private hotelService: HotelService,
     private prenotazioneService: PrenotazioneService,
     private recensioneService: RecensioneService,
+    private messaggiService: MessaggiService,
     private authService: AuthService,
     private i18n: TranslationService,
-    private prefsService: PreferencesService
+    private prefsService: PreferencesService,
+    private ngZone: NgZone
   ) {}
 
   formatPrezzo(val: number | null | undefined): string {
@@ -116,15 +127,31 @@ export class HotelDetail implements OnInit, AfterViewInit {
   }
 
   caricaHotel(id: number) {
+    this.destroyFlatpickr();
     this.loading = true;
+    this.occupazioni = [];
+    this.blocchiHotel = [];
     this.hotelService.getDettaglio(id).subscribe({
       next: (h) => {
         this.hotel = h;
         this.camere = h.camere ?? [];
         this.loading = false;
-        setTimeout(() => this.inizializzaMappa(), 300);
+        this.caricaBlocchiHotel(id);
+        setTimeout(() => {
+          this.inizializzaMappa();
+          this.initFlatpickr();
+        }, 300);
       },
       error: () => { this.loading = false; }
+    });
+  }
+
+  // Blocchi di disponibilità decisi dall'host (ferie/lavori): valgono per tutte
+  // le camere e vanno disabilitati nel calendario come le date già occupate.
+  private caricaBlocchiHotel(id: number) {
+    this.hotelService.getBlocchi(id).subscribe({
+      next: (b) => { this.blocchiHotel = b ?? []; this.aggiornaFlatpickrDisabled(); },
+      error: () => { this.blocchiHotel = []; },
     });
   }
 
@@ -151,15 +178,104 @@ export class HotelDetail implements OnInit, AfterViewInit {
       .openPopup();
   }
 
+  // Prenotabile solo se la struttura è pubblicata: una sospesa (o non ancora
+  // approvata) resta visualizzabile ma non consente la prenotazione.
+  get prenotabile(): boolean {
+    return (this.hotel?.stato ?? 'PUBBLICATO').toUpperCase() === 'PUBBLICATO';
+  }
+  get isSospeso(): boolean {
+    return (this.hotel?.stato ?? '').toUpperCase() === 'SOSPESO';
+  }
+  get isNonAttivo(): boolean {
+    return (this.hotel?.stato ?? '').toUpperCase() === 'NON_ATTIVO';
+  }
+  get bannerNonPrenotabile(): string {
+    if (this.isSospeso)  return 'hoteldetail.sospeso-banner';
+    if (this.isNonAttivo) return 'hoteldetail.non-attiva-banner';
+    return 'hoteldetail.non-prenotabile-banner';
+  }
+
   get isGuest()       { return this.authService.isGuest(); }
+  get isHost()        { return this.authService.isHost(); }
   get isAdmin()       { return this.authService.isAdmin(); }
   get currentUserId() { return this.authService.getLoggedUser()?.id; }
+
+  // Solo i guest prenotano: host e admin devono accedere con un profilo guest.
+  get puoPrenotare(): boolean {
+    return this.isGuest;
+  }
+
+  // ── Contatta l'host (avvia una conversazione privata) ──
+  contattando = false;
+
+  // Può contattare chi è loggato e non è il proprietario della struttura.
+  get puoContattareHost(): boolean {
+    const uid = this.currentUserId;
+    return !!uid && this.hotel?.idProprietario !== uid;
+  }
+
+  contattaHost(): void {
+    if (!this.hotel?.id || this.contattando) return;
+    this.contattando = true;
+    this.messaggiService.avvia(this.hotel.id).subscribe({
+      next: (conv) => {
+        this.contattando = false;
+        this.router.navigate(['/dashboard/messaggi'], { queryParams: { conv: conv.id } });
+      },
+      error: (e) => {
+        this.contattando = false;
+        this.showAlertMessage(e?.error?.message ?? e?.error ?? this.i18n.translate('msg.errore'), 'error');
+      },
+    });
+  }
 
   stelle(n: number): string {
     return '★'.repeat(Math.max(0, Math.min(5, n))) + '☆'.repeat(5 - Math.max(0, Math.min(5, n)));
   }
 
   get fotoUrls(): string[] { return this.hotel?.fotoUrls ?? []; }
+
+  // ── Lightbox (foto hotel o camera ingrandite in primo piano) ──
+  // lightboxFotos è il set attualmente mostrato: le foto dell'hotel oppure
+  // quelle di una singola camera, così lo stesso overlay serve entrambi i casi.
+  lightboxAperto = false;
+  lightboxIndex = 0;
+  lightboxFotos: string[] = [];
+
+  apriLightbox(i: number) { this.apriLightboxDa(this.fotoUrls, i); }
+
+  apriLightboxCamera(camera: any) {
+    // Una camera ha una sola foto: apriamo solo la prima, così nel lightbox non
+    // compaiono frecce né contatore e non è possibile scorrere.
+    const prima = camera?.foto?.[0];
+    this.apriLightboxDa(prima ? [prima] : [], 0);
+  }
+
+  private apriLightboxDa(fotos: string[], i: number) {
+    if (!fotos.length || i < 0 || i >= fotos.length) return;
+    this.lightboxFotos = fotos;
+    this.lightboxIndex = i;
+    this.lightboxAperto = true;
+  }
+
+  chiudiLightbox() { this.lightboxAperto = false; }
+
+  lightboxPrec() {
+    const n = this.lightboxFotos.length;
+    if (n > 0) this.lightboxIndex = (this.lightboxIndex - 1 + n) % n;
+  }
+
+  lightboxSucc() {
+    const n = this.lightboxFotos.length;
+    if (n > 0) this.lightboxIndex = (this.lightboxIndex + 1) % n;
+  }
+
+  onLightboxKey(event: KeyboardEvent) {
+    if (!this.lightboxAperto) return;
+    if (event.key === 'Escape')     this.chiudiLightbox();
+    if (event.key === 'ArrowLeft')  this.lightboxPrec();
+    if (event.key === 'ArrowRight') this.lightboxSucc();
+  }
 
   get fotoGalleria(): string[] {
     const f = this.fotoUrls;
@@ -169,7 +285,19 @@ export class HotelDetail implements OnInit, AfterViewInit {
 
   selezionaCamera(camera: any) {
     if (!camera.disponibile) return;
-    this.selectedCamera = (this.selectedCamera?.id === camera.id) ? null : camera;
+    if (this.selectedCamera?.id === camera.id) {
+      this.selectedCamera = null;
+      this.showCapienzaInfo = false;
+      this.occupazioni = [];
+      this.aggiornaFlatpickrDisabled();
+      return;
+    }
+    this.selectedCamera = camera;
+    this.showCapienzaInfo = false;
+    this.prenotazioneService.getOccupazioniCamera(camera.id).subscribe({
+      next: (occ) => { this.occupazioni = occ; this.aggiornaFlatpickrDisabled(); },
+      error: ()    => { this.occupazioni = [];  this.aggiornaFlatpickrDisabled(); }
+    });
   }
 
   get numNotti(): number {
@@ -185,13 +313,12 @@ export class HotelDetail implements OnInit, AfterViewInit {
   }
 
   get canPrenotare(): boolean {
-    return !!this.selectedCamera && this.numNotti > 0 && this.formValido;
+    return this.prenotabile && this.puoPrenotare && !!this.selectedCamera && this.numNotti > 0 && this.formValido;
   }
 
   get todayStr(): string {
     return new Date().toISOString().split('T')[0];
   }
-
 
   get minCheckout(): string {
     const checkin = this.bookingForm.value.dataCheckin;
@@ -249,14 +376,7 @@ export class HotelDetail implements OnInit, AfterViewInit {
     return !this.erroreCheckin && !this.erroreCheckout && !this.erroreOspiti
       && !!this.bookingForm.value.dataCheckin && !!this.bookingForm.value.dataCheckout;
   }
-  openLightbox(img: string) {
-    this.lightboxImage = img;
-    this.lightboxOpen = true;
-  }
 
-  closeLightbox() {
-    this.lightboxOpen = false;
-  }
   private readonly tipoCameraKeys: Record<string, string> = {
     SINGOLA: 'booking.camera.singola',
     DOPPIA: 'booking.camera.doppia',
@@ -299,6 +419,22 @@ export class HotelDetail implements OnInit, AfterViewInit {
     this.showPaymentModal = true;
   }
 
+  private caricaCarteLocali(): void {
+    try {
+      const raw = localStorage.getItem(this.authService.userKey('ndv_metodi_pagamento'));
+      this.carteLocali = raw ? JSON.parse(raw) : [];
+      const sel = localStorage.getItem(this.authService.userKey('ndv_carta_selezionata'));
+      if (sel !== null && sel !== 'null' && this.carteLocali.length > 0) {
+        const idx = Number(sel);
+        this.cartaSelezionataIdx = idx < this.carteLocali.length ? idx : 0;
+      } else {
+        this.cartaSelezionataIdx = this.carteLocali.length > 0 ? 0 : null;
+      }
+    } catch {
+      this.carteLocali = [];
+      this.cartaSelezionataIdx = null;
+    }
+  }
 
   eseguiPagamento() {
     if (this.cartaSelezionataIdx === null) {
@@ -317,6 +453,10 @@ export class HotelDetail implements OnInit, AfterViewInit {
         this.cartaSelezionataIdx = null;
         this.showAlertMessage(this.i18n.translate('hoteldetail.msg.prenotazione-ok'), 'success');
         this.selectedCamera = null;
+        this.occupazioni = [];
+        this.erroreOccupata = '';
+        this.fpCheckin?.clear();
+        this.fpCheckout?.clear();
         this.bookingForm.reset({ numAdulti: 1, numBambini: 0 });
         this.caricaHotel(this.hotel.id);
       },
@@ -328,29 +468,6 @@ export class HotelDetail implements OnInit, AfterViewInit {
         this.showAlertMessage(msg, 'error');
       }
     });
-  }
-  private caricaCarteLocali(): void {
-    try {
-      const raw = localStorage.getItem(
-        this.authService.userKey('ndv_metodi_pagamento')
-      );
-
-      this.carteLocali = raw ? JSON.parse(raw) : [];
-
-      const sel = localStorage.getItem(
-        this.authService.userKey('ndv_carta_selezionata')
-      );
-
-      if (sel !== null && sel !== 'null' && this.carteLocali.length > 0) {
-        const idx = Number(sel);
-        this.cartaSelezionataIdx = idx < this.carteLocali.length ? idx : 0;
-      } else {
-        this.cartaSelezionataIdx = this.carteLocali.length > 0 ? 0 : null;
-      }
-    } catch {
-      this.carteLocali = [];
-      this.cartaSelezionataIdx = null;
-    }
   }
 
   annullaPagamento() {
@@ -394,6 +511,98 @@ export class HotelDetail implements OnInit, AfterViewInit {
   onAlertDismiss() { this.showAlert = false; }
   indietro()       { this.router.navigate(['/dashboard/home']); }
 
+  ngOnDestroy(): void {
+    this.destroyFlatpickr();
+  }
+
+  private getDisabledRanges(): Array<{from: string; to: string}> {
+    // Date occupate da prenotazioni (checkout escluso → -1 giorno).
+    const daPrenotazioni = this.occupazioni.map(o => {
+      const to = new Date(o.checkout);
+      to.setDate(to.getDate() - 1);
+      const toStr = to.toISOString().split('T')[0];
+      return { from: o.checkin, to: toStr };
+    });
+    // Blocchi dell'host: intervallo [dataInizio, dataFine] già inclusivo.
+    const daBlocchi = this.blocchiHotel.map(b => ({ from: b.dataInizio, to: b.dataFine }));
+    return [...daPrenotazioni, ...daBlocchi].filter(r => r.from <= r.to);
+  }
+
+  private buildOccupatoClickHandler(fp: any): void {
+    fp.calendarContainer?.addEventListener('click', (e: MouseEvent) => {
+      const dayEl = (e.target as HTMLElement).closest?.('.flatpickr-day.flatpickr-disabled');
+      if (dayEl) {
+        this.ngZone.run(() => {
+          this.erroreOccupata = this.i18n.translate('hoteldetail.msg.stanza-occupata');
+          setTimeout(() => this.ngZone.run(() => { this.erroreOccupata = ''; }), 3500);
+        });
+      }
+    }, true);
+  }
+
+  private initFlatpickr(): void {
+    if (!this.checkinInput?.nativeElement || !this.checkoutInput?.nativeElement) return;
+    this.destroyFlatpickr();
+    const disabled = this.getDisabledRanges();
+
+    this.fpCheckin = flatpickr(this.checkinInput.nativeElement, {
+      dateFormat: 'Y-m-d',
+      altInput: true,
+      altFormat: 'd/m/Y',
+      minDate: 'today',
+      disable: disabled,
+      disableMobile: false,
+      onChange: (_: any, dateStr: any) => {
+        this.ngZone.run(() => {
+          this.bookingForm.patchValue({ dataCheckin: dateStr || '' });
+          if (dateStr && this.fpCheckout) {
+            const next = new Date(dateStr);
+            next.setDate(next.getDate() + 1);
+            this.fpCheckout.set('minDate', next.toISOString().split('T')[0]);
+          }
+          this.erroreOccupata = '';
+        });
+      },
+      onReady: (_: any, __: any, fp: any) => { this.buildOccupatoClickHandler(fp); }
+    } as any);
+
+    const minCheckoutDate = (() => {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      return d.toISOString().split('T')[0];
+    })();
+
+    this.fpCheckout = flatpickr(this.checkoutInput.nativeElement, {
+      dateFormat: 'Y-m-d',
+      altInput: true,
+      altFormat: 'd/m/Y',
+      minDate: minCheckoutDate,
+      disable: disabled,
+      disableMobile: false,
+      onChange: (_: any, dateStr: any) => {
+        this.ngZone.run(() => {
+          this.bookingForm.patchValue({ dataCheckout: dateStr || '' });
+          this.erroreOccupata = '';
+        });
+      },
+      onReady: (_: any, __: any, fp: any) => { this.buildOccupatoClickHandler(fp); }
+    } as any);
+  }
+
+  private destroyFlatpickr(): void {
+    try { this.fpCheckin?.destroy(); }  catch {}
+    try { this.fpCheckout?.destroy(); } catch {}
+    this.fpCheckin  = null;
+    this.fpCheckout = null;
+  }
+
+  private aggiornaFlatpickrDisabled(): void {
+    if (!this.fpCheckin || !this.fpCheckout) return;
+    const ranges = this.getDisabledRanges();
+    this.fpCheckin.set('disable',  ranges);
+    this.fpCheckout.set('disable', ranges);
+  }
+
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     const citta = this.hotel?.citta?.toLowerCase();
@@ -407,66 +616,5 @@ export class HotelDetail implements OnInit, AfterViewInit {
     if (!img.src.endsWith(fallback)) {
       img.src = fallback;
     }
-  }
-  getHotelImage(hotel: any): string {
-
-    switch (hotel.nome) {
-
-      case 'B&B Napoli Centro':
-        return '/assets/images/Hotel_Image/Napoli.jpg';
-
-      case 'Grand Hotel Roma':
-        return '/assets/images/Hotel_Image/Roma.jpg';
-
-      case 'Hotel Venezia Palace':
-        return '/assets/images/Hotel_Image/Venezia.jpg';
-
-      case 'Relais Toscana':
-        return '/assets/images/Hotel_Image/Toscana.jpg';
-
-      default:
-        return '/assets/images/Hotel_Image/Roma.jpg';
-    }
-  }
-  getHotelGallery(hotel: any): string[] {
-
-    switch (hotel.nome) {
-
-      case 'B&B Napoli Centro':
-        return [
-          '/assets/images/Hotel Details/Napoli1.jpg',
-          '/assets/images/Hotel Details/Napoli2.jpg',
-          '/assets/images/Hotel Details/Napoli3.jpg',
-          '/assets/images/Hotel Details/Napoli4.jpg'
-        ];
-
-      case 'Grand Hotel Roma':
-        return [
-          '/assets/images/Hotel Details/Roma1.jpg',
-          '/assets/images/Hotel Details/Roma2.jpg',
-          '/assets/images/Hotel Details/Roma3.jpg',
-          '/assets/images/Hotel Details/Roma4.jpg'
-        ];
-
-      case 'Hotel Venezia Palace':
-        return [
-          '/assets/images/Hotel Details/Venezia1.jpg',
-          '/assets/images/Hotel Details/Venezia2.jpg',
-          '/assets/images/Hotel Details/Venezia3.jpg',
-          '/assets/images/Hotel Details/Venezia4.jpg'
-        ];
-
-      case 'Relais Toscana':
-        return [
-          '/assets/images/Hotel Details/Toscana1.jpg',
-          '/assets/images/Hotel Details/Toscana2.jpg',
-          '/assets/images/Hotel Details/Toscana3.jpg',
-          '/assets/images/Hotel Details/Toscana4.jpg'
-        ];
-
-      default:
-        return [];
-    }
-
   }
 }

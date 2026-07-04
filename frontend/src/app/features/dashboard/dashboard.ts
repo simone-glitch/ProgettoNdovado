@@ -22,6 +22,7 @@ export class Dashboard implements OnInit {
   sidebarOpen = false;
   isPrenotazioniRoute = false;
   isMieiHotelRoute = false;
+  isMessaggiRoute = false;
   showLogoutConfirm = false;
 
   constructor(
@@ -64,6 +65,7 @@ export class Dashboard implements OnInit {
   private updateRouteFlags(): void {
     this.isPrenotazioniRoute = this.router.url.includes('/dashboard/prenotazioni');
     this.isMieiHotelRoute    = this.router.url.includes('/dashboard/miei-hotel');
+    this.isMessaggiRoute     = this.router.url.includes('/dashboard/messaggi');
   }
 
   toggleSidebar() { this.sidebarOpen = !this.sidebarOpen; }

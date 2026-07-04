@@ -481,19 +481,19 @@ export class AggiungiHotel implements OnInit {
   }
 
   onFotoCameraSelezionate(event: Event) {
+    // Una camera ha una sola foto: prendiamo solo il primo file e sostituiamo
+    // l'eventuale immagine precedente.
     const input = event.target as HTMLInputElement;
-    const files = input.files;
-    if (!files) return;
-    Array.from(files).forEach(file => {
-      if (file.size > AggiungiHotel.MAX_FOTO_BYTES) {
-        this.showAlertMessage(this.i18n.translate('gestionehotel.foto-troppo-grande'), 'warning');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => this.fotoCameraNuova.push(reader.result as string);
-      reader.readAsDataURL(file);
-    });
+    const file = input.files?.[0];
     input.value = '';
+    if (!file) return;
+    if (file.size > AggiungiHotel.MAX_FOTO_BYTES) {
+      this.showAlertMessage(this.i18n.translate('gestionehotel.foto-troppo-grande'), 'warning');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => this.fotoCameraNuova = [reader.result as string];
+    reader.readAsDataURL(file);
   }
 
   rimuoviFotoCameraNuova(i: number) { this.fotoCameraNuova.splice(i, 1); }

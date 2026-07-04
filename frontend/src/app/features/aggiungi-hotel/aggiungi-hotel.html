@@ -255,11 +255,13 @@
                             [attr.aria-label]="'gestionehotel.rimuovi-foto' | translate"><i class="fas fa-times"></i></button>
                         </div>
                       }
-                      <label class="camera-foto-add">
-                        <input type="file" accept="image/*" multiple (change)="onFotoCameraSelezionate($event)" hidden>
-                        <i class="fas fa-camera"></i>
-                        <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
-                      </label>
+                      @if (!fotoCameraNuova.length) {
+                        <label class="camera-foto-add">
+                          <input type="file" accept="image/*" (change)="onFotoCameraSelezionate($event)" hidden>
+                          <i class="fas fa-camera"></i>
+                          <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
+                        </label>
+                      }
                     </div>
 
                     <button type="button" class="btn-aggiungi-camera" (click)="aggiungiCamera()"

@@ -18,6 +18,8 @@ import { AggiungiHotel } from './features/aggiungi-hotel/aggiungi-hotel';
 import { Preferiti }     from './features/preferiti/preferiti';
 import { HotelForm }      from './features/hotel-form/hotel-form';
 import { GestioneCamere } from './features/gestione-camere/gestione-camere';
+import { Disponibilita }  from './features/disponibilita/disponibilita';
+import { Messaggi }       from './features/messaggi/messaggi';
 
 export const routes: Routes = [
   { path: 'login',            component: Login },
@@ -35,13 +37,14 @@ export const routes: Routes = [
       { path: 'hotel-detail/:id',    component: HotelDetail },
       { path: 'prenotazioni',        component: Prenotazioni,  canActivate: [RoleGuard], data: { roles: ['GUEST', 'HOST', 'ADMIN'] } },
       { path: 'gestione-hotel',      component: GestioneHotel, canActivate: [RoleGuard], data: { roles: ['HOST', 'ADMIN'] } },
-      { path: 'hotel/nuovo',         component: HotelForm,      canActivate: [RoleGuard], data: { roles: ['HOST', 'ADMIN'] } },
       { path: 'hotel/:id/modifica',  component: HotelForm,      canActivate: [RoleGuard], data: { roles: ['HOST', 'ADMIN'] } },
       { path: 'hotel/:id/camere',    component: GestioneCamere, canActivate: [RoleGuard], data: { roles: ['HOST', 'ADMIN'] } },
       { path: 'miei-hotel',          component: MieiHotel,     canActivate: [RoleGuard], data: { roles: ['HOST'] } },
       { path: 'aggiungi-hotel',      component: AggiungiHotel, canActivate: [RoleGuard], data: { roles: ['HOST'] } },
       { path: 'aggiungi-hotel/:id',  component: AggiungiHotel, canActivate: [RoleGuard], data: { roles: ['HOST'] } },
       { path: 'statistiche',         component: Statistiche,   canActivate: [RoleGuard], data: { roles: ['HOST'] } },
+      { path: 'disponibilita',       component: Disponibilita, canActivate: [RoleGuard], data: { roles: ['HOST', 'ADMIN'] } },
+      { path: 'messaggi',            component: Messaggi,      canActivate: [RoleGuard], data: { roles: ['GUEST', 'HOST', 'ADMIN'] } },
       { path: 'utenti',              component: Utenti,        canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
       { path: 'preferiti',           component: Preferiti,     canActivate: [RoleGuard], data: { roles: ['GUEST'] } },
       { path: 'settings',            component: Setting },
