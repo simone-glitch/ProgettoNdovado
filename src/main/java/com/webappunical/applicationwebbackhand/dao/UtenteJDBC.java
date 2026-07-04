@@ -59,6 +59,16 @@ public class UtenteJDBC {
         return jdbcTemplate.query("SELECT * FROM utenti ORDER BY nome, cognome", utenteRowMapper);
     }
 
+    /** Primo amministratore (diverso da excludeId): destinatario delle richieste di assistenza. */
+    public Utente trovaPrimoAdmin(Integer excludeId) {
+        String query = "SELECT * FROM utenti WHERE ruolo = 'ADMIN' AND id_utente <> ? ORDER BY id_utente LIMIT 1";
+        try {
+            return jdbcTemplate.queryForObject(query, utenteRowMapper, excludeId == null ? -1 : excludeId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public void aggiorna(Utente utente) {
         String query = "UPDATE utenti SET nome = ?, cognome = ?, email = ?, ruolo = ?, telefono = ? WHERE id_utente = ?";
         jdbcTemplate.update(query,

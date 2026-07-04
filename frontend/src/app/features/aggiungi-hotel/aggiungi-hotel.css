@@ -241,6 +241,23 @@
 .add-hotel-select { appearance: none; cursor: pointer; }
 .add-hotel-textarea { resize: vertical; min-height: 100px; }
 
+/* Input orario (check-in/check-out): Chrome evidenzia in azzurro il campo
+   attivo (ore/minuti) del controllo nativo type="time". Quel riquadro azzurro
+   sul "--" non serve e stona con lo stile del form, quindi lo azzeriamo sia a
+   riposo sia col focus, lasciando solo il testo. */
+.add-hotel-input[type="time"]::-webkit-datetime-edit-hour-field,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-minute-field,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-second-field,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-ampm-field,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-hour-field:focus,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-minute-field:focus,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-second-field:focus,
+.add-hotel-input[type="time"]::-webkit-datetime-edit-ampm-field:focus {
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+
 .field-error {
   font-size: 0.77rem;
   color: #EF4444;

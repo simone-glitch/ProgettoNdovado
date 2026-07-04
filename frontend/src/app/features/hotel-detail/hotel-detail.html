@@ -45,31 +45,32 @@
 
         <!-- GALLERY -->
         @if (fotoUrls.length > 0) {
-          <div class="ndv-gallery">
-            <div class="ndv-gallery-main">
+          <div class="ndv-gallery" [class.ndv-gallery-single]="fotoUrls.length === 1">
+            <div class="ndv-gallery-main ndv-gallery-clickable" (click)="apriLightbox(fotoAttiva)">
               <img [src]="fotoUrls[fotoAttiva]" (error)="onImageError($event)" [alt]="hotel.nome" class="ndv-gallery-img">
+              <span class="ndv-gallery-zoom" aria-hidden="true"><i class="fas fa-expand"></i></span>
             </div>
-            <div class="ndv-gallery-grid">
-              @for (i of [1,2,3,4]; track i) {
-                @if (fotoUrls[i]) {
-                  <div class="ndv-gallery-cell"
-                       [class.ndv-gallery-last]="i === 4 && fotoUrls.length > 4"
-                       (click)="fotoAttiva = i">
-                    <img [src]="fotoUrls[i]" (error)="onImageError($event)" loading="lazy" [alt]="hotel.nome + ' foto ' + i" class="ndv-gallery-img">
-                    @if (i === 4 && fotoUrls.length > 4) {
-                      <div class="ndv-gallery-overlay">
-                        <span>+{{ fotoUrls.length - 4 }}</span>
-                        <small>{{ 'hoteldetail.vedi-foto' | translate }}</small>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <div class="ndv-gallery-cell ndv-gallery-placeholder">
-                    <i class="fas fa-image"></i>
-                  </div>
+            <!-- Miniature: solo le foto realmente presenti (niente celle placeholder
+                 vuote che lasciano spazi "tagliati" accanto a una foto singola). -->
+            @if (fotoUrls.length > 1) {
+              <div class="ndv-gallery-grid">
+                @for (i of [1,2,3,4]; track i) {
+                  @if (fotoUrls[i]) {
+                    <div class="ndv-gallery-cell ndv-gallery-clickable"
+                         [class.ndv-gallery-last]="i === 4 && fotoUrls.length > 4"
+                         (click)="apriLightbox(i)">
+                      <img [src]="fotoUrls[i]" (error)="onImageError($event)" loading="lazy" [alt]="hotel.nome + ' foto ' + i" class="ndv-gallery-img">
+                      @if (i === 4 && fotoUrls.length > 4) {
+                        <div class="ndv-gallery-overlay">
+                          <span>+{{ fotoUrls.length - 4 }}</span>
+                          <small>{{ 'hoteldetail.vedi-foto' | translate }}</small>
+                        </div>
+                      }
+                    </div>
+                  }
                 }
-              }
-            </div>
+              </div>
+            }
           </div>
         } @else {
           <div class="ndv-gallery-empty">
@@ -118,6 +119,12 @@
         <!-- DESCRIPTION -->
         <div class="ndv-card">
           <p class="ndv-desc">{{ hotel.descrizione || ('hoteldetail.no-descrizione' | translate) }}</p>
+          @if (puoContattareHost) {
+            <button class="ndv-contact-host" (click)="contattaHost()" [disabled]="contattando">
+              @if (contattando) { <span class="msg-spinner"></span> } @else { <i class="fas fa-comments"></i> }
+              {{ 'hoteldetail.contatta-host' | translate }}
+            </button>
+          }
         </div>
 
         <!-- SERVIZI E COMFORT -->
@@ -153,9 +160,17 @@
                    [class.ndv-room-selected]="selectedCamera?.id === camera.id"
                    [class.ndv-room-unavailable]="!camera.disponibile || !prenotabile">
                 <div class="ndv-room-img-col">
-                  <div class="ndv-room-img-placeholder">
-                    <i class="fas fa-bed"></i>
-                  </div>
+                  @if (camera.foto?.length) {
+                    <div class="ndv-room-img-wrap ndv-gallery-clickable" (click)="apriLightboxCamera(camera)">
+                      <img [src]="camera.foto[0]" (error)="onImageError($event)"
+                           [alt]="formatTipoCamera(camera.tipo)" loading="lazy" class="ndv-room-img">
+                      <span class="ndv-gallery-zoom" aria-hidden="true"><i class="fas fa-expand"></i></span>
+                    </div>
+                  } @else {
+                    <div class="ndv-room-img-placeholder">
+                      <i class="fas fa-bed"></i>
+                    </div>
+                  }
                 </div>
                 <div class="ndv-room-info">
                   <div class="ndv-room-top">
@@ -568,5 +583,26 @@
     [messaggio]="confirmMessage"
     (risposta)="gestisciRisposta($event)">
   </app-conferma-box>
+
+  <!-- LIGHTBOX: foto hotel ingrandita in primo piano -->
+  @if (lightboxAperto) {
+    <div class="ndv-lightbox" (click)="chiudiLightbox()" (window:keydown)="onLightboxKey($event)">
+      <button class="ndv-lightbox-close" (click)="chiudiLightbox()"
+              [attr.aria-label]="'common.chiudi' | translate">
+        <i class="fas fa-times"></i>
+      </button>
+      @if (lightboxFotos.length > 1) {
+        <button class="ndv-lightbox-nav ndv-lightbox-prev" (click)="$event.stopPropagation(); lightboxPrec()"
+                aria-label="prev"><i class="fas fa-chevron-left"></i></button>
+        <button class="ndv-lightbox-nav ndv-lightbox-next" (click)="$event.stopPropagation(); lightboxSucc()"
+                aria-label="next"><i class="fas fa-chevron-right"></i></button>
+      }
+      <img [src]="lightboxFotos[lightboxIndex]" (error)="onImageError($event)"
+           [alt]="hotel?.nome" class="ndv-lightbox-img" (click)="$event.stopPropagation()">
+      @if (lightboxFotos.length > 1) {
+        <div class="ndv-lightbox-counter">{{ lightboxIndex + 1 }} / {{ lightboxFotos.length }}</div>
+      }
+    </div>
+  }
 
 </div>

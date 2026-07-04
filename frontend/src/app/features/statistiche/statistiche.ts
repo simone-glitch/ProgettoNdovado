@@ -393,7 +393,7 @@ export class Statistiche implements OnInit, OnDestroy {
   }
 
   getHotelImg(hotel: any): string | null {
-    return hotel?.foto?.[0]?.urlFoto ?? hotel?.immagine ?? hotel?.image ?? null;
+    return hotel?.fotoUrls?.[0] ?? hotel?.foto?.[0]?.urlFoto ?? hotel?.immagine ?? hotel?.image ?? null;
   }
 
   getHotelInitials(nome: string): string {
@@ -522,7 +522,7 @@ export class Statistiche implements OnInit, OnDestroy {
     const inAtt     = this.prenotazioni.filter(p => p.stato === 'IN_ATTESA').length;
     const canc      = this.prenotazioni.filter(p => p.stato === 'CANCELLATA').length;
     const tot       = this.prenotazioni.length;
-    const senzaFoto = this.hotels.filter(h => !h.foto?.length);
+    const senzaFoto = this.hotels.filter(h => !h.fotoUrls?.length && !h.foto?.length);
 
     if (senzaFoto.length > 0) {
       list.push({ icon: 'fa-camera', cls: 'sug-blue', title: this.i18n.translate('stat.sug.foto.titolo'), desc: this.i18n.translate('stat.sug.foto.desc'), route: '/dashboard/gestione-hotel' });

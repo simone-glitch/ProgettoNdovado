@@ -57,6 +57,7 @@ public class HotelService {
         List<Hotel> hotels = hotelDAO.cerca(citta, stelleMin, prezzoMax, numOspiti);
         // Arricchisce ogni card con il voto medio (una query leggera per hotel)
         hotels.forEach(h -> h.setVotoMedio(hotelDAO.trovaVotoMedio(h.getId())));
+        hotels.forEach(this::impostaCopertina);
         return hotels;
     }
 
@@ -64,6 +65,7 @@ public class HotelService {
     public List<Hotel> getTutti() {
         List<Hotel> hotels = hotelDAO.trovaPubblicati();
         hotels.forEach(h -> h.setVotoMedio(hotelDAO.trovaVotoMedio(h.getId())));
+        hotels.forEach(this::impostaCopertina);
         return hotels;
     }
 
@@ -71,7 +73,16 @@ public class HotelService {
     public List<Hotel> getTuttiPerAdmin() {
         List<Hotel> hotels = hotelDAO.trovaPerModerazione();
         hotels.forEach(h -> h.setVotoMedio(hotelDAO.trovaVotoMedio(h.getId())));
+        hotels.forEach(this::impostaCopertina);
         return hotels;
+    }
+
+    // Imposta come copertina della card la prima foto caricata dell'hotel, così
+    // nelle liste (home, "I miei hotel") compare l'immagine reale invece di un
+    // segnaposto. La galleria completa resta lazy sul dettaglio (Proxy).
+    private void impostaCopertina(Hotel h) {
+        String cover = hotelDAO.trovaFotoCopertina(h.getId());
+        if (cover != null) h.setFotoUrls(List.of(cover));
     }
 
     /**
@@ -94,6 +105,7 @@ public class HotelService {
         if (host == null) throw new RuntimeException("Utente non trovato.");
         List<Hotel> hotels = hotelDAO.trovaPerProprietario(host.getId());
         hotels.forEach(h -> h.setVotoMedio(hotelDAO.trovaVotoMedio(h.getId())));
+        hotels.forEach(this::impostaCopertina);
         return hotels;
     }
 

@@ -91,11 +91,13 @@
                 </button>
               </div>
             }
-            <label class="gc-foto-add">
-              <input type="file" accept="image/*" multiple (change)="onFotoSelezionate($event)" hidden>
-              <i class="fas fa-camera"></i>
-              <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
-            </label>
+            @if (!fotoCamera.length) {
+              <label class="gc-foto-add">
+                <input type="file" accept="image/*" (change)="onFotoSelezionate($event)" hidden>
+                <i class="fas fa-camera"></i>
+                <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
+              </label>
+            }
           </div>
         </div>
 

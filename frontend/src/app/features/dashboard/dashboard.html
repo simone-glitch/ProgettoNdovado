@@ -16,16 +16,19 @@
         @if (isGuest) {
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.prenotazioni-guest' | translate }}</a>
           <a routerLink="/dashboard/preferiti" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.preferiti' | translate }}</a>
+          <a routerLink="/dashboard/messaggi" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.messaggi' | translate }}</a>
         }
         @if (isHost) {
           <a routerLink="/dashboard/miei-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.miei-hotel' | translate }}</a>
           <a routerLink="/dashboard/statistiche" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.statistiche' | translate }}</a>
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.prenotazioni' | translate }}</a>
+          <a routerLink="/dashboard/messaggi" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.messaggi' | translate }}</a>
           <a routerLink="/dashboard/aggiungi-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.aggiungi-hotel' | translate }}</a>
         }
         @if (isAdmin) {
           <a routerLink="/dashboard/gestione-hotel" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.gestione-hotel' | translate }}</a>
           <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.prenotazioni' | translate }}</a>
+          <a routerLink="/dashboard/messaggi" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.assistenza' | translate }}</a>
           <a routerLink="/dashboard/utenti" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.utenti' | translate }}</a>
         }
         <a routerLink="/dashboard/settings" routerLinkActive="ndv-nav-active" class="ndv-nav-item">{{ 'nav.impostazioni' | translate }}</a>
@@ -69,6 +72,10 @@
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-heart"></i> {{ 'nav.preferiti' | translate }}
             </a>
+            <a routerLink="/dashboard/messaggi" routerLinkActive="ndv-mob-active"
+               class="ndv-mob-link" (click)="closeSidebar()">
+              <i class="fas fa-comments"></i> {{ 'nav.messaggi' | translate }}
+            </a>
           }
           @if (isHost) {
             <a routerLink="/dashboard/miei-hotel" routerLinkActive="ndv-mob-active"
@@ -83,6 +90,10 @@
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-calendar-check"></i> {{ 'nav.prenotazioni' | translate }}
             </a>
+            <a routerLink="/dashboard/messaggi" routerLinkActive="ndv-mob-active"
+               class="ndv-mob-link" (click)="closeSidebar()">
+              <i class="fas fa-comments"></i> {{ 'nav.messaggi' | translate }}
+            </a>
             <a routerLink="/dashboard/aggiungi-hotel" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-plus-circle"></i> {{ 'nav.aggiungi-hotel' | translate }}
@@ -96,6 +107,10 @@
             <a routerLink="/dashboard/prenotazioni" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
               <i class="fas fa-calendar-check"></i> {{ 'nav.prenotazioni' | translate }}
+            </a>
+            <a routerLink="/dashboard/messaggi" routerLinkActive="ndv-mob-active"
+               class="ndv-mob-link" (click)="closeSidebar()">
+              <i class="fas fa-headset"></i> {{ 'nav.assistenza' | translate }}
             </a>
             <a routerLink="/dashboard/utenti" routerLinkActive="ndv-mob-active"
                class="ndv-mob-link" (click)="closeSidebar()">
@@ -131,7 +146,7 @@
   </main>
 
   <!-- ── AI CHAT BUTTON ── -->
-  @if (!isPrenotazioniRoute && !isMieiHotelRoute) {
+  @if (!isPrenotazioniRoute && !isMieiHotelRoute && !isMessaggiRoute) {
     <div class="div-ai" (click)="toggleChat()" [title]="'dashboard.ai-assistant' | translate">
       <i class="fas fa-robot"></i>
     </div>

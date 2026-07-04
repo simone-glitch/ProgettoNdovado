@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HotelService } from '../../services/hotel.service';
 import { PrenotazioneService } from '../../services/prenotazione.service';
+import { MessaggiService } from '../../services/messaggi.service';
 import { RecensioneService } from '../../services/recensione.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
@@ -50,6 +51,7 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   showCapienzaInfo = false;
 
   occupazioni: Array<{checkin: string; checkout: string}> = [];
+  blocchiHotel: Array<{dataInizio: string; dataFine: string; motivo?: string}> = [];
   erroreOccupata = '';
   private fpCheckin:  any = null;
   private fpCheckout: any = null;
@@ -65,6 +67,7 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     private hotelService: HotelService,
     private prenotazioneService: PrenotazioneService,
     private recensioneService: RecensioneService,
+    private messaggiService: MessaggiService,
     private authService: AuthService,
     private i18n: TranslationService,
     private prefsService: PreferencesService,
@@ -127,17 +130,28 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     this.destroyFlatpickr();
     this.loading = true;
     this.occupazioni = [];
+    this.blocchiHotel = [];
     this.hotelService.getDettaglio(id).subscribe({
       next: (h) => {
         this.hotel = h;
         this.camere = h.camere ?? [];
         this.loading = false;
+        this.caricaBlocchiHotel(id);
         setTimeout(() => {
           this.inizializzaMappa();
           this.initFlatpickr();
         }, 300);
       },
       error: () => { this.loading = false; }
+    });
+  }
+
+  // Blocchi di disponibilità decisi dall'host (ferie/lavori): valgono per tutte
+  // le camere e vanno disabilitati nel calendario come le date già occupate.
+  private caricaBlocchiHotel(id: number) {
+    this.hotelService.getBlocchi(id).subscribe({
+      next: (b) => { this.blocchiHotel = b ?? []; this.aggiornaFlatpickrDisabled(); },
+      error: () => { this.blocchiHotel = []; },
     });
   }
 
@@ -191,11 +205,77 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     return this.isGuest;
   }
 
+  // ── Contatta l'host (avvia una conversazione privata) ──
+  contattando = false;
+
+  // Può contattare chi è loggato e non è il proprietario della struttura.
+  get puoContattareHost(): boolean {
+    const uid = this.currentUserId;
+    return !!uid && this.hotel?.idProprietario !== uid;
+  }
+
+  contattaHost(): void {
+    if (!this.hotel?.id || this.contattando) return;
+    this.contattando = true;
+    this.messaggiService.avvia(this.hotel.id).subscribe({
+      next: (conv) => {
+        this.contattando = false;
+        this.router.navigate(['/dashboard/messaggi'], { queryParams: { conv: conv.id } });
+      },
+      error: (e) => {
+        this.contattando = false;
+        this.showAlertMessage(e?.error?.message ?? e?.error ?? this.i18n.translate('msg.errore'), 'error');
+      },
+    });
+  }
+
   stelle(n: number): string {
     return '★'.repeat(Math.max(0, Math.min(5, n))) + '☆'.repeat(5 - Math.max(0, Math.min(5, n)));
   }
 
   get fotoUrls(): string[] { return this.hotel?.fotoUrls ?? []; }
+
+  // ── Lightbox (foto hotel o camera ingrandite in primo piano) ──
+  // lightboxFotos è il set attualmente mostrato: le foto dell'hotel oppure
+  // quelle di una singola camera, così lo stesso overlay serve entrambi i casi.
+  lightboxAperto = false;
+  lightboxIndex = 0;
+  lightboxFotos: string[] = [];
+
+  apriLightbox(i: number) { this.apriLightboxDa(this.fotoUrls, i); }
+
+  apriLightboxCamera(camera: any) {
+    // Una camera ha una sola foto: apriamo solo la prima, così nel lightbox non
+    // compaiono frecce né contatore e non è possibile scorrere.
+    const prima = camera?.foto?.[0];
+    this.apriLightboxDa(prima ? [prima] : [], 0);
+  }
+
+  private apriLightboxDa(fotos: string[], i: number) {
+    if (!fotos.length || i < 0 || i >= fotos.length) return;
+    this.lightboxFotos = fotos;
+    this.lightboxIndex = i;
+    this.lightboxAperto = true;
+  }
+
+  chiudiLightbox() { this.lightboxAperto = false; }
+
+  lightboxPrec() {
+    const n = this.lightboxFotos.length;
+    if (n > 0) this.lightboxIndex = (this.lightboxIndex - 1 + n) % n;
+  }
+
+  lightboxSucc() {
+    const n = this.lightboxFotos.length;
+    if (n > 0) this.lightboxIndex = (this.lightboxIndex + 1) % n;
+  }
+
+  onLightboxKey(event: KeyboardEvent) {
+    if (!this.lightboxAperto) return;
+    if (event.key === 'Escape')     this.chiudiLightbox();
+    if (event.key === 'ArrowLeft')  this.lightboxPrec();
+    if (event.key === 'ArrowRight') this.lightboxSucc();
+  }
 
   get fotoGalleria(): string[] {
     const f = this.fotoUrls;
@@ -436,12 +516,16 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getDisabledRanges(): Array<{from: string; to: string}> {
-    return this.occupazioni.map(o => {
+    // Date occupate da prenotazioni (checkout escluso → -1 giorno).
+    const daPrenotazioni = this.occupazioni.map(o => {
       const to = new Date(o.checkout);
       to.setDate(to.getDate() - 1);
       const toStr = to.toISOString().split('T')[0];
       return { from: o.checkin, to: toStr };
-    }).filter(r => r.from <= r.to);
+    });
+    // Blocchi dell'host: intervallo [dataInizio, dataFine] già inclusivo.
+    const daBlocchi = this.blocchiHotel.map(b => ({ from: b.dataInizio, to: b.dataFine }));
+    return [...daPrenotazioni, ...daBlocchi].filter(r => r.from <= r.to);
   }
 
   private buildOccupatoClickHandler(fp: any): void {
