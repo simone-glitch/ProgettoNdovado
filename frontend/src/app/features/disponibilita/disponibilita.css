@@ -1,0 +1,121 @@
+.disp-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  font-family: 'Inter', sans-serif;
+  color: #0A2342;
+}
+
+.disp-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #5B6B85; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+  margin-bottom: 18px;
+}
+.disp-back:hover { color: #0F3460; }
+.disp-back-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: #EEF2F8;
+}
+
+.disp-header {
+  display: flex; align-items: stretch; gap: 14px; margin-bottom: 24px;
+}
+.disp-header-accent { width: 5px; border-radius: 6px; background: linear-gradient(180deg, #0F3460, #C9943A); }
+.disp-title { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 700; margin: 0; }
+.disp-subtitle { color: #6B7280; font-size: 0.92rem; margin: 4px 0 0; }
+
+.disp-card {
+  background: #fff;
+  border: 1.5px solid #E8EDF4;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.disp-card-title {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 700;
+  margin: 0 0 16px;
+}
+.disp-card-title i { color: #C9943A; }
+
+.disp-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  align-items: start;
+}
+
+.disp-label { display: block; font-size: 0.82rem; font-weight: 600; color: #46536B; margin-bottom: 6px; }
+.disp-input {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid #D1D9E6; border-radius: 10px;
+  font-size: 0.9rem; color: #0A2342; background: #fff;
+  outline: none; box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.disp-input:focus { border-color: #0F3460; box-shadow: 0 0 0 3px rgba(15,52,96,0.08); }
+
+.disp-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.disp-field-full { grid-column: 1 / -1; }
+.disp-form .disp-btn-primary { grid-column: 1 / -1; }
+
+.disp-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 18px; border: none; border-radius: 10px;
+  background: #0F3460; color: #fff; font-weight: 600; font-size: 0.9rem;
+  cursor: pointer; transition: background 0.2s;
+}
+.disp-btn-primary:hover:not(:disabled) { background: #0A2342; }
+.disp-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.disp-muted { color: #9BAFCF; font-size: 0.9rem; margin: 0; }
+
+.disp-info {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0; padding: 10px 12px;
+  background: #F1F5FB; border-radius: 10px;
+  color: #46536B; font-size: 0.82rem;
+}
+.disp-info i { color: #0F3460; }
+
+.disp-blocchi { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.disp-blocco {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border: 1.5px solid #EEF2F8; border-radius: 12px;
+  background: #FAFBFD;
+}
+.disp-blocco-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(239,68,68,0.1); color: #EF4444;
+}
+.disp-blocco-body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.disp-blocco-date { font-weight: 700; font-size: 0.92rem; }
+.disp-blocco-meta { font-size: 0.78rem; color: #6B7280; }
+.disp-blocco-del {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1.5px solid #FCA5A5; background: #fff; color: #DC2626;
+  padding: 7px 12px; border-radius: 9px; font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+.disp-blocco-del:hover { background: #DC2626; color: #fff; border-color: #DC2626; }
+
+.disp-empty { text-align: center; padding: 50px 20px; color: #6B7280; }
+.disp-empty-icon {
+  width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #EEF2F8; color: #9BAFCF; font-size: 1.6rem;
+}
+
+.disp-skeleton { height: 180px; border-radius: 16px; background: linear-gradient(90deg,#f0f2f6,#e6eaf1,#f0f2f6); }
+
+.disp-spinner {
+  width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: disp-spin 0.7s linear infinite; display: inline-block;
+}
+@keyframes disp-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 760px) {
+  .disp-grid { grid-template-columns: 1fr; }
+}
