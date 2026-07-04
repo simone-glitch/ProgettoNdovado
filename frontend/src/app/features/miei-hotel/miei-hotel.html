@@ -217,6 +217,21 @@
                     <button class="btn-action btn-navy" (click)="vaiGestisciCamere(hotel)">
                       <i class="fas fa-bed"></i> {{ 'myhotel.gestisci-camere' | translate }}
                     </button>
+                    @if (puoInviareRevisione(hotel)) {
+                      <button class="btn-action btn-navy" (click)="inviaRevisione(hotel)">
+                        <i class="fas fa-paper-plane"></i> {{ 'myhotel.azione.invia-revisione' | translate }}
+                      </button>
+                    }
+                    @if (puoDisattivare(hotel)) {
+                      <button class="btn-action btn-outline" (click)="disattivaHotel(hotel)">
+                        <i class="fas fa-pause"></i> {{ 'myhotel.azione.disattiva' | translate }}
+                      </button>
+                    }
+                    @if (puoAttivare(hotel)) {
+                      <button class="btn-action btn-navy" (click)="attivaHotel(hotel)">
+                        <i class="fas fa-play"></i> {{ 'myhotel.azione.attiva' | translate }}
+                      </button>
+                    }
                     <button class="btn-action btn-danger" (click)="chiediElimina(hotel)"
                       [title]="'myhotel.elimina' | translate" [attr.aria-label]="'myhotel.elimina' | translate">
                       <i class="fas fa-trash"></i> {{ 'myhotel.elimina' | translate }}

@@ -151,7 +151,7 @@
               <div class="section-body">
                 <h3 class="section-title">{{ 'addhotel.sezione-b.titolo' | translate }}</h3>
 
-                <div class="add-hotel-form-grid grid-4">
+                <div class="add-hotel-form-grid grid-2">
                   <div class="form-field">
                     <label class="field-label">{{ 'addhotel.checkin-dalle' | translate }} <span class="field-required">*</span></label>
                     <input type="time" formControlName="checkIn" class="add-hotel-input"
@@ -168,27 +168,6 @@
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
                     }
                   </div>
-                  <div class="form-field">
-                    <label class="field-label">{{ 'addhotel.numero-camere' | translate }} <span class="field-required">*</span></label>
-                    <input type="number" formControlName="numCamere" class="add-hotel-input"
-                      [placeholder]="'addhotel.numero-camere.placeholder' | translate" min="1"
-                      [class.input-error]="hotelForm.get('numCamere')?.touched && hotelForm.get('numCamere')?.invalid">
-                    @if (hotelForm.get('numCamere')?.touched && hotelForm.get('numCamere')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.minimo-1' | translate }}</span>
-                    }
-                  </div>
-                  <div class="form-field">
-                    <label class="field-label">{{ 'addhotel.prezzo-medio-notte' | translate }} <span class="field-required">*</span></label>
-                    <div class="input-prefix-wrap">
-                      <span class="input-prefix">€</span>
-                      <input type="number" formControlName="prezzoMedio" class="add-hotel-input input-with-prefix"
-                        [placeholder]="'addhotel.prezzo-medio-notte.placeholder' | translate" min="0"
-                        [class.input-error]="hotelForm.get('prezzoMedio')?.touched && hotelForm.get('prezzoMedio')?.invalid">
-                    </div>
-                    @if (hotelForm.get('prezzoMedio')?.touched && hotelForm.get('prezzoMedio')?.invalid) {
-                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.obbligatorio' | translate }}</span>
-                    }
-                  </div>
                 </div>
 
                 <div class="add-hotel-form-grid grid-2">
@@ -201,6 +180,8 @@
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     } @else if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.errors?.['pattern']) {
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.telefono-non-valido' | translate }}</span>
+                    } @else if (hotelForm.get('telefono')?.touched && hotelForm.get('telefono')?.errors?.['duplicato']) {
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.telefono-duplicato' | translate }}</span>
                     }
                   </div>
                   <div class="form-field">
@@ -212,8 +193,100 @@
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.campo-obbligatorio' | translate }}</span>
                     } @else if (hotelForm.get('email')?.touched && hotelForm.get('email')?.errors?.['email']) {
                       <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.email-non-valida' | translate }}</span>
+                    } @else if (hotelForm.get('email')?.touched && hotelForm.get('email')?.errors?.['duplicato']) {
+                      <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.email-duplicata' | translate }}</span>
                     }
                   </div>
+                </div>
+
+                <!-- ── Camere: builder inline (una camera alla volta) ── -->
+                <div class="add-hotel-camere">
+                  <p class="add-hotel-hint">
+                    <i class="fas fa-circle-info"></i> {{ 'addhotel.camere-intro' | translate }}
+                  </p>
+
+                  <div [formGroup]="cameraForm" class="camera-builder">
+                    <div class="add-hotel-form-grid grid-4">
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.tipo' | translate }}</label>
+                        <select formControlName="tipo" class="add-hotel-select">
+                          @for (t of tipiCamera; track t) { <option [value]="t">{{ formatTipoCamera(t) }}</option> }
+                        </select>
+                      </div>
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.prezzo-notte' | translate }} <span class="field-required">*</span></label>
+                        <div class="input-prefix-wrap">
+                          <span class="input-prefix">€</span>
+                          <input type="number" formControlName="prezzoNotte" class="add-hotel-input input-with-prefix" min="0" step="0.01"
+                            [class.input-error]="cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid">
+                        </div>
+                        @if (cameraForm.get('prezzoNotte')?.touched && cameraForm.get('prezzoNotte')?.invalid) {
+                          <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.camera.prezzo-obbligatorio' | translate }}</span>
+                        }
+                      </div>
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.capienza-ospiti' | translate }} <span class="field-required">*</span></label>
+                        <input type="number" formControlName="capienza" class="add-hotel-input" min="1"
+                          [class.input-error]="cameraForm.get('capienza')?.touched && cameraForm.get('capienza')?.invalid">
+                        @if (cameraForm.get('capienza')?.touched && cameraForm.get('capienza')?.invalid) {
+                          <span class="field-error"><i class="fas fa-exclamation-circle"></i> {{ 'addhotel.camera.capienza-obbligatoria' | translate }}</span>
+                        }
+                      </div>
+                      <div class="form-field">
+                        <label class="field-label">{{ 'gestionehotel.disponibile' | translate }}</label>
+                        <label class="add-hotel-check">
+                          <input type="checkbox" formControlName="disponibile">
+                          <span>{{ 'gestionehotel.disponibile' | translate }}</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-field">
+                      <label class="field-label">{{ 'gestionehotel.descrizione' | translate }}</label>
+                      <textarea formControlName="descrizione" class="add-hotel-textarea" rows="2"
+                        [placeholder]="'gestionehotel.descrizione-camera-placeholder' | translate"></textarea>
+                    </div>
+
+                    <div class="camera-foto-row">
+                      @for (f of fotoCameraNuova; track $index) {
+                        <div class="camera-foto-thumb">
+                          <img [src]="f" alt="">
+                          <button type="button" (click)="rimuoviFotoCameraNuova($index)"
+                            [attr.aria-label]="'gestionehotel.rimuovi-foto' | translate"><i class="fas fa-times"></i></button>
+                        </div>
+                      }
+                      <label class="camera-foto-add">
+                        <input type="file" accept="image/*" multiple (change)="onFotoCameraSelezionate($event)" hidden>
+                        <i class="fas fa-camera"></i>
+                        <span>{{ 'gestionehotel.aggiungi-foto' | translate }}</span>
+                      </label>
+                    </div>
+
+                    <button type="button" class="btn-aggiungi-camera" (click)="aggiungiCamera()"
+                      [disabled]="savingCamera">
+                      @if (savingCamera) { <span class="btn-spinner"></span> }
+                      <i class="fas fa-plus-circle"></i> {{ 'gestionehotel.aggiungi-camera' | translate }}
+                    </button>
+                  </div>
+
+                  @if (camereCreate.length > 0) {
+                    <div class="camere-aggiunte">
+                      @for (c of camereCreate; track c.id) {
+                        <div class="camera-riga">
+                          <span class="camera-riga-tipo">{{ formatTipoCamera(c.tipo) }}</span>
+                          <span class="camera-riga-meta"><i class="fas fa-user"></i> {{ c.capienza }}</span>
+                          <span class="camera-riga-prezzo">€ {{ c.prezzoNotte }}</span>
+                          @if ((c.foto?.length ?? 0) > 0) {
+                            <span class="camera-riga-foto"><i class="fas fa-images"></i> {{ c.foto.length }}</span>
+                          }
+                          <button type="button" class="camera-riga-del" (click)="rimuoviCameraSalvata(c)"
+                            [attr.aria-label]="'common.elimina' | translate"><i class="fas fa-trash"></i></button>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="add-hotel-hint add-hotel-hint-muted">{{ 'gestionehotel.nessuna-camera' | translate }}</p>
+                  }
                 </div>
               </div>
             </div>
@@ -313,7 +386,7 @@
                   </div>
                   <div class="riepilogo-voce">
                     <span class="riepilogo-label">{{ 'addhotel.numero-camere' | translate }}</span>
-                    <span class="riepilogo-val">{{ hotelForm.get('numCamere')?.value || '—' }}</span>
+                    <span class="riepilogo-val">{{ camereCreate.length || '—' }}</span>
                   </div>
                 </div>
 

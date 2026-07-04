@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
@@ -14,7 +14,7 @@ import { SharedModule } from '../../shared/shared.module';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
 
   showPassword = false;
   showAlert: boolean = false;
@@ -29,8 +29,17 @@ export class Login {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private i18n: TranslationService
   ) {}
+
+  ngOnInit() {
+    // Se l'interceptor ci ha rimandato qui per un token scaduto/non valido,
+    // spieghiamo chiaramente il motivo invece di lasciare la pagina muta.
+    if (this.route.snapshot.queryParamMap.get('sessionExpired') === '1') {
+      this.showAlertMessage(this.i18n.translate('auth.msg.sessione-scaduta', 'it'), 'warning');
+    }
+  }
 
   onSubmit() {
     if (this.loginForm.valid) {
@@ -42,7 +51,10 @@ export class Login {
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
-          this.showAlertMessage(this.i18n.translate('auth.msg.credenziali-errate', 'it'), 'error');
+          const chiave = err?.status === 403
+            ? 'auth.msg.account-sospeso'
+            : 'auth.msg.credenziali-errate';
+          this.showAlertMessage(this.i18n.translate(chiave, 'it'), 'error');
         }
       });
     }

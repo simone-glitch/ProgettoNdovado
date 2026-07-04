@@ -164,9 +164,32 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
       .openPopup();
   }
 
+  // Prenotabile solo se la struttura è pubblicata: una sospesa (o non ancora
+  // approvata) resta visualizzabile ma non consente la prenotazione.
+  get prenotabile(): boolean {
+    return (this.hotel?.stato ?? 'PUBBLICATO').toUpperCase() === 'PUBBLICATO';
+  }
+  get isSospeso(): boolean {
+    return (this.hotel?.stato ?? '').toUpperCase() === 'SOSPESO';
+  }
+  get isNonAttivo(): boolean {
+    return (this.hotel?.stato ?? '').toUpperCase() === 'NON_ATTIVO';
+  }
+  get bannerNonPrenotabile(): string {
+    if (this.isSospeso)  return 'hoteldetail.sospeso-banner';
+    if (this.isNonAttivo) return 'hoteldetail.non-attiva-banner';
+    return 'hoteldetail.non-prenotabile-banner';
+  }
+
   get isGuest()       { return this.authService.isGuest(); }
+  get isHost()        { return this.authService.isHost(); }
   get isAdmin()       { return this.authService.isAdmin(); }
   get currentUserId() { return this.authService.getLoggedUser()?.id; }
+
+  // Solo i guest prenotano: host e admin devono accedere con un profilo guest.
+  get puoPrenotare(): boolean {
+    return this.isGuest;
+  }
 
   stelle(n: number): string {
     return '★'.repeat(Math.max(0, Math.min(5, n))) + '☆'.repeat(5 - Math.max(0, Math.min(5, n)));
@@ -210,7 +233,7 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get canPrenotare(): boolean {
-    return !!this.selectedCamera && this.numNotti > 0 && this.formValido;
+    return this.prenotabile && this.puoPrenotare && !!this.selectedCamera && this.numNotti > 0 && this.formValido;
   }
 
   get todayStr(): string {

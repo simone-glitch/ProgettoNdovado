@@ -125,7 +125,7 @@ export class HotelForm implements OnInit {
     };
     const onErr = (e: any) => {
       this.saving = false;
-      this.showAlertMessage(e.error?.message ?? this.i18n.translate('gestionehotel.msg.errore'), 'error');
+      this.showAlertMessage(this.estraiErrore(e, 'gestionehotel.msg.errore'), 'error');
     };
 
     // Ricava le coordinate da città+indirizzo (con fallback sulla sola città) e poi salva.
@@ -143,6 +143,15 @@ export class HotelForm implements OnInit {
         });
       }
     });
+  }
+
+  // Il backend restituisce un body stringa: con responseType json finisce in
+  // e.error.text, non in e.error.message. Estraiamo il messaggio reale.
+  private estraiErrore(e: any, fallbackKey: string): string {
+    if (typeof e?.error === 'string' && e.error) return e.error;
+    if (e?.error?.message) return e.error.message;
+    if (e?.error?.text)    return e.error.text;
+    return this.i18n.translate(fallbackKey);
   }
 
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {

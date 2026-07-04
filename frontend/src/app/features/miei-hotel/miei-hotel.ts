@@ -301,6 +301,47 @@ export class MieiHotel implements OnInit {
     });
   }
 
+  // ── Azioni ciclo di vita (host proprietario) ──
+
+  private statoUpper(hotel: any): string { return (hotel?.stato ?? 'BOZZA').toUpperCase(); }
+
+  puoInviareRevisione(hotel: any): boolean {
+    const s = this.statoUpper(hotel);
+    return s === 'BOZZA' || s === 'RIFIUTATO';
+  }
+  puoDisattivare(hotel: any): boolean { return this.statoUpper(hotel) === 'PUBBLICATO'; }
+  puoAttivare(hotel: any): boolean    { return this.statoUpper(hotel) === 'NON_ATTIVO'; }
+
+  private applicaStato(id: number, stato: string, msgKey: string) {
+    const h = this.hotels.find(x => x.id === id);
+    if (h) h.stato = stato;
+    this.showAlertMessage(this.i18n.translate(msgKey), 'success');
+  }
+  private erroreStato = (e: any) =>
+    this.showAlertMessage(e?.error?.message ?? this.i18n.translate('myhotel.msg.errore-stato'), 'error');
+
+  inviaRevisione(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelService.inviaInRevisione(hotel.id).subscribe({
+      next: () => this.applicaStato(hotel.id, 'IN_REVISIONE', 'myhotel.msg.inviato-revisione'),
+      error: this.erroreStato,
+    });
+  }
+  disattivaHotel(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelService.disattiva(hotel.id).subscribe({
+      next: () => this.applicaStato(hotel.id, 'NON_ATTIVO', 'myhotel.msg.disattivato'),
+      error: this.erroreStato,
+    });
+  }
+  attivaHotel(hotel: any) {
+    if (!hotel?.id) return;
+    this.hotelService.attiva(hotel.id).subscribe({
+      next: () => this.applicaStato(hotel.id, 'PUBBLICATO', 'myhotel.msg.attivato'),
+      error: this.erroreStato,
+    });
+  }
+
   showAlertMessage(msg: string, type: 'success' | 'error' | 'info' | 'warning') {
     this.alertMessage = msg; this.alertType = type; this.showAlert = true;
   }

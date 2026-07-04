@@ -195,6 +195,28 @@ public class PrenotazioneDAO {
         return jdbcTemplate.update(sql);
     }
 
+    /**
+     * Ripristina la disponibilità delle camere rimaste bloccate dalla vecchia logica
+     * che, al momento della prenotazione, marcava l'intera camera come non disponibile.
+     * Ora l'occupazione è gestita per-data (calendario): una camera con prenotazioni
+     * deve restare selezionabile, con i soli giorni presi bloccati nel date-picker.
+     * Tocca solo le camere che hanno almeno una prenotazione non cancellata, così le
+     * camere disabilitate manualmente dall'host (fuori servizio, senza prenotazioni)
+     * non vengono riattivate.
+     */
+    public int ripristinaCamereConPrenotazioni() {
+        String sql = """
+                UPDATE camere
+                SET disponibile = true
+                WHERE disponibile = false
+                  AND id_camera IN (
+                      SELECT DISTINCT id_camera FROM prenotazioni
+                      WHERE stato NOT IN ('CANCELLATA')
+                  )
+                """;
+        return jdbcTemplate.update(sql);
+    }
+
     public List<Map<String, String>> getOccupazioniCamera(Integer idCamera) {
         String sql = """
                 SELECT data_checkin, data_checkout FROM prenotazioni

@@ -54,9 +54,21 @@ public class UserService {
         if (altroConStessaEmail != null && !Objects.equals(altroConStessaEmail.getId(), utente.getId()))
             throw new IllegalArgumentException("Email già utilizzata da un altro utente.");
 
+        // Telefono: opzionale. Se valorizzato deve essere univoco tra gli utenti;
+        // se lasciato vuoto viene azzerato (NULL) così non collide con altri campi vuoti.
+        String telefono = profileRequest.get("telefono");
+        if (telefono != null) telefono = telefono.trim();
+        if (telefono != null && telefono.isEmpty()) telefono = null;
+        if (telefono != null) {
+            Utente altroConStessoTelefono = utenteJDBC.trovaPerTelefono(telefono);
+            if (altroConStessoTelefono != null && !Objects.equals(altroConStessoTelefono.getId(), utente.getId()))
+                throw new IllegalArgumentException("Numero di telefono già utilizzato da un altro utente.");
+        }
+
         utente.setNome(nome);
         utente.setCognome(cognome);
         utente.setEmail(nuovaEmail);
+        utente.setTelefono(telefono);
         utenteJDBC.aggiorna(utente);
         utente.setPassword(null);
         return utente;

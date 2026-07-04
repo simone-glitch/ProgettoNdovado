@@ -31,7 +31,7 @@ export class Home implements OnInit {
     public favService: FavoritesService,
   ) {}
 
-  ngOnInit() { this.caricaTutti(); }
+  ngOnInit() { this.favService.sincronizza(); this.caricaTutti(); }
 
   caricaTutti() {
     this.loading = true;

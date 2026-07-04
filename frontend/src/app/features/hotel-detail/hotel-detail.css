@@ -298,6 +298,21 @@
 .ndv-stars-gold { color: #C9943A; font-size: 1rem; }
 .ndv-err { color: #DC2626; font-size: 0.78rem; }
 .ndv-no-data { color: #94A3B8; font-style: italic; font-size: 0.9rem; margin: 0; }
+.ndv-sospeso-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  background: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: 12px;
+  color: #92400E;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.ndv-sospeso-banner i { margin-top: 2px; }
 .ndv-btn-primary {
   padding: 12px 24px;
   background: linear-gradient(135deg, #0F3460, #0A2342);

@@ -22,6 +22,11 @@ export class HotelService {
     return this.http.get<any[]>(`${this.api}/tutti`);
   }
 
+  // Vista di moderazione ADMIN: include il proprietario ed esclude le bozze altrui.
+  getPerGestione(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/gestione`);
+  }
+
   getDettaglio(id: number): Observable<any> {
     return this.http.get<any>(`${this.api}/${id}`);
   }
@@ -50,8 +55,25 @@ export class HotelService {
     return this.http.put<any>(`${this.api}/${idHotel}/servizi`, idServizi);
   }
 
+  // ── Transizioni di stato (ciclo di vita struttura) ──
+  // HOST proprietario
+  inviaInRevisione(id: number): Observable<any> { return this.http.put<any>(`${this.api}/${id}/invia-revisione`, {}); }
+  disattiva(id: number):        Observable<any> { return this.http.put<any>(`${this.api}/${id}/disattiva`, {}); }
+  attiva(id: number):           Observable<any> { return this.http.put<any>(`${this.api}/${id}/attiva`, {}); }
+  // ADMIN (moderazione)
+  approva(id: number):  Observable<any> { return this.http.put<any>(`${this.api}/${id}/approva`, {}); }
+  rifiuta(id: number):  Observable<any> { return this.http.put<any>(`${this.api}/${id}/rifiuta`, {}); }
+  sospendi(id: number): Observable<any> { return this.http.put<any>(`${this.api}/${id}/sospendi`, {}); }
+  riattiva(id: number): Observable<any> { return this.http.put<any>(`${this.api}/${id}/riattiva`, {}); }
+
   aggiungiFoto(idHotel: number, urlFoto: string, didascalia: string = ''): Observable<any> {
     return this.http.post<any>(`${this.api}/${idHotel}/foto`, { urlFoto, didascalia });
+  }
+
+  // Sostituisce l'intera galleria dell'hotel con l'elenco passato (data URL base64
+  // o URL esterni). Usato dal wizard dopo il salvataggio per persistere le foto.
+  sostituisciFoto(idHotel: number, foto: string[]): Observable<any> {
+    return this.http.put(`${this.api}/${idHotel}/foto`, foto, { responseType: 'text' as 'json' });
   }
 
   eliminaFoto(idHotel: number, idFoto: number): Observable<any> {

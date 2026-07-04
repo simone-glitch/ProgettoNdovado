@@ -29,6 +29,11 @@ public class Hotel {
     private List<String> fotoUrls;
     private Double votoMedio;
 
+    // Popolati solo nella vista di moderazione ADMIN (join con la tabella utenti):
+    // servono a mostrare "di chi è" ogni struttura. Restano null altrove.
+    private String nomeProprietario;
+    private String emailProprietario;
+
     public Hotel() {}
 
     public Integer getId() { return id; }
@@ -90,4 +95,10 @@ public class Hotel {
 
     public Double getVotoMedio() { return votoMedio; }
     public void setVotoMedio(Double votoMedio) { this.votoMedio = votoMedio; }
+
+    public String getNomeProprietario() { return nomeProprietario; }
+    public void setNomeProprietario(String nomeProprietario) { this.nomeProprietario = nomeProprietario; }
+
+    public String getEmailProprietario() { return emailProprietario; }
+    public void setEmailProprietario(String emailProprietario) { this.emailProprietario = emailProprietario; }
 }

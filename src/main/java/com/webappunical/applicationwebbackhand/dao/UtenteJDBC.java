@@ -25,14 +25,16 @@ public class UtenteJDBC {
         utente.setPassword(rs.getString("password"));
         utente.setRuolo(rs.getString("ruolo"));
         utente.setBanned(rs.getBoolean("banned"));
+        // Colonna opzionale: se il DB non è ancora migrato non deve rompere le query.
+        try { utente.setTelefono(rs.getString("telefono")); } catch (Exception ignored) {}
         return utente;
     };
 
     public void salva(Utente utente) {
-        String query = "INSERT INTO utenti (nome, cognome, email, password, ruolo) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO utenti (nome, cognome, email, password, ruolo, telefono) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(query,
                 utente.getNome(), utente.getCognome(),
-                utente.getEmail(), utente.getPassword(), utente.getRuolo());
+                utente.getEmail(), utente.getPassword(), utente.getRuolo(), utente.getTelefono());
     }
 
     public Utente trovaPerId(Integer id) {
@@ -58,10 +60,19 @@ public class UtenteJDBC {
     }
 
     public void aggiorna(Utente utente) {
-        String query = "UPDATE utenti SET nome = ?, cognome = ?, email = ?, ruolo = ? WHERE id_utente = ?";
+        String query = "UPDATE utenti SET nome = ?, cognome = ?, email = ?, ruolo = ?, telefono = ? WHERE id_utente = ?";
         jdbcTemplate.update(query,
                 utente.getNome(), utente.getCognome(),
-                utente.getEmail(), utente.getRuolo(), utente.getId());
+                utente.getEmail(), utente.getRuolo(), utente.getTelefono(), utente.getId());
+    }
+
+    public Utente trovaPerTelefono(String telefono) {
+        String query = "SELECT * FROM utenti WHERE telefono = ?";
+        try {
+            return jdbcTemplate.queryForObject(query, utenteRowMapper, telefono);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void aggiornaPassword(Integer id, String nuovaPasswordHash) {

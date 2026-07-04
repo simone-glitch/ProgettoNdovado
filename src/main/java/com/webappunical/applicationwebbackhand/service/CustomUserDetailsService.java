@@ -31,18 +31,23 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (utente == null) {
             throw new UsernameNotFoundException("Utente non trovato con email: " + email);
         }
-        if (utente.isBanned()) {
-            throw new UsernameNotFoundException("Account bannato. Contatta l'amministratore.");
-        }
+        // Un account bannato viene segnalato come "locked": Spring Security lancia
+        // una LockedException (distinta dalle credenziali errate) che l'AuthController
+        // traduce in un messaggio dedicato di account sospeso.
         return new User(
                 utente.getEmail(),
                 utente.getPassword(),
+                true,                       // enabled
+                true,                       // accountNonExpired
+                true,                       // credentialsNonExpired
+                !utente.isBanned(),         // accountNonLocked
                 Collections.singletonList(() -> "ROLE_" + utente.getRuolo())
         );
     }
 
     @Transactional
-    public Utente registraNuovoUtente(String nome, String cognome, String email, String password, String ruolo) {
+    public Utente registraNuovoUtente(String nome, String cognome, String email, String password,
+                                      String ruolo, String telefono) {
         if (nome == null || nome.trim().isEmpty() || cognome == null || cognome.trim().isEmpty()
                 || email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome, cognome ed email sono obbligatori.");
@@ -54,6 +59,13 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new IllegalArgumentException(
                     "La password deve avere almeno 8 caratteri, una lettera maiuscola e un numero.");
         }
+        // Telefono: facoltativo. Se valorizzato deve essere univoco tra gli utenti;
+        // vuoto → NULL così i profili senza telefono non collidono tra loro.
+        if (telefono != null) telefono = telefono.trim();
+        if (telefono != null && telefono.isEmpty()) telefono = null;
+        if (telefono != null && utenteJDBC.trovaPerTelefono(telefono) != null) {
+            throw new IllegalArgumentException("Numero di telefono già registrato.");
+        }
         // Solo GUEST e HOST sono ruoli validi per la registrazione pubblica
         String ruoloFinale = ("HOST".equalsIgnoreCase(ruolo)) ? "HOST" : "GUEST";
 
@@ -63,6 +75,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         nuovo.setEmail(email.trim());
         nuovo.setPassword(passwordEncoder.encode(password));
         nuovo.setRuolo(ruoloFinale);
+        nuovo.setTelefono(telefono);
         utenteJDBC.salva(nuovo);
         return utenteJDBC.trovaPerEmail(email);
     }

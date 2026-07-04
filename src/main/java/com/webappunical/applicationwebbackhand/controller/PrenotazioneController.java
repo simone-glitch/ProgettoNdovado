@@ -58,8 +58,10 @@ public class PrenotazioneController {
         return ResponseEntity.ok(prenotazioneService.getTutte());
     }
 
+    // Solo i GUEST prenotano: host e admin, per prenotare, devono accedere con un
+    // profilo guest. La UI lo comunica esplicitamente.
     @PostMapping
-    @PreAuthorize("hasAnyRole('GUEST','ADMIN')")
+    @PreAuthorize("hasRole('GUEST')")
     public ResponseEntity<?> crea(@RequestBody PrenotazioneDTO dto, Authentication auth) {
         try {
             Prenotazione prenotazione = new Prenotazione();

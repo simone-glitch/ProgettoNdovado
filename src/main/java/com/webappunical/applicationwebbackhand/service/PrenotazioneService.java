@@ -1,10 +1,13 @@
 package com.webappunical.applicationwebbackhand.service;
 
 import com.webappunical.applicationwebbackhand.dao.CameraDAO;
+import com.webappunical.applicationwebbackhand.dao.HotelDAO;
 import com.webappunical.applicationwebbackhand.dao.PrenotazioneDAO;
 import com.webappunical.applicationwebbackhand.dao.UtenteJDBC;
 import com.webappunical.applicationwebbackhand.model.Camera;
+import com.webappunical.applicationwebbackhand.model.Hotel;
 import com.webappunical.applicationwebbackhand.model.Prenotazione;
+import com.webappunical.applicationwebbackhand.model.StatoHotel;
 import com.webappunical.applicationwebbackhand.model.Utente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,12 +22,15 @@ public class PrenotazioneService {
 
     private final PrenotazioneDAO prenotazioneDAO;
     private final CameraDAO       cameraDAO;
+    private final HotelDAO        hotelDAO;
     private final UtenteJDBC      utenteJDBC;
 
     @Autowired
-    public PrenotazioneService(PrenotazioneDAO prenotazioneDAO, CameraDAO cameraDAO, UtenteJDBC utenteJDBC) {
+    public PrenotazioneService(PrenotazioneDAO prenotazioneDAO, CameraDAO cameraDAO,
+                               HotelDAO hotelDAO, UtenteJDBC utenteJDBC) {
         this.prenotazioneDAO = prenotazioneDAO;
         this.cameraDAO       = cameraDAO;
+        this.hotelDAO        = hotelDAO;
         this.utenteJDBC      = utenteJDBC;
     }
 
@@ -64,6 +70,17 @@ public class PrenotazioneService {
         if (camera == null) throw new RuntimeException("Camera non trovata.");
         if (!camera.isDisponibile()) throw new IllegalStateException("La camera non è disponibile.");
 
+        // Solo le strutture pubblicate sono prenotabili: una sospesa (o non ancora
+        // approvata) non deve poter essere prenotata neppure via link diretto.
+        Hotel hotel = hotelDAO.trovaPerId(camera.getIdHotel());
+        if (hotel == null || !StatoHotel.PUBBLICATO.name().equals(hotel.getStato())) {
+            throw new IllegalStateException("La struttura non è al momento prenotabile.");
+        }
+        // Un host non può prenotare la propria struttura.
+        if (hotel.getIdProprietario() != null && hotel.getIdProprietario().equals(guest.getId())) {
+            throw new IllegalStateException("Non puoi prenotare una tua struttura.");
+        }
+
         String checkin  = prenotazione.getDataCheckin().toString();
         String checkout = prenotazione.getDataCheckout().toString();
         boolean libera  = prenotazioneDAO.verificaDisponibilita(camera.getId(), checkin, checkout);
@@ -80,7 +97,10 @@ public class PrenotazioneService {
 
         Integer id = prenotazioneDAO.salva(prenotazione);
         prenotazione.setId(id);
-        cameraDAO.setDisponibile(camera.getId(), false);
+        // La disponibilità è gestita per-data (calendario/occupazioni): NON si tocca
+        // il flag globale `disponibile`, che resta il controllo manuale dell'host
+        // (camera fuori servizio). Così la camera resta prenotabile per altre date
+        // e le date già prese — in attesa o confermate — risultano bloccate.
         return prenotazione;
     }
 
@@ -102,13 +122,11 @@ public class PrenotazioneService {
             }
         }
 
+        // Cambiare stato (conferma/rifiuto/cancellazione) non tocca il flag
+        // `disponibile`: le date si liberano da sole perché le occupazioni
+        // considerano solo le prenotazioni non CANCELLATA. Un rifiuto usa lo
+        // stato CANCELLATA, quindi le date tornano subito disponibili.
         prenotazioneDAO.aggiornaStato(id, nuovoStato);
-
-        if ("CANCELLATA".equals(nuovoStato)) {
-            if (!prenotazioneDAO.haAltrePrenotazioniAttive(prenotazione.getIdCamera(), id)) {
-                cameraDAO.setDisponibile(prenotazione.getIdCamera(), true);
-            }
-        }
     }
 
     @Transactional

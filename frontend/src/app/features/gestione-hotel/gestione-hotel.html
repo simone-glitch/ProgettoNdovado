@@ -27,8 +27,18 @@
         <div class="hotel-card">
           <div class="hotel-card-info">
             <div>
-              <h3>{{ hotel.nome }}</h3>
+              <h3>
+                {{ hotel.nome }}
+                <span class="stato-badge" [ngClass]="getStatoBadgeClass(hotel)">{{ getStatoLabel(hotel) }}</span>
+              </h3>
               <p class="hotel-meta"><i class="fas fa-map-marker-alt"></i> {{ hotel.citta }} &nbsp;·&nbsp; {{ stelle(hotel.stelle) }}</p>
+              @if (isAdmin && hotel.nomeProprietario) {
+                <p class="hotel-owner">
+                  <i class="fas fa-user"></i>
+                  {{ 'gestionehotel.proprietario' | translate }}: <strong>{{ hotel.nomeProprietario }}</strong>
+                  <span class="owner-email">({{ hotel.emailProprietario }})</span>
+                </p>
+              }
               <p class="hotel-desc">{{ hotel.descrizione }}</p>
             </div>
           </div>
@@ -37,6 +47,19 @@
               <i class="fas fa-bed"></i> {{ 'gestionehotel.camere-count' | translate }} ({{ hotel.camere?.length ?? 0 }})
             </button>
             <button class="btn-sm btn-edit" (click)="apriModificaHotel(hotel)"><i class="fas fa-pen"></i> {{ 'common.modifica' | translate }}</button>
+
+            <!-- Moderazione (solo ADMIN) -->
+            @if (puoApprovareRifiutare(hotel)) {
+              <button class="btn-sm btn-approva" (click)="approvaHotel(hotel)"><i class="fas fa-check"></i> {{ 'gestionehotel.azione.approva' | translate }}</button>
+              <button class="btn-sm btn-rifiuta" (click)="rifiutaHotel(hotel)"><i class="fas fa-times"></i> {{ 'gestionehotel.azione.rifiuta' | translate }}</button>
+            }
+            @if (puoSospendere(hotel)) {
+              <button class="btn-sm btn-sospendi" (click)="sospendiHotel(hotel)"><i class="fas fa-ban"></i> {{ 'gestionehotel.azione.sospendi' | translate }}</button>
+            }
+            @if (puoRiattivare(hotel)) {
+              <button class="btn-sm btn-approva" (click)="riattivaHotel(hotel)"><i class="fas fa-play"></i> {{ 'gestionehotel.azione.riattiva' | translate }}</button>
+            }
+
             <button class="btn-sm btn-delete" (click)="chiediEliminaHotel(hotel)"><i class="fas fa-trash"></i> {{ 'common.elimina' | translate }}</button>
           </div>
         </div>
