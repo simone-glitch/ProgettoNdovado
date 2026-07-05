@@ -118,10 +118,6 @@
           @if (cercato) { {{ 'home.sec.corrispondenti' | translate }} } @else { {{ 'home.sec.soggiorni-selezionati' | translate }} }
         </p>
       </div>
-
-      @if (cercato) {
-        <span class="ndv-results-count">({{ hotels.length }} {{ 'home.risultati' | translate }})</span>
-      }
     </div>
 
     @if (loading) {
