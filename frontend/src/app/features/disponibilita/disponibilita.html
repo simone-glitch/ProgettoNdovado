@@ -78,7 +78,6 @@
                   <span class="disp-blocco-date">{{ fmtData(b.dataInizio) }} → {{ fmtData(b.dataFine) }}</span>
                   <span class="disp-blocco-meta">
                     {{ durata(b) }} {{ durata(b) === 1 ? ('disp.giorno' | translate) : ('disp.giorni' | translate) }}
-                    @if (b.motivo) { · {{ b.motivo }} }
                   </span>
                 </div>
                 <button class="disp-blocco-del" (click)="chiediRimozione(b)"
