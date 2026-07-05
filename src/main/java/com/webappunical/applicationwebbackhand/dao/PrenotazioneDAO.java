@@ -41,6 +41,7 @@ public class PrenotazioneDAO {
         try { p.setTipoCamera(rs.getString("tipo_camera")); } catch (Exception ignored) {}
         try { p.setNomeHotel(rs.getString("nome_hotel"));   } catch (Exception ignored) {}
         try { p.setIdHotel(rs.getInt("id_hotel"));          } catch (Exception ignored) {}
+        try { p.setFotoHotel(rs.getString("foto_hotel"));   } catch (Exception ignored) {}
         return p;
     };
 
@@ -70,7 +71,10 @@ public class PrenotazioneDAO {
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
                        h.nome                     AS nome_hotel,
-                       h.id_hotel                 AS id_hotel
+                       h.id_hotel                 AS id_hotel,
+                       (SELECT f.url_foto FROM foto_hotel f
+                         WHERE f.id_hotel = h.id_hotel
+                         ORDER BY f.id_foto LIMIT 1) AS foto_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -90,7 +94,10 @@ public class PrenotazioneDAO {
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
                        h.nome                     AS nome_hotel,
-                       h.id_hotel                 AS id_hotel
+                       h.id_hotel                 AS id_hotel,
+                       (SELECT f.url_foto FROM foto_hotel f
+                         WHERE f.id_hotel = h.id_hotel
+                         ORDER BY f.id_foto LIMIT 1) AS foto_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -107,7 +114,10 @@ public class PrenotazioneDAO {
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
                        h.nome                     AS nome_hotel,
-                       h.id_hotel                 AS id_hotel
+                       h.id_hotel                 AS id_hotel,
+                       (SELECT f.url_foto FROM foto_hotel f
+                         WHERE f.id_hotel = h.id_hotel
+                         ORDER BY f.id_foto LIMIT 1) AS foto_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -124,7 +134,10 @@ public class PrenotazioneDAO {
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
                        h.nome                     AS nome_hotel,
-                       h.id_hotel                 AS id_hotel
+                       h.id_hotel                 AS id_hotel,
+                       (SELECT f.url_foto FROM foto_hotel f
+                         WHERE f.id_hotel = h.id_hotel
+                         ORDER BY f.id_foto LIMIT 1) AS foto_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera
@@ -141,7 +154,10 @@ public class PrenotazioneDAO {
                        u.nome || ' ' || u.cognome AS nome_utente,
                        c.tipo                     AS tipo_camera,
                        h.nome                     AS nome_hotel,
-                       h.id_hotel                 AS id_hotel
+                       h.id_hotel                 AS id_hotel,
+                       (SELECT f.url_foto FROM foto_hotel f
+                         WHERE f.id_hotel = h.id_hotel
+                         ORDER BY f.id_foto LIMIT 1) AS foto_hotel
                 FROM prenotazioni p
                 JOIN utenti  u ON u.id_utente = p.id_utente
                 JOIN camere  c ON c.id_camera = p.id_camera

@@ -229,7 +229,8 @@
               <div class="booking-image">
 
                 <img
-                  [src]="getHotelImage(p.nomeHotel)"
+                  [src]="getHotelImage(p)"
+                  (error)="onImageError($event, p)"
                   [alt]="p.nomeHotel"
                   class="booking-img">
 

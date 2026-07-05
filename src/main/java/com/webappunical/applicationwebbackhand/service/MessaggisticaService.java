@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -42,7 +43,15 @@ public class MessaggisticaService {
     public List<Conversazione> getConversazioni(String email) {
         Utente utente = utenteJDBC.trovaPerEmail(email);
         if (utente == null) throw new RuntimeException("Utente non trovato.");
-        List<Conversazione> conv = conversazioneDAO.trovaPerUtente(utente.getId());
+        List<Conversazione> conv = new ArrayList<>(conversazioneDAO.trovaPerUtente(utente.getId()));
+        // Un admin vede anche TUTTE le conversazioni di assistenza (segnalazioni
+        // incluse), non solo quelle assegnate a lui: così ogni amministratore può
+        // gestire qualunque richiesta indipendentemente da chi era il "primo admin".
+        if ("ADMIN".equals(utente.getRuolo())) {
+            for (Conversazione a : conversazioneDAO.trovaAssistenza()) {
+                if (conv.stream().noneMatch(c -> c.getId().equals(a.getId()))) conv.add(a);
+            }
+        }
         conv.forEach(c -> arricchisci(c, utente.getId()));
         conv.sort(Comparator.comparing(
                 Conversazione::getDataUltimoMessaggio,
@@ -173,7 +182,18 @@ public class MessaggisticaService {
         if (conv == null) throw new RuntimeException("Conversazione non trovata.");
         boolean partecipe = utente.getId().equals(conv.getIdGuest())
                 || utente.getId().equals(conv.getIdHost());
+        // Qualsiasi admin può gestire (aprire/rispondere) una chat di assistenza,
+        // anche se non è l'host a cui era stata originariamente assegnata.
+        if (!partecipe && "ADMIN".equals(utente.getRuolo()) && isAssistenza(conv)) {
+            partecipe = true;
+        }
         if (!partecipe) throw new SecurityException("Non fai parte di questa conversazione.");
+    }
+
+    /** Una conversazione è di assistenza quando il suo lato host è un amministratore. */
+    private boolean isAssistenza(Conversazione conv) {
+        Utente host = utenteJDBC.trovaPerId(conv.getIdHost());
+        return host != null && "ADMIN".equals(host.getRuolo());
     }
 
     private void arricchisci(Conversazione c, Integer richiedenteId) {

@@ -269,26 +269,26 @@ export class Prenotazioni implements OnInit {
     return nome.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
   }
 
-  getHotelImage(nomeHotel: string): string {
+  // Immagine della card prenotazione: usa la prima foto (copertina) impostata
+  // nel profilo dell'hotel; se manca, ripiega su un'immagine di città generica.
+  getHotelImage(p: any): string {
+    if (p?.fotoHotel && String(p.fotoHotel).trim()) return p.fotoHotel;
+    return this.imgFallback(p?.citta ?? p?.city);
+  }
 
-    switch (nomeHotel) {
+  onImageError(event: Event, p: any): void {
+    const img = event.target as HTMLImageElement;
+    const fallback = this.imgFallback(p?.citta ?? p?.city);
+    if (!img.src.endsWith(fallback)) img.src = fallback;
+  }
 
-      case 'B&B Napoli Centro':
-        return '/assets/images/Hotel_Image/Napoli.jpg';
-
-      case 'Grand Hotel Roma':
-        return '/assets/images/Hotel_Image/Roma.jpg';
-
-      case 'Hotel Venezia Palace':
-        return '/assets/images/Hotel_Image/Venezia.jpg';
-
-      case 'Relais Toscana':
-        return '/assets/images/Hotel_Image/Toscana.jpg';
-
-      default:
-        return '/assets/images/Hotel_Image/Roma.jpg';
+  private imgFallback(citta?: string): string {
+    switch ((citta ?? '').toLowerCase()) {
+      case 'napoli':  return '/assets/images/Hotel_Image/Napoli.jpg';
+      case 'venezia': return '/assets/images/Hotel_Image/Venezia.jpg';
+      case 'siena':   return '/assets/images/Hotel_Image/Toscana.jpg';
+      default:        return '/assets/images/Hotel_Image/Roma.jpg';
     }
-
   }
 
   // ── Tab / filter ──

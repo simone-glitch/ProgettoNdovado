@@ -54,6 +54,16 @@ public class ConversazioneDAO {
         return jdbcTemplate.query(sql, mapper, idUtente, idUtente);
     }
 
+    /**
+     * Tutte le conversazioni di assistenza (il cui host è un admin). Servono per
+     * mostrare ogni segnalazione a qualunque amministratore, non solo al primo.
+     */
+    public List<Conversazione> trovaAssistenza() {
+        String sql = "SELECT c.* FROM conversazioni c "
+                + "JOIN utenti u ON c.id_host = u.id_utente WHERE u.ruolo = 'ADMIN'";
+        return jdbcTemplate.query(sql, mapper);
+    }
+
     public Integer salva(Integer idGuest, Integer idHost, Integer idHotel) {
         String sql = "INSERT INTO conversazioni (id_guest, id_host, id_hotel) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

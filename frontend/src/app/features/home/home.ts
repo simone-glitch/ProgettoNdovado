@@ -63,6 +63,14 @@ export class Home implements OnInit {
     this.caricaTutti();
   }
 
+  // Click su una destinazione popolare: filtra gli hotel per quella città e
+  // riporta la vista in cima ai risultati.
+  cercaCitta(citta: string) {
+    this.filtriForm.patchValue({ citta });
+    this.cerca();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   vaiDettaglio(id: number) {
     this.router.navigate(['/dashboard/hotel-detail', id]);
   }

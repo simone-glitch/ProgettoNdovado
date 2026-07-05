@@ -18,6 +18,7 @@ public class Prenotazione {
     private String tipoCamera;
     private String nomeHotel;
     private Integer idHotel;
+    private String fotoHotel; // prima foto (copertina) dell'hotel, per la card prenotazione
 
     public Prenotazione() {}
 
@@ -56,4 +57,7 @@ public class Prenotazione {
 
     public Integer getIdHotel() { return idHotel; }
     public void setIdHotel(Integer idHotel) { this.idHotel = idHotel; }
+
+    public String getFotoHotel() { return fotoHotel; }
+    public void setFotoHotel(String fotoHotel) { this.fotoHotel = fotoHotel; }
 }
