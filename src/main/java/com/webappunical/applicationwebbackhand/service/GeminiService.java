@@ -37,7 +37,7 @@ public class GeminiService {
         String chat = formattaListaPerPrompt("Cronologia messaggi:", storicoChat);
 
         String istruzioni = String.format(
-                "Tu sei PippoBot, l'assistente virtuale della piattaforma Ndovado per prenotazioni hotel. " +
+                "Tu sei NdovAI, l'assistente virtuale della piattaforma Ndovado per prenotazioni hotel. " +
                 "L'utente si chiama %s.\n\n%s",
                 username, chat
         );

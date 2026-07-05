@@ -48,18 +48,6 @@ public class MessaggioChatDAO {
         }
     }
 
-    public List<Map<String, Object>> getLavoroRecente(Long idUtente) {
-        String sql = "SELECT tk.id_task, ts.ore, tk.titolo_task AS nome_task " +
-                "FROM timesheet ts JOIN task tk ON ts.id_task = tk.id_task " +
-                "WHERE ts.id_utente = ? ORDER BY ts.id_timesheet DESC LIMIT 5";
-        try {
-            return jdbcTemplate.queryForList(sql, idUtente);
-        } catch (Exception e) {
-            System.err.println("ERRORE in getLavoroRecente: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
     public void salvaMessaggio(String testo, String ruolo, Long utenteId) {
         String sql = "INSERT INTO messaggi_chat (testo, ruolo, utente_id, data_invio) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, testo, ruolo, utenteId, LocalDateTime.now());

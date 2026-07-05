@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/chat")
-public class PippoBotController {
+public class NdovAIController {
     private final GeminiService geminiservice;
     private final UtenteJDBC utenteJDBC;
 
     @Autowired
-    public PippoBotController(GeminiService geminiService, UtenteJDBC utenteJDBC) {
+    public NdovAIController(GeminiService geminiService, UtenteJDBC utenteJDBC) {
         this.geminiservice = geminiService;
         this.utenteJDBC = utenteJDBC;
     }
@@ -28,11 +28,11 @@ public class PippoBotController {
     public ChatResponse chiedi(@RequestBody ChatRequest message, Authentication authentication) {
         String emailLoggata = authentication.getName();
         Utente utente = utenteJDBC.trovaPerEmail(emailLoggata);
-        
+
         if (utente == null) {
             throw new RuntimeException("Utente non trovato");
         }
-        
+
         Long idSicuro = (long) utente.getId();
 
         String testoRisposta = geminiservice.chiediAgemini(message.getMessaggio(), idSicuro);
