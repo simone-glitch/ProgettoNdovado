@@ -37,7 +37,7 @@ public enum StatoHotel {
     public enum Attore { PROPRIETARIO, ADMIN }
 
     /**
-     * Transizioni consentite al PROPRIETARIO (host titolare) — o all'ADMIN,
+     * Transizioni consentite al PROPRIETARIO (host titolare), o all'ADMIN,
      * che eredita i permessi del proprietario oltre ai propri.
      */
     private Set<StatoHotel> transizioniProprietario() {

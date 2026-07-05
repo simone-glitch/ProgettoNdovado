@@ -23,7 +23,7 @@ public class Hotel {
     private Integer numCamere;
     private Double prezzoMedio;
 
-    // Caricati dal Proxy (lazy) — non mappati direttamente dalla query principale
+    // Caricati dal Proxy (lazy), non mappati direttamente dalla query principale
     private List<Camera> camere;
     private List<String> servizi;
     private List<String> fotoUrls;

@@ -5,7 +5,7 @@ import { map, catchError, switchMap } from 'rxjs/operators';
 
 /**
  * Converte un indirizzo testuale in coordinate geografiche (lat/lon) usando
- * Nominatim di OpenStreetMap — lo stesso ecosistema della mappa Leaflet già
+ * Nominatim di OpenStreetMap, lo stesso ecosistema della mappa Leaflet già
  * in uso nell'app, quindi gratuito e senza API key.
  *
  * Nota: Nominatim consente ~1 richiesta al secondo; qui viene invocato solo

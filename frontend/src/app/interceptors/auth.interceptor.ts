@@ -29,7 +29,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((err: HttpErrorResponse) => {
         // Un 401 su una richiesta autenticata (non login/register) significa che
-        // il token salvato è scaduto o non è più valido — ad es. password cambiata.
+        // il token salvato è scaduto o non è più valido, ad es. password cambiata.
         // Con Spring httpBasic questo 401 arriva anche sugli endpoint pubblici se
         // viene inviato un header Basic errato, quindi tutta l'app mostrerebbe dati
         // vuoti e i salvataggi fallirebbero silenziosamente. Puliamo la sessione e

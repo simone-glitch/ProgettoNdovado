@@ -225,7 +225,7 @@ public class HotelController {
     }
 
     // Sostituisce l'intera galleria dell'hotel (usato dal wizard: invia la lista
-    // completa delle foto — data URL base64 o URL esterni — dopo il salvataggio).
+    // completa delle foto (data URL base64 o URL esterni) dopo il salvataggio).
     @PutMapping("/{id}/foto")
     @PreAuthorize("hasAnyRole('HOST','ADMIN')")
     public ResponseEntity<?> sostituisciFoto(@PathVariable Integer id,

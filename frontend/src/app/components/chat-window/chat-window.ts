@@ -34,8 +34,6 @@ export class ChatWindow implements OnInit {
     this.nuovoMessaggio='';
     this.chatService.inviaMessaggioAlBackend(testoDaInviare).subscribe({
       next: (response: any) => {
-        console.log("Risposta ricevuta dal backend:", response);
-
         let testoBot = '';
 
         if (response && response.risposta) {

@@ -108,7 +108,7 @@ public class PrenotazioneService {
         // La disponibilità è gestita per-data (calendario/occupazioni): NON si tocca
         // il flag globale `disponibile`, che resta il controllo manuale dell'host
         // (camera fuori servizio). Così la camera resta prenotabile per altre date
-        // e le date già prese — in attesa o confermate — risultano bloccate.
+        // e le date già prese (in attesa o confermate) risultano bloccate.
         return prenotazione;
     }
 

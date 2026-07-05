@@ -563,7 +563,7 @@ export class AggiungiHotel implements OnInit {
 
   // Errore nel salvataggio dell'hotel (anche quando innescato dall'aggiunta di
   // una camera, che dietro le quinte crea prima la bozza). Se il motivo è un
-  // contatto duplicato — telefono/email univoci tra strutture — evidenziamo il
+  // contatto duplicato (telefono/email univoci tra strutture), evidenziamo il
   // campo colpevole e riportiamo l'utente allo step dei contatti, così è chiaro
   // cosa correggere invece di vedere un errore "sganciato" mentre aggiunge una camera.
   private gestisciErroreHotel(e: any): void {

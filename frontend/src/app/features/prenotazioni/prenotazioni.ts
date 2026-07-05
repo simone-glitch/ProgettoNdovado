@@ -33,7 +33,7 @@ export class Prenotazioni implements OnInit {
   filterStatus = '';
   filterAnno = '';
 
-  // stato applicato — aggiornato solo al click del pulsante filtro
+  // stato applicato: aggiornato solo al click del pulsante filtro
   private appliedSearch = '';
   private appliedStatus = '';
   private appliedAnno = '';
