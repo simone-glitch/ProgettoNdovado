@@ -25,7 +25,9 @@ export class Register {
     nome:     new FormControl('', [Validators.required]),
     cognome:  new FormControl('', [Validators.required]),
     email:    new FormControl('', [Validators.required, Validators.email]),
-    telefono: new FormControl(''),
+    telefono: new FormControl('', [
+      Validators.pattern(/^[0-9]{8,15}$/)
+    ]),
     ruolo:    new FormControl('GUEST', [Validators.required]),
     password: new FormControl('', [
       Validators.required,
@@ -35,6 +37,17 @@ export class Register {
   });
 
   constructor(private authService: AuthService, private router: Router, private i18n: TranslationService) {}
+
+  // Filtro input telefono: consente solo cifre (0-9), scarta qualsiasi altro
+  // carattere man mano che si digita/incolla.
+  soloCifreTelefono(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const soloNumeri = input.value.replace(/\D/g, '');
+    if (input.value !== soloNumeri) {
+      input.value = soloNumeri;
+      this.registerForm.get('telefono')?.setValue(soloNumeri);
+    }
+  }
 
   onSubmit(): void {
     if (!this.registerForm.valid) { this.registerForm.markAllAsTouched(); return; }
@@ -69,4 +82,23 @@ export class Register {
   }
 
   onAlertDismiss(): void { this.showAlert = false; }
+
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const key = event.key;
+
+    // Permette Backspace, Tab, Delete, frecce ecc.
+    if (
+      key === 'Backspace' ||
+      key === 'Delete' ||
+      key === 'Tab' ||
+      key === 'ArrowLeft' ||
+      key === 'ArrowRight'
+    ) {
+      return;
+    }
+
+    if (!/[0-9]/.test(key)) {
+      event.preventDefault();
+    }
+  }
 }

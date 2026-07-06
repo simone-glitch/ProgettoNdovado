@@ -57,7 +57,7 @@ export class Setting implements OnInit {
       nome: ['', Validators.required],
       cognome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      telefono: [''],
+      telefono: ['', [Validators.pattern(/^\d*$/)]],
     });
 
     this.passwordForm = this.fb.group({
@@ -134,6 +134,17 @@ export class Setting implements OnInit {
       lingua: this.prefsService.lingua,
       valuta: this.prefsService.valuta,
     };
+  }
+
+  // Filtro input telefono: consente solo cifre (0-9), scarta qualsiasi altro
+  // carattere man mano che si digita/incolla.
+  soloCifreTelefono(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const soloNumeri = input.value.replace(/\D/g, '');
+    if (input.value !== soloNumeri) {
+      input.value = soloNumeri;
+      this.profileForm.get('telefono')?.setValue(soloNumeri);
+    }
   }
 
   aggiornaProfilo(): void {

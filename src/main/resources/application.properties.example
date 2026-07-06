@@ -7,9 +7,9 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/ndovado_db
 spring.datasource.username=postgres
 spring.datasource.password=LA_TUA_PASSWORD_POSTGRES
 spring.datasource.driver-class-name=org.postgresql.Driver
-logging.level.org.springframework.jdbc.core=DEBUG
-logging.level.org.springframework.jdbc=DEBUG
-logging.level.org.springframework.transaction=TRACE
+logging.level.org.springframework.jdbc.core=WARN
+logging.level.org.springframework.jdbc=WARN
+logging.level.org.springframework.transaction=WARN
 
 # ===============================
 # API KEYS ESTERNE

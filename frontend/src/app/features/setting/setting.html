@@ -126,7 +126,7 @@
 
               <div class="form-field">
                 <label>{{ 'common.telefono' | translate }}</label>
-                <input type="tel" formControlName="telefono" [placeholder]="'settings.placeholder.telefono-non-impostato' | translate">
+                <input type="tel" inputmode="numeric" formControlName="telefono" (input)="soloCifreTelefono($event)" [placeholder]="'settings.placeholder.telefono-non-impostato' | translate">
               </div>
 
             </div>

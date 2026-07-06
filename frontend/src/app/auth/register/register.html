@@ -114,7 +114,14 @@
           <label class="auth-label">{{ 'common.telefono' | translate:'it' }} <span class="auth-label-optional">{{ 'auth.opzionale' | translate:'it' }}</span></label>
           <div class="auth-input-wrap">
             <i class="fas fa-phone auth-ico"></i>
-            <input class="auth-input" type="tel" formControlName="telefono" [placeholder]="'auth.placeholder.telefono-esempio' | translate:'it'">
+            <input class="auth-input"
+                   type="tel"
+                   formControlName="telefono"
+                   inputmode="numeric"
+                   maxlength="15"
+                   pattern="[0-9]*"
+                   (keypress)="allowOnlyNumbers($event)"
+                   [placeholder]="'auth.placeholder.telefono-esempio' | translate:'it'">
           </div>
         </div>
 

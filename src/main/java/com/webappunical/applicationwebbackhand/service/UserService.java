@@ -59,6 +59,9 @@ public class UserService {
         String telefono = profileRequest.get("telefono");
         if (telefono != null) telefono = telefono.trim();
         if (telefono != null && telefono.isEmpty()) telefono = null;
+        if (telefono != null && !telefono.matches("\\d+")) {
+            throw new IllegalArgumentException("Il numero di telefono deve contenere solo cifre (0-9).");
+        }
         if (telefono != null) {
             Utente altroConStessoTelefono = utenteJDBC.trovaPerTelefono(telefono);
             if (altroConStessoTelefono != null && !Objects.equals(altroConStessoTelefono.getId(), utente.getId()))

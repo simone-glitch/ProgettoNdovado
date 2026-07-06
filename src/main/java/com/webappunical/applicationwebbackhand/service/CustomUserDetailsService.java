@@ -63,6 +63,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         // vuoto → NULL così i profili senza telefono non collidono tra loro.
         if (telefono != null) telefono = telefono.trim();
         if (telefono != null && telefono.isEmpty()) telefono = null;
+        if (telefono != null && !telefono.matches("\\d+")) {
+            throw new IllegalArgumentException("Il numero di telefono deve contenere solo cifre (0-9).");
+        }
         if (telefono != null && utenteJDBC.trovaPerTelefono(telefono) != null) {
             throw new IllegalArgumentException("Numero di telefono già registrato.");
         }
