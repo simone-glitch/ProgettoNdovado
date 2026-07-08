@@ -399,11 +399,11 @@
 }
 
 .profile-avatar-circle {
-  width: 72px;
-  height: 72px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   background: linear-gradient(135deg, #0F3460, #1a4a7a);
-  border: 3px solid rgba(201,164,92,0.4);
+  border: none; /* l'anello oro è fornito da .profile-avatar-wrap: evita il doppio bordo asimmetrico */
   display: flex;
   align-items: center;
   justify-content: center;
