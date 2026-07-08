@@ -35,7 +35,7 @@ export class AggiungiHotel implements OnInit {
   // Foto (data URL base64) della camera che si sta compilando nel builder.
   fotoCameraNuova: string[] = [];
   savingCamera = false;
-  private static readonly MAX_FOTO_BYTES = 2 * 1024 * 1024;
+  private static readonly MAX_FOTO_BYTES = 10 * 1024 * 1024; // 10 MB per foto camera
 
   // Coordinate geografiche ricavate dall'indirizzo (per la mappa)
   private lat: number | null = null;

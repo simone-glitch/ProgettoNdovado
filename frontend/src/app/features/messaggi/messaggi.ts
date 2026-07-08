@@ -30,6 +30,7 @@ export class Messaggi implements OnInit, OnDestroy, AfterViewChecked {
   loading = false;
   loadingMessaggi = false;
   sending = false;
+  contattandoAssistenza = false;
 
   showAlert = false;
   alertMessage = '';
@@ -182,6 +183,32 @@ export class Messaggi implements OnInit, OnDestroy, AfterViewChecked {
 
   chiudiThread() { this.selezionata = null; this.messaggi = []; }
 
+  // Apre (o crea) la chat di assistenza con un amministratore per l'utente
+  // corrente, senza dover prima segnalare un messaggio. Il backend fa "trova o
+  // crea": i click successivi riaprono sempre la stessa conversazione.
+  contattaAssistenza() {
+    if (this.contattandoAssistenza) return;
+    this.contattandoAssistenza = true;
+    this.messaggiService.avviaAssistenza().subscribe({
+      next: (conv) => {
+        this.contattandoAssistenza = false;
+        this.mostraArchiviate = false;
+        this.messaggiService.getConversazioni().subscribe({
+          next: (c) => {
+            this.conversazioni = c ?? [];
+            const target = this.conversazioni.find(x => x.id === conv.id) ?? conv;
+            this.seleziona(target);
+          },
+          error: () => { this.seleziona(conv); },
+        });
+      },
+      error: (e) => {
+        this.contattandoAssistenza = false;
+        this.alert(e?.error?.message ?? e?.error ?? this.i18n.translate('msg.errore'), 'error');
+      },
+    });
+  }
+
   private caricaMessaggi(idConv: number) {
     this.loadingMessaggi = true;
     this.messaggiService.getMessaggi(idConv).subscribe({
@@ -232,6 +259,12 @@ export class Messaggi implements OnInit, OnDestroy, AfterViewChecked {
 
   altroNome(conv: any): string {
     if (!conv) return '';
+    // Chat di assistenza: il lato utente (guest/host) vede l'etichetta "Assistenza"
+    // invece del nome reale dell'amministratore. L'admin continua a vedere il nome
+    // dell'utente da assistere.
+    if (conv.assistenza && this.currentUserId === conv.idGuest) {
+      return this.i18n.translate('msg.assistenza');
+    }
     return this.currentUserId === conv.idGuest ? conv.nomeHost : conv.nomeGuest;
   }
 

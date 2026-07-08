@@ -47,6 +47,7 @@ export class GestioneHotel implements OnInit {
 
   // ── Navigazione a pagine dedicate ──
 
+  vediHotel(h: any) { if (h?.id) this.router.navigate(['/dashboard/hotel-detail', h.id]); }
   apriModificaHotel(h: any) { if (h?.id) this.router.navigate(['/dashboard/hotel', h.id, 'modifica']); }
   gestisciCamere(h: any) { if (h?.id) this.router.navigate(['/dashboard/hotel', h.id, 'camere']); }
 

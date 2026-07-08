@@ -43,6 +43,7 @@
             </div>
           </div>
           <div class="hotel-card-actions">
+            <button class="btn-sm btn-secondary" (click)="vediHotel(hotel)"><i class="fas fa-eye"></i> {{ 'gestionehotel.vedi' | translate }}</button>
             <button class="btn-sm btn-secondary" (click)="gestisciCamere(hotel)">
               <i class="fas fa-bed"></i> {{ 'gestionehotel.camere-count' | translate }} ({{ hotel.camere?.length ?? 0 }})
             </button>

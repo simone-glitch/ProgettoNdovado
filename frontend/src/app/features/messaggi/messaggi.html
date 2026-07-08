@@ -28,6 +28,12 @@
         </button>
       </div>
 
+      @if (!isAdmin) {
+        <button class="msg-new-assist" (click)="contattaAssistenza()" [disabled]="contattandoAssistenza">
+          <i class="fas fa-headset"></i> {{ 'msg.contatta-assistenza' | translate }}
+        </button>
+      }
+
       @if (loading) {
         <div class="msg-list-skeleton"></div>
         <div class="msg-list-skeleton"></div>

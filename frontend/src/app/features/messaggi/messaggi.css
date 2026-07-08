@@ -44,6 +44,18 @@
 }
 .msg-tab-active .msg-tab-count { background: rgba(255,255,255,0.25); }
 
+/* Pulsante "Contatta assistenza" (visibile agli utenti non-admin) */
+.msg-new-assist {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin: 0 0 10px; padding: 10px 12px;
+  border: none; border-radius: 10px; cursor: pointer;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem;
+  color: #fff; background: linear-gradient(135deg, #0F3460, #C9943A);
+  transition: filter 0.15s;
+}
+.msg-new-assist:hover { filter: brightness(1.06); }
+.msg-new-assist:disabled { opacity: 0.6; cursor: default; }
+
 .msg-conv {
   display: flex; align-items: flex-start; gap: 10px;
   width: 100%; text-align: left; position: relative;

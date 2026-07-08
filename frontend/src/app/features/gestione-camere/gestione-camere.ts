@@ -38,7 +38,7 @@ export class GestioneCamere implements OnInit {
   private actionPending: (() => void) | null = null;
 
   readonly tipiCamera = ['SINGOLA', 'DOPPIA', 'TRIPLA', 'SUITE', 'FAMILIARE', 'DELUXE'];
-  private static readonly MAX_FOTO_BYTES = 2 * 1024 * 1024;
+  private static readonly MAX_FOTO_BYTES = 10 * 1024 * 1024; // 10 MB per foto camera
 
   constructor(
     private fb: FormBuilder,

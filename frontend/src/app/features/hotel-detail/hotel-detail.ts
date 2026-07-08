@@ -115,6 +115,13 @@ export class HotelDetail implements OnInit, AfterViewInit, OnDestroy {
     if (openPrenota) {
       setTimeout(() => this.scrollToSection('prenota'), 600);
     }
+
+    // Apertura "pulita" (nessun deep-link a una sezione): riporta lo scroll del
+    // contenitore in cima, altrimenti la pagina eredita la posizione di scroll
+    // della vista precedente (es. lista Gestione hotel scrollata in basso).
+    if (!openReview && !openPrenota) {
+      setTimeout(() => document.querySelector('.ndv-main')?.scrollTo({ top: 0 }));
+    }
   }
 
   private scrollToSection(id: string) {
